@@ -1,3 +1,3 @@
 1. data scaling
-2. data generators
-3. pca computation
+2. pca computation
+3. augmentations

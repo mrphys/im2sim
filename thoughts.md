@@ -14,3 +14,12 @@ Physics-based losses - these should be easy to integrate once everything else is
 More augmentations
 mesh-based augmentations can be applied at runtime for segmentation problems but not for im2sim problems 
 Image augmentations including noise, contrast and translation/rotation can be applied for any type of problem
+
+
+Datasets
+- loading vtus is a lot slower than loading .pt files so:
+    - On the first epoch, load in the data using pyvista, perform the preprocessing and cache
+        - concatenate the node type to the node features 
+        - write all the utils you need based on the edges and node type
+    - On subsequent epochs, access the cache and load the data
+    - perform augmentation on the preprocessed data 

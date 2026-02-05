@@ -1,5 +1,5 @@
 from torch import nn
-from layer_util import get_image_layer, get_activation
+from .layer_util import get_image_layer, get_activation
 
 
 class ImageConvBlock(nn.Module):
@@ -40,7 +40,7 @@ class ImageConvBlock(nn.Module):
             for _ in range(depth)
         ])
 
-        self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)
+        self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
 
     def forward(self, x):
         """
@@ -79,6 +79,7 @@ class ImageEncoder(nn.Module):
                 rank=3,
                 norm_type=None,
                 pool_type='MaxPool',
+                pool_size=2,
                 activation='relu'):
         super().__init__()
         
@@ -95,7 +96,7 @@ class ImageEncoder(nn.Module):
         ])
         pool = get_image_layer(pool_type, rank)
         self.maxpools = nn.ModuleList([
-            pool() if i>0 else nn.Identity()
+            pool(pool_size) if i>0 else nn.Identity()
             for i in range(n_levels)
         ])
 

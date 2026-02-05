@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from layer_util import get_graph_layer, get_activation
+from .layer_util import get_graph_layer, get_activation
 
 
 class GraphConvBlock(nn.Module):
@@ -41,14 +41,14 @@ class GraphConvBlock(nn.Module):
             for _ in range(depth)
         ])
 
-        self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)
+        self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
 
-    def forward(self, x):
+    def forward(self, x, edge_index):
         for conv, norm in zip(self.convs, self.norms):
-            x = norm(self.act(conv(x)))
+            x = norm(self.act(conv(x,edge_index)))
         return x
 
-class GraphDecoder(nn.Module):
+class _GraphDecoder(nn.Module):
     """
     A cgraph convolutional decoder block with the same structure as MeshDeformNet and Image2Flow
 
@@ -69,7 +69,7 @@ class GraphDecoder(nn.Module):
     
     """
     def __init__(self,
-                 encoder_channels,
+                 projection_channels,
                  out_channels,
                  filters = [[384,288], [144,96], [64,32]],
                  convs_per_layer = 3,
@@ -95,7 +95,7 @@ class GraphDecoder(nn.Module):
         ])
 
         self.deform_convs = nn.ModuleList([
-            GraphConvBlock(in_channels=filters[i][0] + encoder_channels[i], 
+            GraphConvBlock(in_channels=filters[i][0] + projection_channels[i], 
                             filters=filters[i][1], 
                             depth=convs_per_layer, 
                             conv_type=conv_type,
@@ -125,8 +125,84 @@ class GraphDecoder(nn.Module):
         outputs = []
         x=template.clone()
         for pconv, dconv, oconv, enc in zip(self.process_convs,self.deform_convs, self.out_convs, encoder_projections):
-            x = dconv(torch.cat([pconv(x), enc], axis=-1))
-            res = oconv(x) + template
+            x = pconv(x,edge_index)
+            x = dconv(torch.cat([x, enc], axis=-1), edge_index)
+            res = oconv(x, edge_index) + template
             outputs.append(res)
             
         return outputs
+    
+
+class GraphDecoderBlock(nn.Module):
+    """
+    A cgraph convolutional decoder block with the same structure as MeshDeformNet and Image2Flow
+
+    Args:
+        encoder_channels (List[int]): The number of channels projected from the encoder to each decoder level (len=n_decoder_levels)
+        out_channels (int): The number of output channels including node coordinates and features
+        filters (List(List(int)), optional): The number of convolutional filters for each level (default:[[384,288], [144,96], [64,32]])
+        convs_per_layer (int, optional): The number of successive convolutional layers in the deform convolution(default: 3)
+        template_edge_index (torch.Tensor, optional): If template tensor is the fixed it can be passed (default: None)
+        conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: "GraphConv", "GCNConv", "GATConv")
+        conv_kwargs(dict, optional): Dictionary of keyword arguments for the chosen conv_type
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        out_activation (str, optional): The activation function applied after each convolution (default: "linear", options: "leakyrelu","gelu","sigmoid","relu","softmax")
+        norm_type (str, optional): The normalization method to apply between convolutions (default:"InstanceNorm", options: "BatchNorm",  "LayerNorm")
+
+    Returns:
+        A `torch.nn.Module` object.
+    
+    """
+    def __init__(self,
+                 projection_channels,
+                 graph_channels,
+                 out_channels,
+                 filters,
+                 n_process_convs = 1,
+                 n_deform_convs = 3,
+                 template_edge_index=None,
+                 conv_type="ChebConv",
+                 conv_kwargs={'K':3},
+                 activation="relu",
+                 out_activation="linear",
+                 norm_type="InstanceNorm"):
+        super().__init__()
+
+
+        self.process_conv = GraphConvBlock(in_channels=graph_channels,
+                                            filters=filters[0], 
+                                            depth=n_process_convs, 
+                                            conv_type=conv_type,
+                                            conv_kwargs=conv_kwargs,
+                                            activation=activation, 
+                                            norm_type=norm_type)
+
+
+        self.deform_conv = GraphConvBlock(in_channels=filters[0] + projection_channels, 
+                                            filters=filters[1], 
+                                            depth=n_deform_convs, 
+                                            conv_type=conv_type,
+                                            conv_kwargs=conv_kwargs,
+                                            activation=activation, 
+                                            norm_type=norm_type)
+   
+        self.out_conv = GraphConvBlock(in_channels=filters[1], 
+                                        filters=out_channels, 
+                                        depth=1, 
+                                        conv_type=conv_type,
+                                        conv_kwargs=conv_kwargs,
+                                        activation=out_activation, 
+                                        norm_type=None)
+        
+        self.edge_index=template_edge_index
+    
+    def forward(self,graph_features,encoder_projection,prev_results,edge_index):
+        if edge_index is None:
+            edge_index=self.edge_index
+
+        x=graph_features.clone()
+        x=self.process_conv(x,edge_index)
+        x=self.deform_conv(torch.cat([x, encoder_projection], axis=-1), edge_index)
+        res = self.out_conv(x, edge_index) + prev_results
+
+        return x,res

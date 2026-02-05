@@ -99,8 +99,8 @@ _IMAGE_LAYERS = {
     ('ZeroPadding', 2): nn.ZeroPad2d,
     ('ZeroPadding', 3): nn.ZeroPad3d,
     ('BatchNorm', 1): nn.BatchNorm1d,
-    ('BatchNorm', 1): nn.BatchNorm2d,
-    ('BatchNorm', 1): nn.BatchNorm3d
+    ('BatchNorm', 2): nn.BatchNorm2d,
+    ('BatchNorm', 3): nn.BatchNorm3d
 }
 
 _GRAPH_LAYERS = {

@@ -1,4 +1,4 @@
-from layers import ImageEncoder,GraphDecoderBlock,TrilinearProjection
+from layers import ImageResEncoder,GraphResDecoderBlock,TrilinearProjection
 import torch
 from torch import nn
 
@@ -11,7 +11,8 @@ class SimpleI2G(nn.Module):
                 out_channels,
                 cnn_filters=[16,32,64,128,256],
                 cnn_kernel_size=3,
-                cnn_convs_per_layer=2,
+                cnn_res_depth=3,
+                cnn_res_blocks_per_level=2,
                 cnn_rank=3,
                 cnn_norm_type=None,
                 cnn_pool_type='MaxPool',
@@ -19,8 +20,9 @@ class SimpleI2G(nn.Module):
                 cnn_activation='relu',
                 projection_ids = [[3,4],[1,2],[0,1]],
                 gnn_filters = [[384,288], [144,96], [64,32]],
-                gnn_n_process_convs = 1,
-                gnn_n_deform_convs = 3,
+                gnn_res_depth = 3,
+                gnn_n_process_blocks = 1,
+                gnn_n_deform_blocks = 3,
                 template_edge_index=None,
                 gnn_conv_type="ChebConv",
                 gnn_conv_kwargs={'K':3},
@@ -29,10 +31,11 @@ class SimpleI2G(nn.Module):
                 gnn_norm_type="InstanceNorm"):
         super().__init__()
 
-        self.encoder = ImageEncoder(in_channels=in_channels,
+        self.encoder = ImageResEncoder(in_channels=in_channels,
                                filters=cnn_filters,
                                kernel_size=cnn_kernel_size,
-                               convs_per_layer=cnn_convs_per_layer,
+                               res_depth=cnn_res_depth,
+                               res_blocks_per_level=cnn_res_blocks_per_level,
                                rank=cnn_rank,
                                norm_type=cnn_norm_type,
                                pool_type=cnn_pool_type,
@@ -45,12 +48,13 @@ class SimpleI2G(nn.Module):
         projection_channels = _get_projection_channels(cnn_filters, self.projection_ids)
         print(f"Projection channels: {projection_channels}")
         self.decoder_blocks = nn.ModuleList([
-                            GraphDecoderBlock(projection_channels=projection_channels[i], 
+                            GraphResDecoderBlock(projection_channels=projection_channels[i], 
                                             graph_channels=out_channels if i==0 else gnn_filters[i-1][1],
                                             out_channels=out_channels,
                                             filters=gnn_filters[i],
-                                            n_process_convs = gnn_n_process_convs,
-                                            n_deform_convs = gnn_n_deform_convs,
+                                            res_depth=gnn_res_depth,
+                                            n_process_blocks = gnn_n_process_blocks,
+                                            n_deform_blocks = gnn_n_deform_blocks,
                                             template_edge_index=template_edge_index,
                                             conv_type=gnn_conv_type,
                                             conv_kwargs=gnn_conv_kwargs,

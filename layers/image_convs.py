@@ -14,6 +14,7 @@ class ImageConvBlock(nn.Module):
         rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:2),
         activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
         norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
+        dropout_rate (float, optional): The spatial dropout rate to be applied to the final convolution output (default:None)
 
     Returns:
         A `torch.nn.Module` object.
@@ -23,10 +24,11 @@ class ImageConvBlock(nn.Module):
                 in_channels, 
                 filters=32, 
                 kernel_size=3,
-                depth=2, 
+                depth=1, 
                 rank=3,
                 activation='relu', 
-                norm_type=None):
+                norm_type=None,
+                dropout_rate=None):
         super().__init__() 
 
         conv = get_image_layer('Conv', rank)
@@ -39,8 +41,10 @@ class ImageConvBlock(nn.Module):
             get_image_layer(norm_type, rank)(filters) if norm_type else nn.Identity()
             for _ in range(depth)
         ])
+        self.drop = nn.Dropout1d(p=dropout_rate) if dropout_rate else nn.Identity()
 
         self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
+        
 
     def forward(self, x):
         """
@@ -50,22 +54,90 @@ class ImageConvBlock(nn.Module):
         Returns:
             torch.Tensor: Output feature maps [out_channels, ...]
         """
+
         for conv, norm in zip(self.convs, self.norms):
+            print(x.shape, conv.weight.shape)
             x = norm(self.act(conv(x)))
+        return self.drop(x)
+
+class ImageConvResBlock(nn.Module):
+    """
+    A convolutional residual block for image data
+
+    Args:
+        in_channels (int): The number of channels in the input to the layer.
+        filters (int, optional): The number of filters in each convolutional layer (default: 32)
+        kernel_size (int, optional): The kernel(filter) size for the convolutional layers (default: 3)
+        depth (int, optional): The number of successive convolutional layers (default: 3)
+        rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:2),
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
+        dropout_rate (float, optional): The spatial dropout rate to be applied to the convolution prior to residual connection (default:None)
+
+    Returns:
+        A `torch.nn.Module` object.
+    
+    """
+    def __init__(self, 
+                in_channels, 
+                filters=32, 
+                kernel_size=3,
+                depth=3, 
+                rank=3,
+                activation='relu', 
+                norm_type=None,
+                dropout_rate=None):
+        super().__init__() 
+
+        conv_params = dict(filters=filters,
+                        kernel_size=kernel_size,
+                        rank=rank,
+                        activation=activation,
+                        norm_type=norm_type)
+        self.initial_conv = ImageConvBlock(in_channels=in_channels,
+                                            **conv_params,
+                                            depth=1,
+                                            dropout_rate=None)
+        self.main_conv = ImageConvBlock(in_channels=filters,
+                                            **conv_params,
+                                            depth=depth-2,
+                                            dropout_rate=None)
+        self.out_conv = ImageConvBlock(in_channels=filters,
+                                            **conv_params,
+                                            depth=1,
+                                            dropout_rate=dropout_rate)
+
+    def forward(self, x):
+        """
+        Args:
+            x (torch.Tensor): Input feature maps in image space [in_channels, ...] where the number of dims in ... corresponds to rank
+
+        Returns:
+            torch.Tensor: Output feature maps [out_channels, ...]
+        """
+        print(f"x: {x.shape}")
+        x1 = self.initial_conv(x)
+        print(f"x1: {x1.shape}")
+        x = self.main_conv(x1) 
+        print(f"x: {x.shape}")
+        x = self.out_conv(x) + x1
+        print(f"x: {x.shape}")
         return x
     
-class ImageEncoder(nn.Module):
+class ImageResEncoder(nn.Module):
     """
-    A CNN encoder for images. Structured like the encoder of a UNet.
+    A CNN encoder for images. Structured like the encoder of a ResUNet.
 
     Args:
         in_channels (int): The number of channels in the input image.
         filters (List[int], optional): The number of convolutional filters in each encoder level (default: [16,32,64,128,256])
         kernel_size (int, optional): The kernel(filter) size for the convolutional layers (default: 3)
-        depth (int, optional): The number of successive convolutional layers in each encoder level (default: 2)
-        rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:2),
+        res_depth (int, optional): The number of successive convolutional layers in each residual block (default: 3)
+        res_blocks_per_level (int, optional): The number of successive residual blocks per encoder level (default: 2)
+        rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:3),
         activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
         norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
+        dropout_rate (float, optional): The spatial dropout rate to be applied to each residual block prior to residual connection (default:None)
 
     Returns:
         A `torch.nn.Module` object.
@@ -75,23 +147,97 @@ class ImageEncoder(nn.Module):
                 in_channels, 
                 filters=[16,32,64,128,256],
                 kernel_size=3,
-                convs_per_layer=2,
+                res_depth=3,
+                res_blocks_per_level=2,
                 rank=3,
                 norm_type=None,
                 pool_type='MaxPool',
                 pool_size=2,
-                activation='relu'):
+                activation='relu',
+                dropout_rate=None):
+        super().__init__()
+        
+        n_levels = len(filters)
+        in_channels = [in_channels, *filters]
+        self.conv_blocks = nn.ModuleList([
+                nn.ModuleList([
+                    ImageConvResBlock(in_channels=in_channels[i] if j==0 else in_channels[i+1], 
+                                    filters=filters[i], 
+                                    kernel_size=kernel_size, 
+                                    depth=res_depth,
+                                    rank=rank,
+                                    activation=activation,
+                                    norm_type=norm_type,
+                                    dropout_rate=dropout_rate)
+                    for j in range(res_blocks_per_level)
+                    ])
+            for i in range(n_levels)
+        ])
+        pool = get_image_layer(pool_type, rank)
+        self.maxpools = nn.ModuleList([
+            pool(pool_size) if i>0 else nn.Identity()
+            for i in range(n_levels)
+        ])
+
+    def forward(self,x):
+        """
+        Args:
+            x (torch.Tensor): Input image [in_channels, ...]
+
+        Returns:
+            List[torch.Tensor]: Output feature maps from each level ordered from top to bottom [Tensor([filters[0], ...], ..., Tensor([filters[N], ...])
+        """
+        outputs = []
+        for pool, convs in zip(self.maxpools, self.conv_blocks):
+            x = pool(x)
+            for conv in convs: 
+                print(x.shape)
+                x = conv(x)
+            outputs.append(x)
+        return outputs
+    
+
+class ImageEncoder(nn.Module):
+    """
+    A CNN encoder for images. Structured like the encoder of a UNet.
+
+    Args:
+        in_channels (int): The number of channels in the input image.
+        filters (List[int], optional): The number of convolutional filters in each encoder level (default: [16,32,64,128,256])
+        kernel_size (int, optional): The kernel(filter) size for the convolutional layers (default: 3)
+        conv_blocks_per_level (int, optional): The number of successive convolutional blocks per encoder level (default: 1)
+        rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:3),
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
+        dropout_rate (float, optional): The spatial dropout rate to be applied to each residual block prior to residual connection (default:None)
+
+    Returns:
+        A `torch.nn.Module` object.
+    """
+
+    def __init__(self,
+                in_channels, 
+                filters=[16,32,64,128,256],
+                kernel_size=3,
+                conv_blocks_per_level=1,
+                rank=3,
+                norm_type=None,
+                pool_type='MaxPool',
+                pool_size=2,
+                activation='relu',
+                dropout_rate=None):
         super().__init__()
         
         n_levels = len(filters)
         self.conv_blocks = nn.ModuleList([
-            ImageConvBlock(in_channels=in_channels if i==0 else filters[i-1], 
-                      filters=filters[i], 
-                      kernel_size=kernel_size, 
-                      depth=convs_per_layer,
-                      rank=rank,
-                      activation=activation,
-                      norm_type=norm_type)
+                ImageConvBlock(in_channels=in_channels if i==0 else filters[i-1], 
+                        filters=filters[i], 
+                        kernel_size=kernel_size, 
+                        depth=conv_blocks_per_level,
+                        rank=rank,
+                        activation=activation,
+                        norm_type=norm_type,
+                        dropout_rate=dropout_rate)
             for i in range(n_levels)
         ])
         pool = get_image_layer(pool_type, rank)
@@ -113,6 +259,7 @@ class ImageEncoder(nn.Module):
             x = conv(pool(x))
             outputs.append(x)
         return outputs
+
 
 
 

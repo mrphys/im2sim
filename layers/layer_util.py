@@ -100,7 +100,10 @@ _IMAGE_LAYERS = {
     ('ZeroPadding', 3): nn.ZeroPad3d,
     ('BatchNorm', 1): nn.BatchNorm1d,
     ('BatchNorm', 2): nn.BatchNorm2d,
-    ('BatchNorm', 3): nn.BatchNorm3d
+    ('BatchNorm', 3): nn.BatchNorm3d,
+    ('InstanceNorm', 1): nn.InstanceNorm1d,
+    ('InstanceNorm', 2): nn.InstanceNorm2d,
+    ('InstanceNorm', 3): nn.InstanceNorm3d
 }
 
 _GRAPH_LAYERS = {

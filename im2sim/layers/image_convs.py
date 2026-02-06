@@ -56,7 +56,6 @@ class ImageConvBlock(nn.Module):
         """
 
         for conv, norm in zip(self.convs, self.norms):
-            print(x.shape, conv.weight.shape)
             x = norm(self.act(conv(x)))
         return self.drop(x)
 
@@ -115,13 +114,9 @@ class ImageConvResBlock(nn.Module):
         Returns:
             torch.Tensor: Output feature maps [out_channels, ...]
         """
-        print(f"x: {x.shape}")
         x1 = self.initial_conv(x)
-        print(f"x1: {x1.shape}")
         x = self.main_conv(x1) 
-        print(f"x: {x.shape}")
         x = self.out_conv(x) + x1
-        print(f"x: {x.shape}")
         return x
     
 class ImageResEncoder(nn.Module):
@@ -191,7 +186,6 @@ class ImageResEncoder(nn.Module):
         for pool, convs in zip(self.maxpools, self.conv_blocks):
             x = pool(x)
             for conv in convs: 
-                print(x.shape)
                 x = conv(x)
             outputs.append(x)
         return outputs

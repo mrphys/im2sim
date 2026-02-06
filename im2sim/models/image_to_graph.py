@@ -46,7 +46,6 @@ class SimpleI2G(nn.Module):
         self.projection_ids = projection_ids
 
         projection_channels = _get_projection_channels(cnn_filters, self.projection_ids)
-        print(f"Projection channels: {projection_channels}")
         self.decoder_blocks = nn.ModuleList([
                             GraphResDecoderBlock(projection_channels=projection_channels[i], 
                                             graph_channels=out_channels if i==0 else gnn_filters[i-1][1],
@@ -68,14 +67,13 @@ class SimpleI2G(nn.Module):
     def forward(self, x, template):
         encoder_outputs = self.encoder(x)
         outputs = []
-        graph = template.x.clone()
-        out = template.x.clone()
+        graph_features = template.x.clone()
+        curr_mesh = template.x.clone()
         for dec, ids in zip(self.decoder_blocks, self.projection_ids):
-            proj_inp = torch.cat([TrilinearProjection()(encoder_outputs[id], out[:,:3])
+            proj_inp = torch.cat([TrilinearProjection()(encoder_outputs[id], curr_mesh[:,:3])
                                   for id in ids], dim=-1)
-            print(graph.shape, proj_inp.shape, out.shape)
-            graph, out = dec(graph,proj_inp,out,template.edge_index)
-            outputs.append(out)
+            graph_features, curr_mesh = dec(graph_features,proj_inp,curr_mesh,template.edge_index)
+            outputs.append(curr_mesh)
         return outputs
 
 

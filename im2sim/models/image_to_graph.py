@@ -1,4 +1,4 @@
-from layers import ImageResEncoder,GraphResDecoderBlock,TrilinearProjection
+from ..layers import ImageResEncoder,GraphResDecoderBlock,TrilinearProjection
 import torch
 from torch import nn
 

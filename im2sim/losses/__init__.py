@@ -1,1 +1,1 @@
-from .point_cloud_losses import *
+from . import pointcloud, mesh

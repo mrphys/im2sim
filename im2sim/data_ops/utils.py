@@ -29,3 +29,8 @@ def set_structure_masks(data, mesh, structure_list):
     for id, structure in enumerate(structure_list):
             setattr(data, f"is_{structure}", torch.from_numpy(node_ids==id))
     return data
+
+def get_tet_cells(mesh):
+    tet_cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == 0)[0])
+    tet_cells = tet_cells.cells.reshape(-1, 5)[:, 1:]
+    return tet_cells

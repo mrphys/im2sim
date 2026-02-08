@@ -159,7 +159,7 @@ class GraphResDecoderBlock(nn.Module):
                                         conv_type=conv_type,
                                         conv_kwargs=conv_kwargs,
                                         activation=out_activation, 
-                                        norm_type=None)
+                                        norm_type="InstanceNorm")
         
         self.edge_index=template_edge_index
     

@@ -124,9 +124,18 @@ _LAYER_KWARGS = {
 }
 _ACTIVATIONS = {
     "relu": nn.ReLU,
-    "leakyrelu": nn.LeakyReLU,
+    "leaky_relu": nn.LeakyReLU,
     "gelu": nn.GELU,
     "sigmoid": nn.Sigmoid,
     "linear": nn.Identity,
     "softmax": nn.Softmax
 }
+
+
+def init_weights(m):
+    if isinstance(m, gnn.ChebConv):
+        for lin in m.lins:
+            nn.init.kaiming_normal_(lin.weight, nonlinearity='leaky_relu')
+            lin.weight.data *= 0.1
+            if lin.bias is not None:
+                nn.init.zeros_(lin.bias)

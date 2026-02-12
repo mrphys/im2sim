@@ -26,7 +26,7 @@ _CONFIGS = {
                 cnn_norm_type="InstanceNorm",
                 cnn_pool_type='MaxPool',
                 cnn_pool_size=2,
-                cnn_activation='relu',
+                cnn_activation='leaky_relu',
                 projection_ids = [[3,4],[1,2],[0,1]],
                 gnn_filters = [[384,288], [144,96], [64,32]],
                 gnn_res_depth = 3,
@@ -35,7 +35,7 @@ _CONFIGS = {
                 template_edge_index=None,
                 gnn_conv_type="ChebConv",
                 gnn_conv_kwargs={'K':3},
-                gnn_activation="relu",
+                gnn_activation="leaky_relu",
                 out_activation="linear",
                 gnn_norm_type="InstanceNorm")
 }

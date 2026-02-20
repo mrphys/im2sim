@@ -21,7 +21,7 @@ class TrilinearProjection(nn.Module):
                                 for j,d in enumerate(self.domain_size)], axis=-1) # normalise coords [-1,1] and divide by scale 
             grid = grid.unsqueeze(-2).unsqueeze(-2) # [B,N,3]->[B,N,1,1,3]
             grid = grid.type_as(encoder_outputs)
-            projections = F.grid_sample(encoder_outputs[i],grid).squeeze().permute(0,2,1) # [B,C,N,1,1] -> [B,N,C]
+            projections = F.grid_sample(encoder_outputs[i],grid, align_corners=True).squeeze().permute(0,2,1) # [B,C,N,1,1] -> [B,N,C]
             projections = projections[padding_mask]
         else:
             # loop through the batches and concatenate the projections
@@ -32,6 +32,6 @@ class TrilinearProjection(nn.Module):
                                 for j,d in enumerate(self.domain_size)], axis=-1) # normalise coords [-1,1] and divide by scale 
                 grid = grid.unsqueeze(0).unsqueeze(-2).unsqueeze(-2) # [N,3]->[1,N,1,1,3]
                 grid = grid.type_as(encoder_outputs)
-                projections.append(F.grid_sample(encoder_outputs[i].unsqueeze(0),grid).squeeze().permute(1,0)) # [1,C,N,1,1] -> [1,C,N] -> [N,C]
+                projections.append(F.grid_sample(encoder_outputs[i].unsqueeze(0),grid, align_corners=True).squeeze().permute(1,0)) # [1,C,N,1,1] -> [1,C,N] -> [N,C]
             projections = torch.cat(projections, dim=0)
         return projections

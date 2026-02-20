@@ -33,4 +33,12 @@ def set_structure_masks(data, mesh, structure_list):
 def get_tet_cells(mesh):
     tet_cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == 0)[0])
     tet_cells = tet_cells.cells.reshape(-1, 5)[:, 1:]
+    tet_cells = torch.from_numpy(tet_cells).permute(1,0)
     return tet_cells
+
+def make_padded_batch(x, batch):
+    jagged_x = [x[batch==i] for i in torch.unique(batch)]
+    padded_x= torch.nn.utils.rnn.pad_sequence(jagged_x, batch_first=True)
+    lengths = torch.tensor([len(s) for s in jagged_x])
+    mask = torch.arange(padded_x.size(1))[None, :] < lengths[:, None]
+    return padded_x, mask

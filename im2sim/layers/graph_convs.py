@@ -104,7 +104,7 @@ class GraphResDecoderBlock(nn.Module):
         filters (List(List(int)), optional): The number of convolutional filters for each level (default:[[384,288], [144,96], [64,32]])
         res_block_depth (int, optional): The number of successive convolutions in each residual block (default: 3)
         n_process_blocks (int, optional): The number of residual blocks prior to projection(default: 1)
-        n_process_blocks (int, optional): The number of residual blocks after projection(default: 3)
+        n_deform_blocks (int, optional): The number of residual blocks after projection(default: 3)
         template_edge_index (torch.Tensor, optional): If template tensor is the fixed it can be passed (default: None)
         conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: "GraphConv", "GCNConv", "GATConv")
         conv_kwargs(dict, optional): Dictionary of keyword arguments for the chosen conv_type

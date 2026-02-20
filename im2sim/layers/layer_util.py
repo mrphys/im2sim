@@ -139,3 +139,4 @@ def init_weights(m):
             lin.weight.data *= 0.1
             if lin.bias is not None:
                 nn.init.zeros_(lin.bias)
+

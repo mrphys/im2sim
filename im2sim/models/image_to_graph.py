@@ -1,6 +1,11 @@
-from ..layers import ImageResEncoder,GraphResDecoderBlock,TrilinearProjection
+import logging
+
 import torch
 from torch import nn
+
+from ..layers import ImageResEncoder,GraphResDecoderBlock,TrilinearProjection
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -28,8 +33,12 @@ class SimpleI2G(nn.Module):
                 gnn_conv_kwargs={'K':3},
                 gnn_activation="relu",
                 out_activation="linear",
-                gnn_norm_type="InstanceNorm"):
+                gnn_norm_type="InstanceNorm",
+                batched_ops=True):
         super().__init__()
+
+        logger.debug("Defining SimpleI2G layers...")
+        self.batched_ops = batched_ops
 
         self.encoder = ImageResEncoder(in_channels=in_channels,
                                filters=cnn_filters,
@@ -63,17 +72,21 @@ class SimpleI2G(nn.Module):
                             for i in range(len(gnn_filters))
 
         ])
+        logger.debug("Done")
 
     def forward(self, x, template):
+        logger.debug("In model forward pass...")
         encoder_outputs = self.encoder(x)
         outputs = []
         graph_features = template.x.clone()
         curr_mesh = template.x.clone()
         for dec, ids in zip(self.decoder_blocks, self.projection_ids):
-            proj_inp = torch.cat([TrilinearProjection()(encoder_outputs[id], curr_mesh[:,:3])
+            proj_inp = torch.cat([TrilinearProjection(domain_size=x.shape[-3:], batch_ops=self.batched_ops)(encoder_outputs[id], curr_mesh[:,:3], template.batch)
                                   for id in ids], dim=-1)
             graph_features, curr_mesh = dec(graph_features,proj_inp,curr_mesh,template.edge_index)
-            outputs.append(curr_mesh)
+            out_graph = template.clone()
+            out_graph.x = curr_mesh
+            outputs.append(out_graph)
         return outputs
 
 

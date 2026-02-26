@@ -37,5 +37,6 @@ _CONFIGS = {
                 gnn_conv_kwargs={'K':3},
                 gnn_activation="leaky_relu",
                 out_activation="linear",
-                gnn_norm_type="InstanceNorm")
+                gnn_norm_type="InstanceNorm",
+                batched_ops=True)
 }

@@ -4,13 +4,22 @@ from itertools import combinations
 from torch_geometric.utils import to_undirected
 
 
-def get_node_ids(mesh):
-    cell_ids = np.zeros((len(mesh.points),))
-    for id in np.unique(mesh['CellEntityIds']):
+# def get_node_ids(mesh):
+#     cell_ids = np.zeros((len(mesh.points),))
+#     for id in np.unique(mesh['CellEntityIds']):
+#         cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])['vtkOriginalPointIds']
+#         nodes = np.unique(cells)
+#         cell_ids[nodes] = id
+#     return cell_ids
+
+def add_structure_masks(data, mesh, structure_list):
+    for id, name in zip(np.unique(mesh['CellEntityIds']), structure_list):
+        cell_ids = torch.zeros((len(mesh.points),))
         cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])['vtkOriginalPointIds']
         nodes = np.unique(cells)
-        cell_ids[nodes] = id
-    return cell_ids
+        cell_ids[nodes] = 1
+        setattr(data, f'{name}_mask', cell_ids.to(torch.bool))
+     
 
 def get_edges_tet(mesh):
     tet_cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == 0)[0])
@@ -24,11 +33,11 @@ def get_node_features(mesh, feature_names):
     features = torch.from_numpy(np.array([mesh.point_data[name] for name in feature_names]).T)
     return features
 
-def set_structure_masks(data, mesh, structure_list):
-    node_ids = get_node_ids(mesh)
-    for id, structure in enumerate(structure_list):
-            setattr(data, f"is_{structure}", torch.from_numpy(node_ids==id))
-    return data
+# def set_structure_masks(data, mesh, structure_list):
+#     node_ids = get_node_ids(mesh)
+#     for id, structure in enumerate(structure_list):
+#             setattr(data, f"is_{structure}", torch.from_numpy(node_ids==id))
+#     return data
 
 def get_tet_cells(mesh):
     tet_cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == 0)[0])

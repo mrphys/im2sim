@@ -1,7 +1,10 @@
+import logging
+
 import torch
 from torch import nn
 from .layer_util import get_graph_layer, get_activation
 
+logger = logging.getLogger(__name__)
 
 class GraphConvBlock(nn.Module):
     """
@@ -45,6 +48,7 @@ class GraphConvBlock(nn.Module):
 
     def forward(self, x, edge_index):
         for conv, norm in zip(self.convs, self.norms):
+            logger.debug("Graph features shape:%s", x.shape)
             x = norm(self.act(conv(x,edge_index)))
         return x
 
@@ -164,12 +168,15 @@ class GraphResDecoderBlock(nn.Module):
         self.edge_index=template_edge_index
     
     def forward(self,graph_features,encoder_projection,prev_results,edge_index):
+        logger.debug("IN GRAPH DECODER")
         if edge_index is None:
             edge_index=self.edge_index
 
         x=graph_features.clone()
+        logger.debug("Process convs...")
         for pconv in self.process_conv: x=pconv(x,edge_index)
         x = torch.cat([x, encoder_projection], axis=-1)
+        logger.debug("Decoder convs")
         for dconv in self.deform_conv: x=dconv(x, edge_index)
         res = self.out_conv(x, edge_index) + prev_results
 

@@ -1,6 +1,9 @@
+import logging
+
 from torch import nn
 from .layer_util import get_image_layer, get_activation
 
+logger = logging.getLogger(__name__)
 
 class ImageConvBlock(nn.Module):
     """
@@ -56,7 +59,8 @@ class ImageConvBlock(nn.Module):
         """
 
         for conv, norm in zip(self.convs, self.norms):
-            x = norm(self.act(conv(x)))
+            logger.debug("Image feature shape:%s", tuple(x.shape))
+            x = self.act(norm(conv(x)))
         return self.drop(x)
 
 class ImageConvResBlock(nn.Module):
@@ -182,11 +186,13 @@ class ImageResEncoder(nn.Module):
         Returns:
             List[torch.Tensor]: Output feature maps from each level ordered from top to bottom [Tensor([filters[0], ...], ..., Tensor([filters[N], ...])
         """
+        logger.debug("IN ENCODER")
         outputs = []
         for pool, convs in zip(self.maxpools, self.conv_blocks):
             x = pool(x)
             for conv in convs: 
                 x = conv(x)
+            logger.debug("Conv output shape:%s", x.shape)
             outputs.append(x)
         return outputs
     

@@ -13,8 +13,12 @@ from torch_geometric.utils import to_undirected
 #     return cell_ids
 
 def add_structure_masks(data, mesh, structure_list):
-    for id, name in zip(np.unique(mesh['CellEntityIds']), structure_list):
-        cell_ids = torch.zeros((len(mesh.points),))
+    ids = np.unique(mesh['CellEntityIds'])
+    missing_ids = set(range(len(structure_list))) - set(ids.tolist())
+    for id in missing_ids:
+        setattr(data, f'{structure_list[id]}_mask', torch.zeros((len(mesh.points))).to(torch.bool))
+    for id, name in zip(ids, structure_list):
+        cell_ids = torch.zeros((len(mesh.points)))
         cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])['vtkOriginalPointIds']
         nodes = np.unique(cells)
         cell_ids[nodes] = 1

@@ -15,8 +15,10 @@ def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
     logging.debug("shapes - y1:%s, y2:%s, b1:%s, b2%s", 
                   tuple(y1.shape),tuple(y2.shape),tuple(b1.shape),tuple(b2.shape))
     nns1 = gnn.pool.knn(x=y2, y=y1, batch_x=b2, batch_y=b1, k=1)
+    logging.debug("nn shape: %s", nns1.shape)
     d1 = torch.linalg.norm(y1 - y2[nns1[1]], dim=-1).mean()
     nns2 = gnn.pool.knn(x=y1, y=y2, batch_x=b1, batch_y=b2, k=1)
+    logging.debug("nn shape: %s", nns2.shape)
     d2 = torch.linalg.norm(y2 - y1[nns2[1]], dim=-1).mean()
     return d1 + d2
 

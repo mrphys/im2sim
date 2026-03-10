@@ -2,7 +2,14 @@ import logging
 
 import torch
 from torch import nn
+import torch_geometric.nn as gnn
+
 from .layer_util import get_graph_layer, get_activation
+from .projections import TrilinearProjection
+from ..data_ops.utils import cluster_pool
+
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -181,3 +188,124 @@ class GraphResDecoderBlock(nn.Module):
         res = self.out_conv(x, edge_index) + prev_results
 
         return x,res
+
+
+# class RecursiveTopKPooling(nn.Module):
+
+#     def __init__(self,
+#                  n_channels,
+#                  n_levels = 5,
+#                  compression_ratio = 0.5):
+#         super().__init__()
+
+#         self.pools = nn.ModuleList([
+#             gnn.TopKPooling(in_channels=n_channels, ratio=compression_ratio)
+#             for _ in range(n_levels-1)
+#         ])
+
+#     def forward(self, x, edge_index, edge_attr=None, batch=None):
+#         x_list, edge_index_list, edge_attr_list, batch_list, perm_list, score_list = [x], [edge_index], [edge_attr], [batch], [], []
+#         for pool in self.pools:
+#             x, edge_index, edge_attr, batch, perm, score = pool(x, edge_index, edge_attr, batch)
+#             x_list.append(x)
+#             edge_index_list.append(edge_index)
+#             edge_attr_list.append(edge_attr)
+#             batch_list.append(batch)
+#             perm_list.append(perm)
+#             score_list.append(score)
+#         perm_list.append(torch.ones(x.shape[0]).to(torch.bool))
+#         score_list.append(torch.ones(x.shape[0]))
+#         return  x_list, edge_index_list, edge_attr_list, batch_list, perm_list, score_list
+
+
+
+class RecursiveClusterPooling(nn.Module):
+
+    def __init__(self, n_levels = 5):
+        super().__init__()
+        self.n_levels = 5
+
+    def forward(self, graph):
+        multigraph = [graph.clone()]
+        for _ in range(self.n_levels-1):
+            graph = cluster_pool(graph)
+            multigraph.append(graph.clone())
+        return multigraph
+ 
+
+
+
+class GraphUNetDecoderBlock(nn.Module):
+
+    def __init__(self,
+                 #in_channels,
+                 out_channels,
+                 filters,
+                 domain_size,
+                 res_depth = 3,
+                 n_align_blocks = 1,
+                 n_deform_blocks = 3,
+                 conv_type="ChebConv",
+                 conv_kwargs={'K':3},
+                 activation="relu",
+                 out_activation="linear",
+                 norm_type="InstanceNorm",
+                 batched_ops = True):
+        super().__init__()
+
+        conv_config = dict(depth=res_depth, 
+                            conv_type=conv_type,
+                            conv_kwargs=conv_kwargs,
+                            activation=activation, 
+                            norm_type=norm_type)
+        
+
+        if n_align_blocks > 0:
+            self.align=True
+            self.align_conv = gnn.Sequential('x, edge_index, batch',[
+                    (GraphConvResBlock(in_channels=out_channels*2 if i==0 else filters,
+                                    filters=filters, 
+                                    **conv_config), 'x, edge_index -> x')
+                    for i in range(n_align_blocks)
+            ])
+        else:
+            self.align=False
+
+
+        self.deform_conv = gnn.Sequential('x, edge_index, batch',[
+                (GraphConvResBlock(in_channels=out_channels+filters if i==0 else filters, 
+                                filters=filters, 
+                                **conv_config), 'x, edge_index -> x')
+                for i in range(n_deform_blocks)
+        ])
+
+        self.convert_conv = GraphConvBlock(in_channels=filters, 
+                                        filters=out_channels, 
+                                        depth=1, 
+                                        conv_type=conv_type,
+                                        conv_kwargs=conv_kwargs,
+                                        activation=out_activation, 
+                                        norm_type=None)
+        
+        self.projection_args = {"domain_size":domain_size, "batch_ops":batched_ops}
+        
+    # INFO: removed graph features for now may want to add back 
+    def forward(self,image_features,prev_deformation,template_x,edge_index,batch):
+
+        # Move all zero points after unpooling
+        if self.align:
+            x = torch.cat([prev_deformation, template_x], axis=-1)
+            x = self.align_conv(x, edge_index)
+            x = self.convert_conv(x, edge_index)
+            prev_deformation = prev_deformation+x
+
+        # apply current deformation to template
+        x = template_x + prev_deformation
+        proj = TrilinearProjection(**self.projection_args)(image_features, x[:,:3], batch)
+        x = torch.cat([x, proj], axis=-1)
+
+        # get new deformations based on current position and projections
+        x = self.deform_conv(x, edge_index)
+        x = self.convert_conv(x, edge_index)
+        return x+prev_deformation
+        

@@ -37,6 +37,9 @@ class PointCloudPlot():
         self.axes = np.array(axes).reshape(-1)
         self.scatters = []
 
+        maxs = np.max(point_sets[-1],axis=0)
+        mins = np.min(point_sets[-1],axis=0)
+
         for i, (ax, points, colors) in enumerate(
                 zip(self.axes, point_sets, color_sets)):
 
@@ -52,12 +55,12 @@ class PointCloudPlot():
                          azim=azim,
                          vertical_axis='y')
 
-            if i == 0:
-                lims = ax.get_w_lims()
-            else:
-                ax.set_xlim(lims[0], lims[1])
-                ax.set_ylim(lims[2], lims[3])
-                ax.set_zlim(lims[4], lims[5])
+            # if i == 0:
+            #     lims = ax.get_w_lims()
+            # else:
+            ax.set_xlim(mins[0], maxs[0])
+            ax.set_ylim(mins[1], maxs[1])
+            ax.set_zlim(mins[2], maxs[2])
 
             self.scatters.append(sc)
 
@@ -117,6 +120,7 @@ class PointCloudPlot():
     def save_image(self, filename, dpi=200):
         plt.tight_layout()
         self.fig.savefig(filename, dpi=dpi)
+        plt.close(self.fig)
 
     # ---------------------------------------------------------
     # ANIMATE

@@ -39,4 +39,5 @@ _CONFIGS = {
                 out_activation="linear",
                 gnn_norm_type="InstanceNorm",
                 batched_ops=True)
+    
 }

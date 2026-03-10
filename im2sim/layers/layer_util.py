@@ -113,7 +113,7 @@ _GRAPH_LAYERS = {
   'GATConv': gnn.GATConv,
   'InstanceNorm': gnn.InstanceNorm,
   'BatchNorm': gnn.BatchNorm,
-  'GraphNorm': gnn.GraphNorm
+  'GraphNorm': gnn.GraphNorm,
 }
 
 _LAYER_KWARGS = {

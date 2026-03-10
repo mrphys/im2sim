@@ -25,6 +25,8 @@ class TrilinearProjection(nn.Module):
             # make a padded batched tensor and get the padding mask 
             # do the projection
             # extract the graph features using the padding mask 
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug("batch: %s", tuple(torch.unique(batch)))
             padded_coords, padding_mask = make_padded_batch(graph_coords, batch)
             logger.debug("padded_shape: %s, mask_shape:%s",
                          tuple(padded_coords.shape), tuple(padding_mask.shape))

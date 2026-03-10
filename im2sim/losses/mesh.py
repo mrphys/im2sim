@@ -1,5 +1,6 @@
 from itertools import combinations
 import logging
+from ..data_ops.utils import _compute_edge_lengths
 
 import torch
 
@@ -14,12 +15,6 @@ def _edge_length_deviation(points, edges):
     std_dev = lengths.sum(-1).std()
     return std_dev
 
-def _compute_edge_lengths(points, edges):
-    logger.debug('points_shape:%s, max_edge_index:%d', tuple(points.shape), edges.max())
-    coords = points[edges]
-    logger.debug('coords_shape:%s', tuple(coords.shape))
-    distances = (coords[0] - coords[1])**2
-    return distances
 
 
 def _aspect_ratio(tet_vertices):

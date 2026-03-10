@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from itertools import combinations
 from torch_geometric.utils import to_undirected
+import torch_geometric.nn as gnn
 
 
 # def get_node_ids(mesh):
@@ -55,3 +56,16 @@ def make_padded_batch(x, batch):
     lengths = torch.tensor([len(s) for s in jagged_x])
     mask = torch.arange(padded_x.size(1))[None, :] < lengths[:, None]
     return padded_x, mask
+
+
+def _compute_edge_lengths(points, edges):
+    coords = points[edges]
+    distances = (coords[0] - coords[1])**2
+    return distances
+
+def cluster_pool(mesh):
+    distances = _compute_edge_lengths(mesh.x, mesh.edge_index).sum(-1)
+    weights = 1/(distances + 1e-8)
+    clusters = gnn.graclus(mesh.edge_index,weights, mesh.x.shape[0])
+    pooled_mesh = gnn.avg_pool(clusters, mesh)
+    return pooled_mesh

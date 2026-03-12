@@ -3,7 +3,7 @@ import logging
 import torch
 import torch.nn.functional as F
 from torch import nn
-from ..data_ops.utils import make_padded_batch
+from ..data.mesh_utils import make_padded_batch
 
 logger = logging.getLogger(__name__)
 

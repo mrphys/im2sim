@@ -1,6 +1,6 @@
 from itertools import combinations
 import logging
-from ..data_ops.utils import _compute_edge_lengths
+from ..data.mesh_utils import _compute_edge_lengths
 
 import torch
 

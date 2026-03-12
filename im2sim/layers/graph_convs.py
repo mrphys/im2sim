@@ -6,7 +6,7 @@ import torch_geometric.nn as gnn
 
 from .layer_util import get_graph_layer, get_activation
 from .projections import TrilinearProjection
-from ..data_ops.utils import cluster_pool
+from ..data.mesh_utils import cluster_pool
 
 
 

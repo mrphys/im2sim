@@ -1,5 +1,5 @@
 import logging
-
+import torch
 from torch import nn
 from .layer_util import get_image_layer, get_activation
 
@@ -260,6 +260,118 @@ class ImageEncoder(nn.Module):
             outputs.append(x)
         return outputs
 
+
+
+
+
+class ImageDecoder(nn.Module):
+    """
+    CNN decoder for images. Mirrors ImageEncoder like a UNet decoder.
+
+    Args:
+        filters (List[int]): Encoder filter sizes in top→bottom order.
+        kernel_size (int): Convolution kernel size.
+        conv_blocks_per_level (int): Number of conv blocks per level.
+        rank (int): Spatial rank (2 or 3).
+        upsample_type (str): "ConvTranspose" or "Upsample".
+        activation (str): Activation name.
+        norm_type (str): Normalization type.
+        dropout_rate (float): Dropout rate.
+        skip (bool): Use skip connections.
+    """
+
+    def __init__(self,
+                 filters=[16,32,64,128,256],
+                 kernel_size=3,
+                 conv_blocks_per_level=1,
+                 rank=3,
+                 upsample_type="Upsample",
+                 activation="relu",
+                 norm_type=None,
+                 dropout_rate=None,
+                 skip=True):
+        super().__init__()
+
+        self.skip = skip
+        n_levels = len(filters)
+
+        rev_filters = filters[::-1]
+
+        if upsample_type.lower() == 'upsample':
+            # if rank == 4:
+            #     self.ups = nn.ModuleList([
+            #         Upsample4d(scale_factor=(1, 2, 2, 2))
+            #         for _ in range(n_levels - 1)
+            #     ])
+            
+            # else:
+            self.ups = nn.ModuleList([
+                nn.Upsample(scale_factor=2, mode='trilinear' if rank==3 else 'bilinear', align_corners=True)
+                for _ in range(n_levels - 1)
+            ])
+        else:
+            up_layer = get_image_layer(upsample_type, rank)
+            self.ups = nn.ModuleList([
+                up_layer(rev_filters[i], rev_filters[i+1], kernel_size=2, stride=2)
+                for i in range(n_levels - 1)
+            ])
+
+
+        self.conv_blocks = nn.ModuleList([
+            ImageConvBlock(
+                in_channels=(
+                    rev_filters[i] + rev_filters[i+1]
+                    if skip else rev_filters[i]
+                ),
+                filters=rev_filters[i+1],
+                kernel_size=kernel_size,
+                depth=conv_blocks_per_level,
+                rank=rank,
+                activation=activation,
+                norm_type=norm_type,
+                dropout_rate=dropout_rate
+            )
+            for i in range(n_levels - 1)
+        ])
+
+
+    def _match_size(self, x, skip):
+        if x.shape[2:] != skip.shape[2:]:
+            # center crop skip to x
+            diff = [s - t for s, t in zip(skip.shape[2:], x.shape[2:])]
+            slices = [slice(d//2, d//2 + t) for d, t in zip(diff, x.shape[2:])]
+            skip = skip[(..., *slices)]
+        return skip
+
+
+    def forward(self, encoder_outputs):
+        """
+        Args:
+            encoder_outputs: List of tensors from encoder (top→bottom).
+
+        Returns:
+            Decoded tensor at highest resolution.
+        """
+
+        # Reverse the encoder outputs so we traverse from bottleneck to top
+        rev_enc = encoder_outputs[::-1]
+
+        # Start from bottleneck
+        x = rev_enc[0]
+
+        # Traverse decoder levels
+        for i, (up, conv) in enumerate(zip(self.ups, self.conv_blocks)):
+
+            x = up(x)
+
+            if self.skip:
+                skip_feat = rev_enc[i + 1]  # next encoder feature
+                skip_feat = self._match_size(x, skip_feat)
+                x = torch.cat([x, skip_feat], dim=1)
+
+            x = conv(x)
+
+        return x
 
 
 

@@ -42,14 +42,14 @@ class PointCloudPlot():
 
         for i, (ax, points, colors) in enumerate(
                 zip(self.axes, point_sets, color_sets)):
-
+            print(points.shape, colors.shape)
             sc = ax.scatter(points[:, 0],
                             points[:, 1],
                             points[:, 2],
                             c=colors,
                             cmap=cmap,
-                            vmin=0,
-                            vmax=1)
+                            vmin=colors.min(),
+                            vmax=colors.max())
 
             ax.view_init(elev=elev,
                          azim=azim,
@@ -61,6 +61,7 @@ class PointCloudPlot():
             ax.set_xlim(mins[0], maxs[0])
             ax.set_ylim(mins[1], maxs[1])
             ax.set_zlim(mins[2], maxs[2])
+            plt.colorbar(sc, ax=ax, shrink=0.5)
 
             self.scatters.append(sc)
 

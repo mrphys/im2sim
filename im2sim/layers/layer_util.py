@@ -1,5 +1,6 @@
 from torch import nn
 import torch.nn.functional as F
+import torch_geometric.nn as gnn
 
 
 def get_image_layer(name, rank):
@@ -105,24 +106,22 @@ _IMAGE_LAYERS = {
     ('InstanceNorm', 3): nn.InstanceNorm3d
 }
 
-# _GRAPH_LAYERS = {
-#   'ChebConv': gnn.ChebConv,
-#   'GraphConv': gnn.GraphConv,
-#   'GCNConv': gnn.GCNConv,
-#   'GATConv': gnn.GATConv,
-#   'InstanceNorm': gnn.InstanceNorm,
-#   'BatchNorm': gnn.BatchNorm,
-#   'GraphNorm': gnn.GraphNorm
-# }
+_GRAPH_LAYERS = {
+  'ChebConv': gnn.ChebConv,
+  'GraphConv': gnn.GraphConv,
+  'GCNConv': gnn.GCNConv,
+  'GATConv': gnn.GATConv,
+  'InstanceNorm': gnn.InstanceNorm,
+  'BatchNorm': gnn.BatchNorm,
+  'GraphNorm': gnn.GraphNorm,
+}
 
-# _LAYER_KWARGS = {
-#   'ChebConv': {'K':3},
-#   'GraphConv': {},
-#   'GCNConv': {},
-#   'GATConv': {}
-# }
-
-
+_LAYER_KWARGS = {
+  'ChebConv': {'K':3},
+  'GraphConv': {},
+  'GCNConv': {},
+  'GATConv': {}
+}
 _ACTIVATIONS = {
     "relu": nn.ReLU,
     "leaky_relu": nn.LeakyReLU,
@@ -133,29 +132,11 @@ _ACTIVATIONS = {
 }
 
 
-# def init_weights(m):
-#     if isinstance(m, gnn.ChebConv):
-#         for lin in m.lins:
-#             nn.init.kaiming_normal_(lin.weight, nonlinearity='leaky_relu')
-#             lin.weight.data *= 0.1
-#             if lin.bias is not None:
-#                 nn.init.zeros_(lin.bias)
+def init_weights(m):
+    if isinstance(m, gnn.ChebConv):
+        for lin in m.lins:
+            nn.init.kaiming_normal_(lin.weight, nonlinearity='leaky_relu')
+            lin.weight.data *= 0.1
+            if lin.bias is not None:
+                nn.init.zeros_(lin.bias)
 
-
-def standardize_spatial_factors(factors, rank):
-    """
-    Convert a sequence of spatial factors into a standardized list of tuples.
-    """
-    standardized = []
-
-    for f in factors:
-        if isinstance(f, int):
-            standardized.append(tuple([f] * rank))
-        elif isinstance(f, (tuple, list)):
-            standardized.append(tuple(f))
-        else:
-            raise TypeError(
-                f"Each factor must be an int, tuple, or list, got {type(f).__name__}"
-            )
-
-    return standardized

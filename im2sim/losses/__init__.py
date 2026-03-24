@@ -1,1 +1,1 @@
-from . import pointcloud, mesh
+from . import pointcloud, mesh, feature

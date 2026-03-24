@@ -69,3 +69,9 @@ def cluster_pool(mesh):
     clusters = gnn.graclus(mesh.edge_index,weights, mesh.x.shape[0])
     pooled_mesh = gnn.avg_pool(clusters, mesh)
     return pooled_mesh
+
+def extract_features(mesh, fnames):
+    out = []
+    for name in fnames:
+        out.append(torch.from_numpy(mesh.point_data[name]))
+    return torch.stack(out, dim=-1)

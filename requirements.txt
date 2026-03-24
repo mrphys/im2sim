@@ -1,0 +1,9 @@
+-f https://data.pyg.org/whl/torch-2.3.1+cu121.html
+
+torch==2.3.1
+torch-cluster==1.6.3
+torch_geometric==2.7.0
+pyvista==0.47.0
+numpy
+matplotlib
+scikit-learn

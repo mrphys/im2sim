@@ -140,3 +140,20 @@ def init_weights(m):
             if lin.bias is not None:
                 nn.init.zeros_(lin.bias)
 
+def standardize_spatial_factors(factors, rank):
+    """
+    Convert a sequence of spatial factors into a standardized list of tuples.
+    """
+    standardized = []
+
+    for f in factors:
+        if isinstance(f, int):
+            standardized.append(tuple([f] * rank))
+        elif isinstance(f, (tuple, list)):
+            standardized.append(tuple(f))
+        else:
+            raise TypeError(
+                f"Each factor must be an int, tuple, or list, got {type(f).__name__}"
+            )
+
+    return standardized

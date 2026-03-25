@@ -20,10 +20,13 @@ class PointCloudPlot():
         self.azim = azim
 
         if color_sets is None:
+            is_colored = False
             color_sets = [
                 0.1 * np.ones(points.shape[0])
                 for points in point_sets
             ]
+        else:
+            is_colored = True
 
         if figsize is None:
             figsize = (ncols * 3, nrows * 3)
@@ -61,7 +64,9 @@ class PointCloudPlot():
             ax.set_xlim(mins[0], maxs[0])
             ax.set_ylim(mins[1], maxs[1])
             ax.set_zlim(mins[2], maxs[2])
-            plt.colorbar(sc, ax=ax, shrink=0.5)
+            
+            if is_colored:
+                plt.colorbar(sc, ax=ax, shrink=0.5)
 
             self.scatters.append(sc)
 

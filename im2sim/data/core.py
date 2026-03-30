@@ -87,10 +87,10 @@ class Dataset(torch.utils.data.Dataset):
         >>>
         >>> dataset = im2sim.data.Dataset(load_fn=load, cases=cases)
     """
-    def __init__(self, load_fn, cases, transforms=[]):
+    def __init__(self, load_fn, cases, transforms=None):
         self.load_fn = load_fn
         self.cases = cases
-        self.transforms = transforms
+        self.transforms = transforms if transforms is not None else []
 
     def __len__(self):
         return len(self.cases)
@@ -516,7 +516,7 @@ class Pipeline:
         temp_dataset = copy.deepcopy(dataset)
         for i in range(n):
             if self.transforms[i].is_fittable:
-                temp_dataset.transforms = [t.forward for t in self.transforms[:i]]
+                temp_dataset.transforms = [Pipeline(self.transforms[:i])]
                 dataloader = DataLoader(temp_dataset,batch_size=1)
                 self.transforms[i].fit(dataloader)
         return self

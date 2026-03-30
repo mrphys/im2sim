@@ -7,16 +7,16 @@ from .core import *
 eps = 1e-8
 
 def normtorange(x, max=None, min=None, a=0, b=1):
-    if min==None:
+    if min is None:
         min = x.min()
-    if max==None:
+    if max is None:
         max = x.max()
     return a + ((x-min)*(b-a))/(max-min+eps)
 
 def inv_normtorange(x, max=None, min=None, a=0, b=1):
-    if min==None:
+    if min is None:
         min = x.min()
-    if max==None:
+    if max is None:
         max = x.max()
     return min + ((x-a)*(max-min))/(b-a)
 
@@ -28,9 +28,9 @@ def inv_normalise(x, max, min):
     return inv_normtorange(x, max, min)
 
 def standardise(x, mean=None, std=None):
-    if mean==None:
+    if mean is None:
         mean=x.mean()
-    if std==None:
+    if std is None:
         std=x.std()
     return (x-mean)/(std+eps)
 

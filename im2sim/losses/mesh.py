@@ -59,8 +59,8 @@ def face_norm_loss(x1,x2,b1,b2,f1,f2):
     batch1 = b1[f1[0]]
     batch2 = b2[f2[0]]
 
-    consistency = torch.Tensor([0.0])
-    similarity = torch.Tensor([0.0])
+    consistency = torch.Tensor([0.0]).to(norm1.device)
+    similarity = torch.Tensor([0.0]).to(norm1.device)
 
     for b in torch.unique(b1).tolist():
         mask1 = (batch1 == b)
@@ -117,7 +117,7 @@ def inversion_loss(points, cells, min_vol=1e-3):
 
     vol = det6 / 6.0
 
-    return torch.maximum(torch.zeros(1), min_vol - vol).mean()
+    return torch.maximum(torch.zeros(1).to(vol.device), min_vol - vol).mean()
 
 
 class InversionLoss(torch.nn.Module):

@@ -56,7 +56,7 @@ class GraphConvBlock(nn.Module):
     def forward(self, x, edge_index):
         for conv, norm in zip(self.convs, self.norms):
             logger.debug("Graph features shape:%s", x.shape)
-            x = norm(self.act(conv(x,edge_index)))
+            x = self.act(norm(conv(x,edge_index)))
         return x
 
 class GraphConvResBlock(nn.Module):

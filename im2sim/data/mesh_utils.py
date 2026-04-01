@@ -5,25 +5,59 @@ from torch_geometric.utils import to_undirected
 import torch_geometric.nn as gnn
 
 
-# def get_node_ids(mesh):
-#     cell_ids = np.zeros((len(mesh.points),))
-#     for id in np.unique(mesh['CellEntityIds']):
-#         cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])['vtkOriginalPointIds']
-#         nodes = np.unique(cells)
-#         cell_ids[nodes] = id
-#     return cell_ids
+def get_structure_ids(mesh, structure_dict):
+    cells = get_structure_cells(mesh, structure_dict)
 
-def add_structure_masks(data, mesh, structure_list):
+    if cells == -1:
+        return -1
+
+    ids = {f'{k.split("_cell_index")[0]}_index':torch.unique(v).unsqueeze(0) for k, v in cells.items()}
+    return ids
+
+
+def get_structure_edges(mesh, structure_dict):
+    cells = get_structure_cells(mesh, structure_dict)
+
+    if cells == -1:
+        return -1
+
+    edges =  {k:None for k in structure_dict}
+
+    for k, v in cells.items():
+        e_ids =  list(combinations(range(v.shape[0]),2))
+        cell_edges = v[e_ids,:]
+        edges[f'{k.split("_cell_index")[0]}': cell_edges.permute(1,0,2).reshape(2,-1)] 
+
+    edges = {f'{k}_edge_index':v for k,v in edges.items()}
+    return edges
+    
+
+def get_structure_cells(mesh, structure_dict):
     ids = np.unique(mesh['CellEntityIds'])
-    missing_ids = set(range(len(structure_list))) - set(ids.tolist())
-    for id in missing_ids:
-        setattr(data, f'{structure_list[id]}_mask', torch.zeros((len(mesh.points))).to(torch.bool))
-    for id, name in zip(ids, structure_list):
-        cell_ids = torch.zeros((len(mesh.points)))
-        cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])['vtkOriginalPointIds']
-        nodes = np.unique(cells)
-        cell_ids[nodes] = 1
-        setattr(data, f'{name}_mask', cell_ids.to(torch.bool))
+
+    missing_ids = set(structure_dict.keys()) - set(ids.tolist())
+    if len(missing_ids) != 0:
+        return -1
+
+    out_dict = {k:None for k in structure_dict.values()}
+
+    
+    for id, k in structure_dict.items():
+        submesh = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])
+        subcells = submesh.cells.reshape(-1, submesh.cells[0]+1)[:,1:]
+        cells = submesh['vtkOriginalPointIds'][subcells]
+        out_dict[k] = torch.from_numpy(cells).permute(1,0).to(torch.int)
+    
+    out_dict = {f'{k}_cell_index':v for k,v in out_dict.items()}
+
+    return out_dict
+
+
+def set_attrs(data, attrs):
+    for k,v in attrs.items():
+        setattr(data, k, v)
+
+
      
 
 def get_edges_tet(mesh):

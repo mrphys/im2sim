@@ -62,7 +62,7 @@ def face_norm_loss(x1,x2,b1,b2,f1,f2):
     consistency = torch.Tensor([0.0])
     similarity = torch.Tensor([0.0])
 
-    for b in torch.unique(b1):
+    for b in torch.unique(b1).tolist():
         mask1 = (batch1 == b)
         mask2 = (batch2 == b)
         consistency += torch.norm(norm2[mask2].std(0))

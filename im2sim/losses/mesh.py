@@ -16,18 +16,30 @@ def _edge_length_deviation(points, edges):
     std_dev = lengths.sum(-1).std()
     return std_dev
 
-def aspect_ratio_loss(gr1, gr2):
-    tet_vertices = gr2.x[gr2.tet_index, :3]
-    ar = _aspect_ratio(tet_vertices)
-    return ar
 
-
-def _aspect_ratio(tet_vertices):
+def _aspect_ratio(x, cells):
+    tet_vertices = x[cells,:]
     vert_ids = list(combinations(range(4),2))
     edge_coords = tet_vertices[vert_ids,:]
     distances = torch.linalg.norm(edge_coords[:,0,:,:]-edge_coords[:,1,:,:], dim=-1)
     aspect_ratio = distances.max(0).values/distances.mean(0)
     return aspect_ratio.mean()
+
+class AspectRatioLoss(torch.nn.Module):
+    
+    def __init__(self, cell_key):
+        super().__init__()
+        if isinstance(cell_key, str):
+            self.select = lambda obj: getattr(obj, cell_key)
+        else:
+            raise ValueError(f"face_key must be a graph attribute but is {cell_key}")
+        
+
+    def forward(self, gr1, gr2):
+        cells = self.select(gr2)
+        loss = _aspect_ratio(x = gr2.x[:,:3],
+                              cells = cells)
+        return loss
 
 
 def _face_norm(face_verts):

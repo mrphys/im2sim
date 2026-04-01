@@ -11,7 +11,7 @@ def get_structure_ids(mesh, structure_dict):
     if cells == -1:
         return -1
 
-    ids = {f'{k.split("_cell_index")[0]}_index':torch.unique(v).unsqueeze(0) for k, v in cells.items()}
+    ids = {f'{k.split("_cell_index")[0]}_index':torch.unique(v) for k, v in cells.items()}
     return ids
 
 

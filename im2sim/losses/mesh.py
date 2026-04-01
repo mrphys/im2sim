@@ -111,9 +111,9 @@ def tet_det(x, cells):
 
 
 
-def inversion_loss(points, cells, min_vol=1e-3):
+def inversion_loss(x, cells, min_vol=1e-3):
 
-    det6 = tet_det(points, cells)
+    det6 = tet_det(x, cells)
 
     vol = det6 / 6.0
 

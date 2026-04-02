@@ -102,7 +102,7 @@ class GraphConvResBlock(nn.Module):
         x = self.convs[1](x1,edge_index)
         for conv in self.convs[2:]:
             x = conv(x,edge_index)
-        return x+x1
+        return (x+x1)/2
 
 
 class GraphResDecoderBlock(nn.Module):
@@ -158,7 +158,7 @@ class GraphResDecoderBlock(nn.Module):
 
 
         self.deform_conv = nn.ModuleList([
-                GraphConvResBlock(in_channels=filters[0] + projection_channels if i==0 else filters[1], 
+                GraphConvResBlock(in_channels=filters[0] + projection_channels+out_channels if i==0 else filters[1], 
                                 filters=filters[1], 
                                 **conv_config)
                 for i in range(n_deform_blocks)
@@ -182,7 +182,7 @@ class GraphResDecoderBlock(nn.Module):
         x=graph_features.clone()
         logger.debug("Process convs...")
         for pconv in self.process_conv: x=pconv(x,edge_index)
-        x = torch.cat([x, encoder_projection], axis=-1)
+        x = torch.cat([x, encoder_projection, prev_results], axis=-1)
         logger.debug("Decoder convs")
         for dconv in self.deform_conv: x=dconv(x, edge_index)
         res = self.out_conv(x, edge_index) + prev_results

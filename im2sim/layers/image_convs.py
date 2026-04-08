@@ -92,23 +92,34 @@ class ImageConvResBlock(nn.Module):
                 dropout_rate=None):
         super().__init__() 
 
-        conv_params = dict(filters=filters,
-                        kernel_size=kernel_size,
-                        rank=rank,
-                        activation=activation,
-                        norm_type=norm_type)
+
         self.initial_conv = ImageConvBlock(in_channels=in_channels,
-                                            **conv_params,
+                                            filters=filters,
+                                            kernel_size=kernel_size,
+                                            rank=rank,
+                                            activation='linear',
+                                            norm_type=norm_type,
                                             depth=1,
                                             dropout_rate=None)
+        
         self.main_conv = ImageConvBlock(in_channels=filters,
-                                            **conv_params,
+                                            filters=filters,
+                                            kernel_size=kernel_size,
+                                            rank=rank,
+                                            activation=activation,
+                                            norm_type=norm_type,
                                             depth=depth-2,
-                                            dropout_rate=None)
-        self.out_conv = ImageConvBlock(in_channels=filters,
-                                            **conv_params,
-                                            depth=1,
                                             dropout_rate=dropout_rate)
+        
+        self.out_conv = ImageConvBlock(in_channels=filters,
+                                            filters=filters,
+                                            kernel_size=kernel_size,
+                                            rank=rank,
+                                            activation='linear',
+                                            norm_type=norm_type,
+                                            depth=1,
+                                            dropout_rate=None)
+        self.out_act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
 
     def forward(self, x):
         """
@@ -120,7 +131,7 @@ class ImageConvResBlock(nn.Module):
         """
         x1 = self.initial_conv(x)
         x = self.main_conv(x1) 
-        x = self.out_conv(x) + x1
+        x = self.out_act(self.out_conv(x) + x1)
         return x
     
 class ImageResEncoder(nn.Module):

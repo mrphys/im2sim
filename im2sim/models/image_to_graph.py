@@ -64,7 +64,7 @@ class SimpleI2G(nn.Module):
                                             out_channels=out_channels,
                                             filters=gnn_filters[i],
                                             res_depth=gnn_res_depth,
-                                            n_process_blocks = gnn_n_process_blocks,
+                                            # n_process_blocks = gnn_n_process_blocks,
                                             n_deform_blocks = gnn_n_deform_blocks,
                                             template_edge_index=template_edge_index,
                                             conv_type=gnn_conv_type,

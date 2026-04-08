@@ -86,23 +86,32 @@ class GraphConvResBlock(nn.Module):
                 norm_type='InstanceNorm'):
         super().__init__() 
 
-        self.convs=nn.ModuleList(
-                        GraphConvBlock(in_channels=in_channels if i==0 else filters,
-                                    filters=filters,
-                                    conv_type=conv_type,
-                                    conv_kwargs=conv_kwargs,
-                                    activation=activation,
-                                    norm_type=norm_type)
-                        for i in range(depth)
-        )
+        conv = get_graph_layer(conv_type)
+        self.convs = nn.ModuleList([
+            conv(in_channels if i==0 else filters, filters, **conv_kwargs)
+            for i in range(depth)
+        ])
+        self.norms = nn.ModuleList([
+            get_graph_layer(norm_type)(filters) if norm_type else nn.Identity()
+            for _ in range(depth)
+        ])
+        self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
         
 
     def forward(self, x, edge_index):
-        x1 = self.convs[0](x,edge_index)
-        x = self.convs[1](x1,edge_index)
-        for conv in self.convs[2:]:
-            x = conv(x,edge_index)
-        return (x+x1)/2
+
+        for i, (conv,norm) in enumerate(zip(self.convs, self.norms)):
+
+            x = norm(conv(x, edge_index))
+
+            if i==0:
+                x1 = x.clone()
+            elif i<len(self.convs)-1:
+                x = self.act(x)
+
+        x = self.act((x+x1)/2)
+
+        return x
 
 
 class GraphResDecoderBlock(nn.Module):
@@ -133,7 +142,7 @@ class GraphResDecoderBlock(nn.Module):
                  out_channels,
                  filters,
                  res_depth = 3,
-                 n_process_blocks = 1,
+                #  n_process_blocks = 1,
                  n_deform_blocks = 3,
                  template_edge_index=None,
                  conv_type="ChebConv",
@@ -142,25 +151,30 @@ class GraphResDecoderBlock(nn.Module):
                  out_activation="linear",
                  norm_type="InstanceNorm"):
         super().__init__()
-
-        conv_config = dict(depth=res_depth, 
-                            conv_type=conv_type,
-                            conv_kwargs=conv_kwargs,
-                            activation=activation, 
-                            norm_type=norm_type)
-        
-        self.process_conv = nn.ModuleList([
-                GraphConvResBlock(in_channels=graph_channels if i==0 else filters[0],
-                                filters=filters[0], 
-                                **conv_config)
-                for i in range(n_process_blocks)
-        ])
+                            
+        # self.process_conv = nn.ModuleList([
+        #         GraphConvResBlock(in_channels=graph_channels if i==0 else filters[0],
+        #                         filters=filters[0], 
+        #                         **conv_config)
+        #         for i in range(n_process_blocks)
+        # ])
+        self.process_conv = GraphConvBlock(in_channels=graph_channels, 
+                                        filters=filters[0], 
+                                        depth=1, 
+                                        conv_type=conv_type,
+                                        conv_kwargs=conv_kwargs,
+                                        activation=activation, 
+                                        norm_type=None)
 
 
         self.deform_conv = nn.ModuleList([
                 GraphConvResBlock(in_channels=filters[0] + projection_channels+out_channels if i==0 else filters[1], 
                                 filters=filters[1], 
-                                **conv_config)
+                                depth=res_depth, 
+                                conv_type=conv_type,
+                                conv_kwargs=conv_kwargs,
+                                activation=activation, 
+                                norm_type=norm_type)
                 for i in range(n_deform_blocks)
         ])
 
@@ -179,14 +193,18 @@ class GraphResDecoderBlock(nn.Module):
         if edge_index is None:
             edge_index=self.edge_index
 
-        x=graph_features.clone()
-        logger.debug("Process convs...")
-        for pconv in self.process_conv: x=pconv(x,edge_index)
-        x = torch.cat([x, encoder_projection, prev_results], axis=-1)
-        logger.debug("Decoder convs")
-        for dconv in self.deform_conv: x=dconv(x, edge_index)
-        res = self.out_conv(x, edge_index) + prev_results
+        x = graph_features.clone()
 
+        logger.debug("Process convs...")
+        x = self.process_conv(x,edge_index)
+
+        x = torch.cat([x, encoder_projection, prev_results], axis=-1)
+
+        logger.debug("Decoder convs")
+        for dconv in self.deform_conv: 
+            x=dconv(x, edge_index)
+
+        res = self.out_conv(x, edge_index) + prev_results
         return x,res
 
 

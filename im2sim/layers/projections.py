@@ -58,4 +58,6 @@ class TrilinearProjection(nn.Module):
                 logger.debug("projection %d shape:%s",i,tuple(projections[-1].shape))
             projections = torch.cat(projections, dim=0)
             logger.debug("final projection shape:%s",tuple(projections.shape))
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug("final projection vals: %.2f-%.2f",projections.min(), projections.max())
         return projections

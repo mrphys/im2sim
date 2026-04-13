@@ -34,10 +34,10 @@ _CONFIGS = {
                 gnn_n_deform_blocks = 3,
                 template_edge_index=None,
                 gnn_conv_type="ChebConv",
-                gnn_conv_kwargs={'K':3},
+                gnn_conv_kwargs={'K':1},
                 gnn_activation="leaky_relu",
-                out_activation="linear",
+                out_activation="leaky_relu",
                 gnn_norm_type="InstanceNorm",
-                batched_ops=True)
+                batched_ops=False)
     
 }

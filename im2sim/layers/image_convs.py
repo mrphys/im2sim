@@ -41,7 +41,7 @@ class ImageConvBlock(nn.Module):
         ])
 
         self.norms = nn.ModuleList([
-            get_image_layer(norm_type, rank)(filters) if norm_type else nn.Identity()
+            get_image_layer(norm_type, rank)(filters, affine=True) if norm_type else nn.Identity()
             for _ in range(depth)
         ])
         self.drop = nn.Dropout1d(p=dropout_rate) if dropout_rate else nn.Identity()

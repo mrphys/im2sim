@@ -3,9 +3,22 @@ import torch
 from itertools import combinations
 from torch_geometric.utils import to_undirected
 import torch_geometric.nn as gnn
+from torch_geometric.data import Data
+from pyvista.core.pointset import PointGrid
+from typing import Dict 
 
 
-def get_structure_ids(mesh, structure_dict):
+def get_structure_ids(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
+    """
+    Extracts node ids for different substructures in a pyvista PointGrid object.
+
+    Args:
+        mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
+        structure_dict (Dict[int, str]): A dictionary that maps pyvista 'CellEntityIds' to structure names.
+    
+    Returns:
+        ids (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(N), where N is the number of nodes in the structure.
+    """
     cells = get_structure_cells(mesh, structure_dict)
 
     if cells == -1:
@@ -15,7 +28,18 @@ def get_structure_ids(mesh, structure_dict):
     return ids
 
 
-def get_structure_edges(mesh, structure_dict):
+def get_structure_edges(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
+    """
+    Extracts edges for different substructures in a pyvista PointGrid object.
+
+    Args:
+        mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
+        structure_dict (Dict[int, str]): A dictionary that maps pyvista 'CellEntityIds' to structure names.
+    
+    Returns:
+        edges (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(2, N), 
+        where N is the number of edges in the structure.
+    """
     cells = get_structure_cells(mesh, structure_dict)
 
     if cells == -1:
@@ -26,13 +50,24 @@ def get_structure_edges(mesh, structure_dict):
     for k, v in cells.items():
         e_ids =  list(combinations(range(v.shape[0]),2))
         cell_edges = v[e_ids,:]
-        edges[f'{k.split("_cell_index")[0]}': cell_edges.permute(1,0,2).reshape(2,-1)] 
+        edges[f'{k.split("_cell_index")[0]}'] =  cell_edges.permute(1,0,2).reshape(2,-1)
 
     edges = {f'{k}_edge_index':v for k,v in edges.items()}
     return edges
     
 
-def get_structure_cells(mesh, structure_dict):
+def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
+    """
+    Extracts cells for different substructures in a pyvista PointGrid object.
+
+    Args:
+        mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
+        structure_dict (Dict[int, str]): A dictionary that maps pyvista 'CellEntityIds' to structure names.
+    
+    Returns:
+        cells (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(m, N), where m is 3 for triangles and 4 for tetrahedrons
+        and N is the number of cells in the structure.
+    """
     ids = np.unique(mesh['CellEntityIds'])
 
     missing_ids = set(structure_dict.keys()) - set(ids.tolist())
@@ -53,12 +88,20 @@ def get_structure_cells(mesh, structure_dict):
     return out_dict
 
 
-def set_attrs(data, attrs):
+def set_attrs(data:Data, attrs:Dict[str, torch.Tensor]) -> None:
+    """
+    A helper function to set multiple attributes of a PyG Data object with keys and values from a dictionary.
+
+    Args:
+        data (torch_geometric.data.Data): Data object to be modified
+        attrs (Dict[str, torch.Tensor]): a dictionary of attribute names and values to be set in the Data object 
+
+    Returns:
+        None
+    """
     for k,v in attrs.items():
         setattr(data, k, v)
 
-
-     
 
 def get_edges_tet(mesh):
     tet_cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == 0)[0])
@@ -72,11 +115,7 @@ def get_node_features(mesh, feature_names):
     features = torch.from_numpy(np.array([mesh.point_data[name] for name in feature_names]).T)
     return features
 
-# def set_structure_masks(data, mesh, structure_list):
-#     node_ids = get_node_ids(mesh)
-#     for id, structure in enumerate(structure_list):
-#             setattr(data, f"is_{structure}", torch.from_numpy(node_ids==id))
-#     return data
+
 
 def get_tet_cells(mesh):
     tet_cells = mesh.extract_cells(np.where(mesh['CellEntityIds'] == 0)[0])
@@ -86,11 +125,10 @@ def get_tet_cells(mesh):
 
 def make_padded_batch(x, batch):
     jagged_x = [x[batch==i] for i in torch.unique(batch)]
-    padded_x= torch.nn.utils.rnn.pad_sequence(jagged_x, batch_first=True)
+    padded_x = torch.nn.utils.rnn.pad_sequence(jagged_x, batch_first=True)
     lengths = torch.tensor([len(s) for s in jagged_x])
     mask = torch.arange(padded_x.size(1))[None, :] < lengths[:, None]
     return padded_x, mask
-
 
 def _compute_edge_lengths(points, edges):
     coords = points[edges]

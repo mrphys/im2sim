@@ -84,7 +84,7 @@ class SimpleI2G(nn.Module):
         graph_features = template.x.clone()
         curr_mesh = template.x.clone()
         for dec, ids in zip(self.decoder_blocks, self.projection_ids):
-            proj_inp = torch.cat([TrilinearProjection(domain_size=x.shape[-3:], batch_ops=self.batched_ops)(encoder_outputs[id], curr_mesh[:,:3], template.batch)
+            proj_inp = torch.cat([OGProjection(image_dim=x.shape[-1])(encoder_outputs[id], curr_mesh[:,:3], template.batch)
                                   for id in ids], dim=-1)
             graph_features, curr_mesh = dec(graph_features,proj_inp,curr_mesh,template.edge_index)
             out_graph = template.clone()

@@ -4,13 +4,14 @@ from ..data.mesh_utils import _compute_edge_lengths
 
 
 import torch
+import torch.nn.functional as F
 
 logger = logging.getLogger(__name__)
 
 def edge_length_deviation_loss(gr1, gr2):
     ed1 = _edge_length_deviation(gr1.x[:,:3], gr1.edge_index)
     ed2 = _edge_length_deviation(gr2.x[:,:3], gr2.edge_index)
-    return torch.maximum(ed2-ed1, 0)
+    return F.relu(ed2-ed1)
     
 def _edge_length_deviation(points, edges):
     lengths = _compute_edge_lengths(points, edges)
@@ -41,7 +42,7 @@ class AspectRatioLoss(torch.nn.Module):
                               cells = self.select(gr1))
         ar2 = _aspect_ratio(x = gr2.x[:,:3],
                               cells = self.select(gr2))
-        return torch.maximum(ar2-ar1, 0)
+        return F.relu(ar2-ar1)
 
 
 def _face_norm(face_verts):

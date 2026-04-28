@@ -15,8 +15,8 @@ def edge_length_deviation_loss(gr1, gr2):
     
 def _edge_length_deviation(points, edges):
     lengths = _compute_edge_lengths(points, edges)
-    std_dev = lengths.sum(-1).std()
-    return std_dev
+    dev = lengths.std()/lengths.mean()
+    return dev
 
 
 def _aspect_ratio(x, cells):

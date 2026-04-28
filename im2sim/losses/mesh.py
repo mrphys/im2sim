@@ -15,7 +15,7 @@ def edge_length_deviation_loss(gr1, gr2):
     
 def _edge_length_deviation(points, edges):
     lengths = _compute_edge_lengths(points, edges)
-    dev = lengths.std()/lengths.mean()
+    dev = lengths.std()/(lengths.mean()+1e-8)
     return dev
 
 

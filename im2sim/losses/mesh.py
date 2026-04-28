@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def edge_length_deviation_loss(gr1, gr2):
     ed1 = _edge_length_deviation(gr1.x[:,:3], gr1.edge_index)
     ed2 = _edge_length_deviation(gr2.x[:,:3], gr2.edge_index)
-    return F.relu(ed2-ed1)
+    return F.relu(ed2-ed1)**2
     
 def _edge_length_deviation(points, edges):
     lengths = _compute_edge_lengths(points, edges)
@@ -42,7 +42,7 @@ class AspectRatioLoss(torch.nn.Module):
                               cells = self.select(gr1))
         ar2 = _aspect_ratio(x = gr2.x[:,:3],
                               cells = self.select(gr2))
-        return F.relu(ar2-ar1)
+        return F.relu(ar2-ar1)**2
 
 
 def _face_norm(face_verts):

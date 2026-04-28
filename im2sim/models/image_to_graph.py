@@ -26,6 +26,7 @@ class SimpleI2G(nn.Module):
                 cnn_pool_type='MaxPool',
                 cnn_pool_size=2,
                 cnn_activation='relu',
+                cnn_dropout_rate=None,
                 projection_ids = [[3,4],[1,2],[0,1]],
                 gnn_filters = [[384,288], [144,96], [64,32]],
                 gnn_res_depth = 3,
@@ -52,7 +53,8 @@ class SimpleI2G(nn.Module):
                                norm_type=cnn_norm_type,
                                pool_type=cnn_pool_type,
                                pool_size=cnn_pool_size,
-                               activation=cnn_activation)
+                               activation=cnn_activation,
+                               dropout_rate=cnn_dropout_rate)
         
         # self.projection_layers = nn.ModuleList([TrilinearProjection() for _ in range(len(cnn_filters))])
         self.projection_ids = projection_ids

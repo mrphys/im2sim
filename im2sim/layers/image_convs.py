@@ -119,7 +119,7 @@ class ImageConvResBlock(nn.Module):
                                             norm_type=norm_type,
                                             depth=1,
                                             dropout_rate=None)
-        self.drop =  get_image_layer('Dropout', rank)(p=dropout_rate) if dropout_rate else nn.Identity()
+        # self.drop =  get_image_layer('Dropout', rank)(p=dropout_rate) if dropout_rate else nn.Identity()
         self.out_act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
 
     def forward(self, x):
@@ -132,7 +132,7 @@ class ImageConvResBlock(nn.Module):
         """
         x1 = self.initial_conv(x)
         x = self.main_conv(x1) 
-        x = self.drop(x)
+        # x = self.drop(x)
         x = self.out_act(self.out_conv(x) + x1)
         return x
     

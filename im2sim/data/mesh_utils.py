@@ -279,6 +279,7 @@ def cluster_pool(mesh: Data) -> Data:
           features in each cluster are averaged.
     """
     distances = _compute_edge_lengths(mesh.x, mesh.edge_index).sum(-1)
+    print(distances)
     weights = 1 / (distances + 1e-8)
     clusters = gnn.graclus(mesh.edge_index, weights, mesh.x.shape[0])
     pooled_mesh = gnn.avg_pool(clusters, mesh)

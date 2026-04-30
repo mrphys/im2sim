@@ -46,17 +46,29 @@ class GraphConvBlock(nn.Module):
             for i in range(depth)
         ])
 
+        # self.norms = nn.ModuleList([
+        #     get_graph_layer(norm_type)(filters, affine=True) if norm_type else nn.Identity()
+        #     for _ in range(depth)
+        # ])
+
         self.norms = nn.ModuleList([
-            get_graph_layer(norm_type)(filters, affine=True) if norm_type else nn.Identity()
+            # get_graph_layer(norm_type)(filters, affine=True) if norm_type else nn.Identity()
+            torch.nn.InstanceNorm2d(1, affine=True, eps=1e-3) if norm_type else nn.Identity()
             for _ in range(depth)
         ])
 
         self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
 
     def forward(self, x, edge_index):
+        # for conv, norm in zip(self.convs, self.norms):
+        #     logger.debug("Graph features shape:%s", x.shape)
+        #     x = self.act(norm(conv(x,edge_index)))
+        # return x
         for conv, norm in zip(self.convs, self.norms):
             logger.debug("Graph features shape:%s", x.shape)
-            x = self.act(norm(conv(x,edge_index)))
+            x = conv(x,edge_index)
+            # x = self.act(norm(x.permute(1,0).unsqueeze(0))).squeeze(0).permute(1,0)
+            x = self.act(norm(x.unsqueeze(0).unsqueeze(0))).squeeze()
         return x
 
 class GraphConvResBlock(nn.Module):
@@ -91,8 +103,13 @@ class GraphConvResBlock(nn.Module):
             conv(in_channels if i==0 else filters, filters, **conv_kwargs)
             for i in range(depth)
         ])
+        # self.norms = nn.ModuleList([
+        #     get_graph_layer(norm_type)(filters, affine=True) if norm_type else nn.Identity()
+        #     for _ in range(depth)
+        # ])
         self.norms = nn.ModuleList([
-            get_graph_layer(norm_type)(filters, affine=True) if norm_type else nn.Identity()
+            # get_graph_layer(norm_type)(filters, affine=True) if norm_type else nn.Identity()
+            torch.nn.InstanceNorm2d(1, affine=True, eps=1e-3) if norm_type else nn.Identity()
             for _ in range(depth)
         ])
         self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
@@ -102,7 +119,10 @@ class GraphConvResBlock(nn.Module):
 
         for i, (conv,norm) in enumerate(zip(self.convs, self.norms)):
 
-            x = norm(conv(x, edge_index))
+            # x = norm(conv(x, edge_index))
+            x = conv(x,edge_index)
+            # x = norm(x.permute(1,0).unsqueeze(0)).squeeze(0).permute(1,0)
+            x = norm(x.unsqueeze(0).unsqueeze(0)).squeeze()
 
             if i==0:
                 x1 = x.clone()
@@ -251,7 +271,7 @@ class RecursiveClusterPooling(nn.Module):
 
 
 
-class GraphUNetDecoderBlock(nn.Module):
+class  GraphUNetDecoderBlock(nn.Module):
 
     def __init__(self,
                  #in_channels,

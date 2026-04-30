@@ -103,7 +103,8 @@ _IMAGE_LAYERS = {
     ('BatchNorm', 3): nn.BatchNorm3d,
     ('InstanceNorm', 1): nn.InstanceNorm1d,
     ('InstanceNorm', 2): nn.InstanceNorm2d,
-    ('InstanceNorm', 3): nn.InstanceNorm3d
+    ('InstanceNorm', 3): nn.InstanceNorm3d,
+    ('LayerNorm', 1): nn.InstanceNorm1d,
 }
 
 _GRAPH_LAYERS = {
@@ -112,6 +113,7 @@ _GRAPH_LAYERS = {
   'GCNConv': gnn.GCNConv,
   'GATConv': gnn.GATConv,
   'InstanceNorm': gnn.InstanceNorm,
+  'LayerNorm': gnn.LayerNorm,
   'BatchNorm': gnn.BatchNorm,
   'GraphNorm': gnn.GraphNorm,
 }

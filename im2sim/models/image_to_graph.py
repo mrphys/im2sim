@@ -55,6 +55,7 @@ class SimpleI2G(nn.Module):
                                pool_size=cnn_pool_size,
                                activation=cnn_activation,
                                dropout_rate=cnn_dropout_rate)
+        # self.encoder = Encoder3D(in_channels=in_channels)
         
         # self.projection_layers = nn.ModuleList([TrilinearProjection() for _ in range(len(cnn_filters))])
         self.projection_ids = projection_ids
@@ -88,6 +89,8 @@ class SimpleI2G(nn.Module):
         for dec, ids in zip(self.decoder_blocks, self.projection_ids):
             proj_inp = torch.cat([OGProjection(image_dim=x.shape[-1])(encoder_outputs[id], curr_mesh[:,:3], template.batch)
                                   for id in ids], dim=-1)
+            # proj_inp = torch.cat([TrilinearProjection(domain_size=[x.shape[-1]]*3, batch_ops=False)(encoder_outputs[id], curr_mesh[:,:3], template.batch)
+            #                       for id in ids], dim=-1)
             graph_features, curr_mesh = dec(graph_features,proj_inp,curr_mesh,template.edge_index)
             out_graph = template.clone()
             out_graph.x = curr_mesh

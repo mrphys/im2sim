@@ -169,6 +169,20 @@ def get_edges_tet2(mesh: PointGrid) -> torch.Tensor:
     edges = to_undirected(edges)
     return edges
 
+def get_edges_surf(mesh: PointGrid) -> torch.Tensor:
+    """
+    A function to get the edge index for training from a pyvista surface mesh 
+
+    Args:
+        mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
+
+    Returns:
+        edges (torch.Tensor): A tensor of shape [2,M] where M is the number of edges and the values are the node ids
+    """
+    edges = mesh.extract_all_edges().lines.reshape(-1, 3)[:, 1:] 
+    edges = torch.Tensor(edges).T.long()
+    return edges 
+
 def get_node_features(mesh:PointGrid, feature_names: List[str]) -> torch.Tensor:
     """
     Extracts the node features from a pyvista mesh object based on the feature names provided.

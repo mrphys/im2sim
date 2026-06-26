@@ -119,7 +119,7 @@ def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict
         submesh = mesh.extract_cells(np.where(mesh['CellEntityIds'] == id)[0])
         subcells = submesh.cells.reshape(-1, submesh.cells[0]+1)[:,1:]
         cells = submesh['vtkOriginalPointIds'][subcells]
-        out_dict[k] = torch.from_numpy(cells).permute(1,0).to(torch.int)
+        out_dict[k] = torch.from_numpy(cells).permute(1,0).to(torch.long)
     
     out_dict = {f'{k}_cell_index':v for k,v in out_dict.items()}
 
@@ -242,7 +242,7 @@ def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> Tuple[torch.Tenso
     mask = torch.arange(padded_x.size(1))[None, :] < lengths[:, None]
     return padded_x, mask
 
-def _compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
+def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
     """
     Computes the squared Euclidean distance for each edge in a mesh.
 
@@ -292,10 +292,63 @@ def cluster_pool(mesh: Data) -> Data:
         - Pooling is performed using torch_geometric.nn.avg_pool, so node
           features in each cluster are averaged.
     """
-    distances = _compute_edge_lengths(mesh.x, mesh.edge_index).sum(-1)
+    distances = compute_edge_lengths(mesh.x, mesh.edge_index).sum(-1)
     print(distances)
     weights = 1 / (distances + 1e-8)
     clusters = gnn.graclus(mesh.edge_index, weights, mesh.x.shape[0])
     pooled_mesh = gnn.avg_pool(clusters, mesh)
     return pooled_mesh
 
+def rasterize(points: torch.Tensor, im_shape: List[int], vox_sizes: List[float]) -> torch.Tensor:
+    """
+    Computes the squared Euclidean distance between voxel centroids in a grid to a pointcloud
+
+    Args:
+        points (torch.Tensor): Node coordinate tensor of shape (N, D) where N
+            is the number of nodes and D is the spatial dimensionality
+            (e.g. 3 for 3D meshes).
+        im_shape (torch.Tensor): A list of dim sizes for the image/mask corresponding 
+            to the point cloud.
+        vox_sizes (torch.Tensor): A list of voxel sizes for each dimension
+
+    Returns:
+        distances (torch.Tensor): A tensor of shape specified by im_shape where each voxel 
+            is the distance of the voxel centroid to the pointcloud.
+    """
+    im_coords = [torch.arange(size/2, n , size) for n, size in zip(im_shape, vox_sizes)]
+    grids = torch.meshgrid(*im_coords, indexing='ij')          # three [128,128,128] tensors
+    coord_tensor = torch.stack(grids, dim=-1).reshape(-1, 3)
+
+    nns = gnn.pool.knn(x=points, y=coord_tensor, k=1)
+    dists = torch.linalg.norm(coord_tensor - points[nns[1]], dim=-1)
+    return dists.reshape(im_shape)
+
+def hard_threshold(y: torch.Tensor, threshold: float=1.0) -> torch.Tensor:
+    """
+    Thresholds a Tensor y according to a specified float threshold. Every value less than the threshold
+    is assigned 1.0 and values greater are assigned 0.0
+
+    Args:
+        y (torch.Tensor): tensor containing the raw values
+        threshold (float): threshold value
+        
+    Returns:
+        y_thresh (torch.Tensor): thresholded input tensor
+
+    """
+    return (y<threshold).float()
+
+def soft_threshold(y, threshold=1.5, sharpness=10.0):
+    """
+    Thresholds a Tensor y according to a specified float threshold. Every value less than the threshold
+    is assigned 1.0 and values greater are assigned 0.0
+
+    Args:
+        y (torch.Tensor): tensor containing the raw values
+        threshold (float): threshold value
+        
+    Returns:
+        y_thresh (torch.Tensor): thresholded input tensor
+        
+    """
+    return torch.sigmoid(sharpness * (threshold - y))

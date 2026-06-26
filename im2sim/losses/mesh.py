@@ -1,6 +1,6 @@
 from itertools import combinations
 import logging
-from ..data.mesh_utils import _compute_edge_lengths
+from ..data.mesh_utils import compute_edge_lengths
 
 
 import torch
@@ -14,7 +14,7 @@ def edge_length_deviation_loss(gr1, gr2):
     return F.relu(ed2-ed1)**2
     
 def _edge_length_deviation(points, edges):
-    lengths = _compute_edge_lengths(points, edges)
+    lengths = compute_edge_lengths(points, edges)
     dev = lengths.std()/(lengths.mean()+1e-8)
     return dev
 

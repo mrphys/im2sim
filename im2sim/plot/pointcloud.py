@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
 
 class PointCloudPlot():
 
@@ -12,12 +16,18 @@ class PointCloudPlot():
                  color_sets=None,
                  figsize=None,
                  cmap='Blues_r',
+                 norm_mode='none',   # 'all', 'row', 'col', 'none'
+                 bound_mode='all',
+                 titles=None,       # NEW: optional titles
                  elev=20,
                  azim=90):
 
         self.cmap = cmap
         self.elev = elev
         self.azim = azim
+        self.nrows = nrows
+        self.ncols = ncols
+        self.norm_mode = norm_mode
 
         if color_sets is None:
             is_colored = False
@@ -40,31 +50,96 @@ class PointCloudPlot():
         self.axes = np.array(axes).reshape(-1)
         self.scatters = []
 
-        maxs = np.max(point_sets[-1],axis=0)
-        mins = np.min(point_sets[-1],axis=0)
+        # -----------------------------
+        # Titles handling
+        # -----------------------------
+        if titles is not None:
+            if isinstance(titles, str):
+                self.fig.suptitle(titles)
+                titles = [None] * len(self.axes)
+            elif len(titles) != len(self.axes):
+                raise ValueError("titles must match number of subplots")
 
+        # -----------------------------
+        # Bounds (same as your logic)
+        # -----------------------------
+        maxs = np.max(point_sets[-1], axis=0)
+        mins = np.min(point_sets[-1], axis=0)
+
+        # -----------------------------
+        # Normalization helpers
+        # -----------------------------
+        def compute_norm_ranges(color_sets):
+            color_sets = list(color_sets)
+
+            if norm_mode == 'none':
+                return [(None, None)] * len(color_sets)
+
+            elif norm_mode == 'all':
+                all_vals = np.concatenate(color_sets)
+                vmin, vmax = all_vals.min(), all_vals.max()
+                return [(vmin, vmax)] * len(color_sets)
+
+            elif norm_mode == 'row':
+                ranges = []
+                for r in range(nrows):
+                    row_vals = []
+                    for c in range(ncols):
+                        idx = r * ncols + c
+                        row_vals.append(color_sets[idx])
+                    row_vals = np.concatenate(row_vals)
+                    vmin, vmax = row_vals.min(), row_vals.max()
+                    for c in range(ncols):
+                        ranges.append((vmin, vmax))
+                return ranges
+
+            elif norm_mode == 'col':
+                ranges = [None] * len(color_sets)
+                for c in range(ncols):
+                    col_vals = []
+                    for r in range(nrows):
+                        idx = r * ncols + c
+                        col_vals.append(color_sets[idx])
+                    col_vals = np.concatenate(col_vals)
+                    vmin, vmax = col_vals.min(), col_vals.max()
+                    for r in range(nrows):
+                        idx = r * ncols + c
+                        ranges[idx] = (vmin, vmax)
+                return ranges
+
+            else:
+                raise ValueError("norm_mode must be 'all', 'row', 'col', or 'none'")
+
+        norm_ranges = compute_norm_ranges(color_sets)
+
+        # -----------------------------
+        # Plot creation
+        # -----------------------------
         for i, (ax, points, colors) in enumerate(
                 zip(self.axes, point_sets, color_sets)):
-            print(points.shape, colors.shape)
+
+            vmin, vmax = norm_ranges[i]
+
             sc = ax.scatter(points[:, 0],
                             points[:, 1],
                             points[:, 2],
                             c=colors,
                             cmap=cmap,
-                            vmin=colors.min(),
-                            vmax=colors.max())
+                            vmin=vmin,
+                            vmax=vmax)
 
             ax.view_init(elev=elev,
                          azim=azim,
                          vertical_axis='y')
 
-            # if i == 0:
-            #     lims = ax.get_w_lims()
-            # else:
             ax.set_xlim(mins[0], maxs[0])
             ax.set_ylim(mins[1], maxs[1])
             ax.set_zlim(mins[2], maxs[2])
-            
+
+            # Apply subplot title
+            if titles is not None and titles[i] is not None:
+                ax.set_title(titles[i])
+
             if is_colored:
                 plt.colorbar(sc, ax=ax, shrink=0.5)
 
@@ -74,7 +149,7 @@ class PointCloudPlot():
         self.color_sets = color_sets
 
     # ---------------------------------------------------------
-    # DRAW ONE FRAME (works for static OR animation)
+    # DRAW ONE FRAME
     # ---------------------------------------------------------
 
     def draw_frame(self, point_sets=None, color_sets=None):
@@ -85,15 +160,57 @@ class PointCloudPlot():
         if color_sets is None:
             color_sets = self.color_sets
 
+        # recompute normalization each frame
+        def compute_norm_ranges(color_sets):
+            color_sets = list(color_sets)
+
+            if self.norm_mode == 'none':
+                return [(None, None)] * len(color_sets)
+
+            elif self.norm_mode == 'all':
+                all_vals = np.concatenate(color_sets)
+                vmin, vmax = all_vals.min(), all_vals.max()
+                return [(vmin, vmax)] * len(color_sets)
+
+            elif self.norm_mode == 'row':
+                ranges = []
+                for r in range(self.nrows):
+                    row_vals = []
+                    for c in range(self.ncols):
+                        idx = r * self.ncols + c
+                        row_vals.append(color_sets[idx])
+                    row_vals = np.concatenate(row_vals)
+                    vmin, vmax = row_vals.min(), row_vals.max()
+                    for c in range(self.ncols):
+                        ranges.append((vmin, vmax))
+                return ranges
+
+            elif self.norm_mode == 'col':
+                ranges = [None] * len(color_sets)
+                for c in range(self.ncols):
+                    col_vals = []
+                    for r in range(self.nrows):
+                        idx = r * self.ncols + c
+                        col_vals.append(color_sets[idx])
+                    col_vals = np.concatenate(col_vals)
+                    vmin, vmax = col_vals.min(), col_vals.max()
+                    for r in range(self.nrows):
+                        idx = r * self.ncols + c
+                        ranges[idx] = (vmin, vmax)
+                return ranges
+
+        norm_ranges = compute_norm_ranges(color_sets)
+
         new_scatters = []
 
-        for ax, sc, pts, colors in zip(
+        for i, (ax, sc, pts, colors) in enumerate(zip(
                 self.axes,
                 self.scatters,
                 point_sets,
-                color_sets):
+                color_sets)):
 
-            # If number of points changed → recreate scatter
+            vmin, vmax = norm_ranges[i]
+
             if sc is None or len(pts) != len(sc.get_offsets()):
 
                 if sc is not None:
@@ -105,22 +222,23 @@ class PointCloudPlot():
                     pts[:, 2],
                     c=colors,
                     cmap=self.cmap,
-                    vmin=0,
-                    vmax=1
+                    vmin=vmin,
+                    vmax=vmax
                 )
 
             else:
                 sc._offsets3d = (pts[:, 0], pts[:, 1], pts[:, 2])
                 sc.set_array(colors)
+                if vmin is not None:
+                    sc.set_clim(vmin, vmax)
 
             new_scatters.append(sc)
 
         self.scatters = new_scatters
-
         return self.scatters
 
     # ---------------------------------------------------------
-    # SAVE SINGLE IMAGE
+    # SAVE IMAGE
     # ---------------------------------------------------------
 
     def save_image(self, filename, dpi=200):

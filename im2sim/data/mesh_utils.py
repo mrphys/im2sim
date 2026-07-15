@@ -7,6 +7,11 @@ from torch_geometric.data import Data
 from pyvista.core.pointset import PointGrid
 from typing import Dict, List, Tuple
 
+class InputMeshError(ValueError):
+    pass
+
+
+
 
 def get_structure_ids(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
     """
@@ -19,33 +24,10 @@ def get_structure_ids(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[s
     Returns:
         ids (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(N), where N is the number of nodes in the structure.
     """
-    cells = get_structure_cells(mesh, structure_dict)
-
-    if cells == -1:
-        return -1
-
+    cells = get_structure_edges(mesh, structure_dict)
     ids = {f'{k.split("_cell_index")[0]}_index':torch.unique(v) for k, v in cells.items()}
     return ids
 
-def get_structure_edges(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
-    cells = get_structure_cells(mesh, structure_dict)
-
-    if cells == -1:
-        return -1
-
-    edges = {}
-
-    for k, v in cells.items():
-        edge_list = []
-
-        for i in range(v.shape[1]):  # each cell
-            nodes = v[:, i].tolist()
-            edge_list += list(combinations(nodes, 2))
-
-        edge_tensor = torch.tensor(edge_list, dtype=torch.long).t()
-        edges[f'{k.split("_cell_index")[0]}_edge_index'] = edge_tensor
-
-    return edges
 
 
 def get_structure_edges(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
@@ -60,39 +42,34 @@ def get_structure_edges(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict
         edges (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(2, N), 
         where N is the number of edges in the structure.
     """
-    cells = get_structure_cells(mesh, structure_dict)
 
-    if cells == -1:
-        return -1
-
-    edges =  {k:None for k in structure_dict}
-
-    for k, v in cells.items():
-        e_ids =  list(combinations(range(v.shape[0]),2))
-        cell_edges = v[e_ids,:]
-        edges[f'{k.split("_cell_index")[0]}'] =  cell_edges.permute(1,0,2).reshape(2,-1)
-
-    edges = {f'{k}_edge_index':v for k,v in edges.items()}
-    return edges
+    if _has_missing_ids(mesh, structure_dict):
+        raise InputMeshError("Mesh has missing ids")
     
-def get_structure_edges2(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
-    cells = get_structure_cells(mesh, structure_dict)
-
     edges = {}
 
-    for k, v in cells.items():
-        edge_list = []
-
-        for i in range(v.shape[1]):  # each cell
-            nodes = v[:, i]
-            edge_list.append(torch.combinations(nodes, r=2))
-
-        edge_index = torch.cat(edge_list, dim=0).T
-        edge_index = torch.unique(edge_index, dim=1)
-
-        edges[f'{k.split("_cell_index")[0]}_edge_index'] = edge_index
+    for i,key in structure_dict.items():
+        edges[f'{key}_edge_index'] = get_edges(mesh, i)
 
     return edges
+
+def get_edges(mesh:PointGrid, structure_id: int) -> torch.Tensor:
+    """
+    Extracts edges for a single structure in a pyvista PointGrid object.
+
+    Args:
+        mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
+        structure_id (int): An integer corresponding to the structure id 
+    
+    Returns:
+        edges (torch.Tensor):  Tensor of shape (2, N) where N is the number of edges in the structure.
+    """
+    submesh = mesh.extract_cells(np.where(mesh['CellEntityIds']==structure_id))
+    edges = submesh.extract_all_edges().lines.reshape(-1,3)[:,1:].T
+    edges = torch.from_numpy(submesh['vtkOriginalPointIds'][edges]).long()
+    edges = to_undirected(edges)
+    return edges
+
 
 def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
     """
@@ -106,11 +83,8 @@ def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict
         cells (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(m, N), where m is 3 for triangles and 4 for tetrahedrons
         and N is the number of cells in the structure.
     """
-    ids = np.unique(mesh['CellEntityIds'])
-
-    missing_ids = set(structure_dict.keys()) - set(ids.tolist())
-    if len(missing_ids) != 0:
-        return -1
+    if _has_missing_ids(mesh, structure_dict):
+        raise InputMeshError("Mesh has missing ids")
 
     out_dict = {k:None for k in structure_dict.values()}
 
@@ -124,6 +98,15 @@ def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict
     out_dict = {f'{k}_cell_index':v for k,v in out_dict.items()}
 
     return out_dict
+
+
+def _has_missing_ids(mesh: PointGrid, structure_dict: Dict[int,str]) -> bool:
+    ids = np.unique(mesh['CellEntityIds'])
+
+    missing_ids = set(structure_dict.keys()) - set(ids.tolist())
+    if len(missing_ids) != 0:
+        return True
+    return False
 
 
 def set_attrs(data:Data, attrs:Dict[str, torch.Tensor]) -> None:
@@ -155,19 +138,6 @@ def get_edges_tet(mesh: PointGrid) -> torch.Tensor:
     edges = to_undirected(edges)
     return edges
 
-def get_edges_tet2(mesh: PointGrid) -> torch.Tensor:
-    """
-    A function to get the edge index for training from a tetrahedral pyvista mesh 
-
-    Args:
-        mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
-
-    Returns:
-        edges (torch.Tensor): A tensor of shape [2,M] where M is the number of edges and the values are the node ids
-    """
-    edges = get_structure_edges2(mesh, {0:'vol'})['vol_edge_index']
-    edges = to_undirected(edges)
-    return edges
 
 def get_edges_surf(mesh: PointGrid) -> torch.Tensor:
     """

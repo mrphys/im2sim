@@ -3,8 +3,11 @@ import copy
 import torch
 from torch_geometric.data import Data, Batch
 import logging
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
+
+
 
 
 
@@ -475,39 +478,46 @@ class Pipeline:
     # Forward
     # -----------------------------
     def __call__(self, data):
-        for t in self.transforms:
-            if logger.isEnabledFor(logging.DEBUG):
-                logging.debug(f' before {t.name}')
-                for k,v in data.items():
-                    logging.debug(k)
-                    
-                    if isinstance(v, Data):
-                        for c in range(v.x.shape[-1]):
-                            logging.debug(f'channel {c}- max:{v.x[...,c].max()}, min:{v.x[...,c].min()}')
-                    else:
-                        logging.debug(v.shape)
+        transforms = self._get_applicable_transforms(data.keys())
+        for t in transforms:
+            logging.debug(f'before {t.name}')
+            _log_data(data)
+
             data = t.forward(data)
+
+            logging.debug(f'after {t.name}')
+            _log_data(data)
         return data
 
     # -----------------------------
     # Inverse (reverse order)
     # -----------------------------
     def inverse(self, data):
-        for t in reversed(self.transforms):
+        transforms = self._get_applicable_transforms(data.keys())
+        for t in reversed(transforms):
             if t.is_invertible:
-                if logger.isEnabledFor(logging.DEBUG):
-                    logging.debug(f' before {t.name}')
-                    for k,v in data.items():
-                        logging.debug(k)
-                    
-                        if isinstance(v, Data):
-                            for c in range(v.x.shape[-1]):
-                                logging.debug(f'channel {c}- max:{v.x[...,c].max()}, min:{v.x[...,c].min()}')
-                        else:
-                            logging.debug(v.shape)
+                logging.debug(f'before {t.name} inverse')
+                _log_data(data)
+
                 data = t.inverse(data)
+
+                logging.debug(f'after {t.name} inverse')
+                _log_data(data)
+
         return data
 
+    def _get_applicable_transforms(self, keys: str) -> list[Transform]:
+        transforms = []
+        for t in self.transforms:
+            skip = False
+            for key in t.keys:
+                if key not in keys:
+                    skip=True
+                    break
+            if not skip:
+                transforms.append(t)
+        return transforms
+            
     # -----------------------------
     # Fit (only fittable transforms)
     # -----------------------------
@@ -596,6 +606,17 @@ def load_pipeline(path):
     pipeline.load_state_dict(obj["state"])
 
     return pipeline
+
+def _log_data(data: Dict[str,Any]) -> None:
+    if logger.isEnabledFor(logging.DEBUG):
+        for k,v in data.items():
+            logging.debug(k)
+        
+            if isinstance(v, Data):
+                for c in range(v.x.shape[-1]):
+                    logging.debug(f'channel {c}- max:{v.x[...,c].max()}, min:{v.x[...,c].min()}')
+            else:
+                logging.debug(v.shape)
 
 # ------------------------------------------------------------------------------------
 # TRANSFORM REGISTRY DEFINITION

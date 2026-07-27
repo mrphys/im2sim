@@ -1,3 +1,4 @@
+import torch.nn.functional as F
 from torch import nn
 
 from ..layers.layer_util import *
@@ -40,7 +41,7 @@ class ImageConvBlock(nn.Module):
         ])
 
         self.norms = nn.ModuleList([
-            get_image_layer(norm_type, rank)(filters) if norm_type else nn.Identity()
+            TORCH_LAYERS(f"{norm_type}{rank}d")(filters) if norm_type else nn.Identity()
             for _ in range(depth)
         ])
         self.drop = drop(p=dropout_rate) if dropout_rate else nn.Identity()
@@ -187,7 +188,7 @@ class ImageDecoder(nn.Module):
                 for i in range(n_levels - 1)
             ])
         else:
-            up_layer = get_image_layer(upsample_type, rank)
+            up_layer = TORCH_LAYERS(f"{upsample_type}{rank}d")
             self.ups = nn.ModuleList([
                 up_layer(rev_filters[i], rev_filters[i+1], kernel_size=upsample_sizes[i], stride=upsample_sizes[i])
                 for i in range(n_levels - 1)
@@ -395,7 +396,7 @@ class UNet(nn.Module):
         self.final_conv = conv(filters[0], out_channels, kernel_size=1)
 
         self.final_act = (
-            get_activation(final_activation)()
+            ACTIVATIONS(final_activation)()
             if final_activation.lower() != "linear"
             else nn.Identity()
         )

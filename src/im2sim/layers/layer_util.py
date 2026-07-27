@@ -76,7 +76,7 @@ layer_pattern = r"(Conv|Pool|Norm|UpSample|PixelShuffle|Dropout)"
 TORCH_LAYERS, register_torch_layer = make_registry(torch.nn, layer_pattern)
 PYG_LAYERS, register_pyg_layer = make_registry(gnn, layer_pattern)
 
-print(PYG_LAYERS)
+
 
 # def get_image_layer(name, rank):
 #   """Get an N-D layer object.

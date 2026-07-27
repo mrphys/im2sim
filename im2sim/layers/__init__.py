@@ -1,6 +1,6 @@
-from .graph_convs import *
-from .image_convs import *
+from .graph_blocks import *
+from .image_blocks import *
 from .projections import *
 from .meshgraphnets import *
-from .layer_util import get_image_layer, get_activation, get_default_kwargs, get_graph_layer
+from .layer_util import *
 

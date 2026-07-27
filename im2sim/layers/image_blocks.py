@@ -1,7 +1,7 @@
 import logging
 import torch
 from torch import nn
-from .layer_util import get_image_layer, get_activation
+from .layer_util import *
 
 logger = logging.getLogger(__name__)
 
@@ -29,24 +29,24 @@ class ImageConvBlock(nn.Module):
                 kernel_size=3,
                 depth=1, 
                 rank=3,
-                activation='relu', 
+                activation='ReLU', 
                 norm_type=None,
                 dropout_rate=None):
         super().__init__() 
 
-        conv = get_image_layer('Conv', rank)
+        conv = TORCH_LAYERS[f'Conv{rank}d']
         self.convs = nn.ModuleList([
             conv(in_channels if i==0 else filters, filters, kernel_size, padding=kernel_size//2)
             for i in range(depth)
         ])
 
         self.norms = nn.ModuleList([
-            get_image_layer(norm_type, rank)(filters, affine=True, eps=1e-5) if norm_type else nn.Identity()
+            TORCH_LAYERS[f'{norm_type}{rank}d'](filters, affine=True) if norm_type else nn.Identity()
             for _ in range(depth)
         ])
-        self.drop = get_image_layer('Dropout', rank)(p=dropout_rate) if dropout_rate else nn.Identity()
+        self.drop = TORCH_LAYERS(f'Dropout{rank}d')(p=dropout_rate) if dropout_rate else nn.Identity()
 
-        self.act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
+        self.act = ACTIVATIONS[activation]
         
 
     def forward(self, x):
@@ -120,7 +120,7 @@ class ImageConvResBlock(nn.Module):
                                             depth=1,
                                             dropout_rate=None)
         # self.drop =  get_image_layer('Dropout', rank)(p=dropout_rate) if dropout_rate else nn.Identity()
-        self.out_act = get_activation(activation)(inplace=True) if activation.lower() == 'relu' else get_activation(activation)()
+        self.out_act = ACTIVATIONS[activation]
 
     def forward(self, x):
         """
@@ -165,7 +165,7 @@ class ImageResEncoder(nn.Module):
                 norm_type=None,
                 pool_type='MaxPool',
                 pool_size=2,
-                activation='relu',
+                activation='ReLU',
                 dropout_rate=None):
         super().__init__()
         
@@ -185,8 +185,8 @@ class ImageResEncoder(nn.Module):
                     ])
             for i in range(n_levels)
         ])
-        pool = get_image_layer(pool_type, rank)
-        self.maxpools = nn.ModuleList([
+        pool = TORCH_LAYERS[f'{pool_type}{rank}d']
+        self.pools = nn.ModuleList([
             pool(pool_size) if i>0 else nn.Identity()
             for i in range(n_levels)
         ])
@@ -201,7 +201,7 @@ class ImageResEncoder(nn.Module):
         """
         logger.debug("IN ENCODER")
         outputs = []
-        for pool, convs in zip(self.maxpools, self.conv_blocks):
+        for pool, convs in zip(self.pools, self.conv_blocks):
             x = pool(x)
             for conv in convs: 
                 x = conv(x)
@@ -237,7 +237,7 @@ class ImageEncoder(nn.Module):
                 norm_type=None,
                 pool_type='MaxPool',
                 pool_size=2,
-                activation='relu',
+                activation='ReLU',
                 dropout_rate=None):
         super().__init__()
         
@@ -253,7 +253,7 @@ class ImageEncoder(nn.Module):
                         dropout_rate=dropout_rate)
             for i in range(n_levels)
         ])
-        pool = get_image_layer(pool_type, rank)
+        pool = TORCH_LAYERS[f'{pool_type}{rank}d']
         self.maxpools = nn.ModuleList([
             pool(pool_size) if i>0 else nn.Identity()
             for i in range(n_levels)
@@ -299,7 +299,7 @@ class ImageDecoder(nn.Module):
                  conv_blocks_per_level=1,
                  rank=3,
                  upsample_type="Upsample",
-                 activation="relu",
+                 activation="ReLU",
                  norm_type=None,
                  dropout_rate=None,
                  skip=True):
@@ -323,7 +323,7 @@ class ImageDecoder(nn.Module):
                 for _ in range(n_levels - 1)
             ])
         else:
-            up_layer = get_image_layer(upsample_type, rank)
+            up_layer = TORCH_LAYERS[f'{upsample_type}{rank}d']
             self.ups = nn.ModuleList([
                 up_layer(rev_filters[i], rev_filters[i+1], kernel_size=2, stride=2)
                 for i in range(n_levels - 1)
@@ -395,113 +395,113 @@ class ImageDecoder(nn.Module):
 # import torch.nn as nn
 
 
-class ConvResBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super().__init__()
+# class ConvResBlock(nn.Module):
+#     def __init__(self, in_channels, out_channels):
+#         super().__init__()
 
-        # First branch (x1)
-        self.conv1a = nn.Conv3d(
-            in_channels, out_channels,
-            kernel_size=3, padding=1, bias=True
-        )
-        self.norm1a = nn.InstanceNorm3d(
-            out_channels, affine=True, eps=1e-5
-        )
+#         # First branch (x1)
+#         self.conv1a = nn.Conv3d(
+#             in_channels, out_channels,
+#             kernel_size=3, padding=1, bias=True
+#         )
+#         self.norm1a = nn.InstanceNorm3d(
+#             out_channels, affine=True, eps=1e-5
+#         )
 
-        # Second branch
-        self.conv1b = nn.Conv3d(
-            in_channels, out_channels,
-            kernel_size=3, padding=1, bias=True
-        )
-        self.norm1b = nn.InstanceNorm3d(
-            out_channels, affine=True, eps=1e-5
-        )
+#         # Second branch
+#         self.conv1b = nn.Conv3d(
+#             in_channels, out_channels,
+#             kernel_size=3, padding=1, bias=True
+#         )
+#         self.norm1b = nn.InstanceNorm3d(
+#             out_channels, affine=True, eps=1e-5
+#         )
 
-        self.act = nn.LeakyReLU(negative_slope=0.3, inplace=False)
-        self.dropout = nn.Dropout3d(p=0.3)
+#         self.act = nn.LeakyReLU(negative_slope=0.3, inplace=False)
+#         self.dropout = nn.Dropout3d(p=0.3)
 
-        self.conv2b = nn.Conv3d(
-            out_channels, out_channels,
-            kernel_size=3, padding=1, bias=True
-        )
-        self.norm2b = nn.InstanceNorm3d(
-            out_channels, affine=True, eps=1e-5
-        )
+#         self.conv2b = nn.Conv3d(
+#             out_channels, out_channels,
+#             kernel_size=3, padding=1, bias=True
+#         )
+#         self.norm2b = nn.InstanceNorm3d(
+#             out_channels, affine=True, eps=1e-5
+#         )
 
-        self._init_weights()
+#         self._init_weights()
 
-    def _init_weights(self):
-        # Match TF he_normal (fan_in, normal)
-        for m in self.modules():
-            if isinstance(m, nn.Conv3d):
-                nn.init.kaiming_normal_(
-                    m.weight,
-                    mode='fan_in',
-                    nonlinearity='leaky_relu'
-                )
-                if m.bias is not None:
-                    nn.init.zeros_(m.bias)
+#     def _init_weights(self):
+#         # Match TF he_normal (fan_in, normal)
+#         for m in self.modules():
+#             if isinstance(m, nn.Conv3d):
+#                 nn.init.kaiming_normal_(
+#                     m.weight,
+#                     mode='fan_in',
+#                     nonlinearity='leaky_relu'
+#                 )
+#                 if m.bias is not None:
+#                     nn.init.zeros_(m.bias)
 
-    def forward(self, x):
-        # First branch
-        x1 = self.conv1a(x)
-        x1 = self.norm1a(x1)
-        # Second branch
-        x2 = self.conv1b(x)
-        x2 = self.norm1b(x2)
-        x2 = self.act(x2)
-        x2 = self.dropout(x2)
+#     def forward(self, x):
+#         # First branch
+#         x1 = self.conv1a(x)
+#         x1 = self.norm1a(x1)
+#         # Second branch
+#         x2 = self.conv1b(x)
+#         x2 = self.norm1b(x2)
+#         x2 = self.act(x2)
+#         x2 = self.dropout(x2)
 
-        x2 = self.conv2b(x2)
-        x2 = self.norm2b(x2)
+#         x2 = self.conv2b(x2)
+#         x2 = self.norm2b(x2)
 
-        # Residual add
-        out = x1 + x2
-        out = self.act(out)
+#         # Residual add
+#         out = x1 + x2
+#         out = self.act(out)
 
-        return out
+#         return out
     
 
-class Encoder3D(nn.Module):
-    def __init__(self, in_channels):
-        super().__init__()
+# class Encoder3D(nn.Module):
+#     def __init__(self, in_channels):
+#         super().__init__()
 
-        self.block1_1 = ConvResBlock(in_channels, 16)
-        self.block1_2 = ConvResBlock(16, 16)
+#         self.block1_1 = ConvResBlock(in_channels, 16)
+#         self.block1_2 = ConvResBlock(16, 16)
 
-        self.block2_1 = ConvResBlock(16, 32)
-        self.block2_2 = ConvResBlock(32, 32)
+#         self.block2_1 = ConvResBlock(16, 32)
+#         self.block2_2 = ConvResBlock(32, 32)
 
-        self.block3_1 = ConvResBlock(32, 64)
-        self.block3_2 = ConvResBlock(64, 64)
+#         self.block3_1 = ConvResBlock(32, 64)
+#         self.block3_2 = ConvResBlock(64, 64)
 
-        self.block4_1 = ConvResBlock(64, 128)
-        self.block4_2 = ConvResBlock(128, 128)
+#         self.block4_1 = ConvResBlock(64, 128)
+#         self.block4_2 = ConvResBlock(128, 128)
 
-        self.block5_1 = ConvResBlock(128, 256)
-        self.block5_2 = ConvResBlock(256, 256)
+#         self.block5_1 = ConvResBlock(128, 256)
+#         self.block5_2 = ConvResBlock(256, 256)
 
-        self.pool = nn.MaxPool3d(kernel_size=2)
+#         self.pool = nn.MaxPool3d(kernel_size=2)
 
-    def forward(self, x):
-        X1 = self.block1_1(x)
-        X1 = self.block1_2(X1)
-        X1p = self.pool(X1)
+#     def forward(self, x):
+#         X1 = self.block1_1(x)
+#         X1 = self.block1_2(X1)
+#         X1p = self.pool(X1)
 
-        X2 = self.block2_1(X1p)
-        X2 = self.block2_2(X2)
-        X2p = self.pool(X2)
+#         X2 = self.block2_1(X1p)
+#         X2 = self.block2_2(X2)
+#         X2p = self.pool(X2)
 
-        X3 = self.block3_1(X2p)
-        X3 = self.block3_2(X3)
-        X3p = self.pool(X3)
+#         X3 = self.block3_1(X2p)
+#         X3 = self.block3_2(X3)
+#         X3p = self.pool(X3)
 
-        X4 = self.block4_1(X3p)
-        X4 = self.block4_2(X4)
-        X4p = self.pool(X4)
+#         X4 = self.block4_1(X3p)
+#         X4 = self.block4_2(X4)
+#         X4p = self.pool(X4)
 
-        X5 = self.block5_1(X4p)
-        X5 = self.block5_2(X5)
-        X5p = self.pool(X5)
+#         X5 = self.block5_1(X4p)
+#         X5 = self.block5_2(X5)
+#         X5p = self.pool(X5)
 
-        return [X1, X2, X3, X4, X5]
+#         return [X1, X2, X3, X4, X5]

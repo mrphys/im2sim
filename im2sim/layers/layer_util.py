@@ -1,146 +1,202 @@
-from torch import nn
+import torch
 import torch.nn.functional as F
 import torch_geometric.nn as gnn
+import re
+from typing import Any, Callable
+import inspect
+from torch_geometric.data import Data
+from copy import deepcopy
 
 
-def get_image_layer(name, rank):
-  """Get an N-D layer object.
+def get_graph_layer(name, kwargs):
+    return PyG_Wrapper(PYG_LAYERS[name](**kwargs))
 
-  Args:
-    name: A `str`. The name of the requested layer.
-    rank: An `int`. The rank of the requested layer.
 
-  Returns:
-    A `torch.nn.Module` object.
 
-  Raises:
-    ValueError: If the requested layer is unknown.
-  """
-  try:
-    return _IMAGE_LAYERS[(name, rank)]
-  except KeyError as err:
-    raise ValueError(
-        f"Could not find a layer with name '{name}' and rank {rank}.") from err
+
+def make_registry(lib: Any, regex: Callable):
+    
+    registry = NormalizedDict({name: getattr(lib, name) for name in dir(lib) if re.search(regex, name)})
+
+    def register(cls=None, *, name=None):
+        def decorator(obj):
+            registry[name or obj.__name__] = obj
+            return obj
+
+        return decorator(cls) if cls else decorator
+
+    return registry, register
+
+
+def normalize_key(key: str) -> str:
+    return key.replace(" ", "").replace("_", "").lower()
+
+class NormalizedDict:
+    def __init__(self, data: dict):
+        self._data = {}
+        for key, val in data.items():
+            self.__setitem__(key,val)
+        
+    def __setitem__(self, key, value):
+        self._data[normalize_key(key)] = value
+
+    def __getitem__(self, key):
+        return self._data[normalize_key(key)]
+    
+    def __str__(self):
+        return self._data.__str__()
+
+
+
+# IMAGE_CONVS, register_image_conv = make_registry(torch.nn, 'Conv')
+# IMAGE_POOLS, register_image_pool = make_registry(torch.nn, 'Pool')
+# IMAGE_NORMS, register_image_norm = make_registry(torch.nn, 'Norm')
+# DROPOUT, register_dropout = make_registry(torch.nn, 'Dropout')
+
+# GRAPH_CONVS, register_graph_conv = make_registry(gnn, 'Conv')
+# GRAPH_POOLS, register_graph_pool = make_registry(gnn, 'Pool')
+# GRAPH_NORMS, register_graph_norm = make_registry(gnn, 'Norm')
+
+
+activation_pattern = re.compile(
+    r"(ReLU|ELU|LeakyReLU|PReLU|RReLU|GELU|SiLU|"
+    r"Sigmoid|Tanh|Softmax|Softplus|SELU|CELU|"
+    r"Threshold|Hardtanh|Hardswish|Mish)"
+)
+ACTIVATIONS, register_activation = make_registry(torch.nn, activation_pattern)
+
+
+layer_pattern = r"(Conv|Pool|Norm|UpSample|PixelShuffle|Dropout)"
+
+
+
+TORCH_LAYERS, register_torch_layer = make_registry(torch.nn, layer_pattern)
+PYG_LAYERS, register_pyg_layer = make_registry(gnn, layer_pattern)
+
+print(PYG_LAYERS)
+
+# def get_image_layer(name, rank):
+#   """Get an N-D layer object.
+
+#   Args:
+#     name: A `str`. The name of the requested layer.
+#     rank: An `int`. The rank of the requested layer.
+
+#   Returns:
+#     A `torch.nn.Module` object.
+
+#   Raises:
+#     ValueError: If the requested layer is unknown.
+#   """
+#   layer_name =  f"{name}{rank}d"
+#   try:
+#     return _IMAGE_LAYERS(layer_name)
+#   except KeyError as err:
+#     raise ValueError(
+#         f"Could not find a layer with name {name} and rank {rank}") from err
+  
+# def get_torch_layer(layer_name):
+#      return getattr(torch.nn, layer_name)
   
   
-def get_graph_layer(name):
-  """Get an graph layer object.
+# def get_graph_layer(name):
+#   """Get an graph layer object.
 
-  Args:
-    name: A `str`. The name of the requested layer.
+#   Args:
+#     name: A `str`. The name of the requested layer.
 
-  Returns:
-    A `torch.nn.Module` object.
+#   Returns:
+#     A `torch.nn.Module` object.
 
-  Raises:
-    ValueError: If the requested layer is unknown.
-  """
-  try:
-    return _GRAPH_LAYERS[name] 
-  except KeyError as err:
-    raise ValueError(
-        f"Could not find an activation with name '{name}'") from err
+#   Raises:
+#     ValueError: If the requested layer is unknown.
+#   """
+#   try:
+#     return _GRAPH_LAYERS[name] 
+#   except KeyError as err:
+#     raise ValueError(
+#         f"Could not find an activation with name '{name}'") from err
   
-def get_default_kwargs(name):
-  """Get an graph layer object.
+# def get_default_kwargs(name):
+#   """Get an graph layer object.
 
-  Args:
-    name: A `str`. The name of the requested layer.
+#   Args:
+#     name: A `str`. The name of the requested layer.
 
-  Returns:
-    A `torch.nn.Module` object.
+#   Returns:
+#     A `torch.nn.Module` object.
 
-  Raises:
-    ValueError: If the requested layer is unknown.
-  """
-  try:
-    return _LAYER_KWARGS[name] 
-  except KeyError as err:
-    raise ValueError(
-        f"Could not find an activation with name '{name}'") from err
+#   Raises:
+#     ValueError: If the requested layer is unknown.
+#   """
+#   try:
+#     return _LAYER_KWARGS[name] 
+#   except KeyError as err:
+#     raise ValueError(
+#         f"Could not find an activation with name '{name}'") from err
   
   
-def get_activation(name):
-  """Get an activation object.
+# def get_activation(name):
+#   """Get an activation object.
 
-  Args:
-    name: A `str`. The name of the requested layer.
+#   Args:
+#     name: A `str`. The name of the requested layer.
 
-  Returns:
-    A `torch.nn.Module` object.
+#   Returns:
+#     A `torch.nn.Module` object.
 
-  Raises:
-    ValueError: If the requested activation is unknown.
-  """
-  try:
-    return _ACTIVATIONS[name]
-  except KeyError as err:
-    raise ValueError(
-        f"Could not find an activation with name '{name}'") from err
+#   Raises:
+#     ValueError: If the requested activation is unknown.
+#   """
+#   try:
+#     return _ACTIVATIONS[name]
+#   except KeyError as err:
+#     raise ValueError(
+#         f"Could not find an activation with name '{name}'") from err
+  
 
 
-_IMAGE_LAYERS = {
-    ('AveragePooling', 1): nn.AvgPool1d,
-    ('AveragePooling', 2): nn.AvgPool2d,
-    ('AveragePooling', 3): nn.AvgPool3d,
-    ('Conv', 1): nn.Conv1d,
-    ('Conv', 2): nn.Conv2d,
-    ('Conv', 3): nn.Conv3d,
-    ('ConvTranspose', 1): nn.ConvTranspose1d,
-    ('ConvTranspose', 2): nn.ConvTranspose2d,
-    ('ConvTranspose', 3): nn.ConvTranspose3d,
-    ('MaxPool', 1): nn.MaxPool1d,
-    ('MaxPool', 2): nn.MaxPool2d,
-    ('MaxPool', 3): nn.MaxPool3d,
-    ('Dropout', 1): nn.Dropout1d,
-    ('Dropout', 2): nn.Dropout2d,
-    ('Dropout', 3): nn.Dropout3d,
-    ('ZeroPadding', 1): nn.ZeroPad1d,
-    ('ZeroPadding', 2): nn.ZeroPad2d,
-    ('ZeroPadding', 3): nn.ZeroPad3d,
-    ('BatchNorm', 1): nn.BatchNorm1d,
-    ('BatchNorm', 2): nn.BatchNorm2d,
-    ('BatchNorm', 3): nn.BatchNorm3d,
-    ('InstanceNorm', 1): nn.InstanceNorm1d,
-    ('InstanceNorm', 2): nn.InstanceNorm2d,
-    ('InstanceNorm', 3): nn.InstanceNorm3d,
-    ('LayerNorm', 1): nn.InstanceNorm1d,
-}
 
-_GRAPH_LAYERS = {
-  'ChebConv': gnn.ChebConv,
-  'GraphConv': gnn.GraphConv,
-  'GCNConv': gnn.GCNConv,
-  'GATConv': gnn.GATConv,
-  'InstanceNorm': gnn.InstanceNorm,
-  'LayerNorm': gnn.LayerNorm,
-  'BatchNorm': gnn.BatchNorm,
-  'GraphNorm': gnn.GraphNorm,
-}
 
-_LAYER_KWARGS = {
-  'ChebConv': {'K':3},
-  'GraphConv': {},
-  'GCNConv': {},
-  'GATConv': {}
-}
-_ACTIVATIONS = {
-    "relu": nn.ReLU,
-    "leaky_relu": nn.LeakyReLU,
-    "gelu": nn.GELU,
-    "sigmoid": nn.Sigmoid,
-    "linear": nn.Identity,
-    "softmax": nn.Softmax
-}
+# pattern = r"\d+d$"
+# _IMAGE_LAYERS = {**{name: getattr(torch.nn, name) for name in dir(torch.nn) if re.search(pattern, name)}}
+
+
+# _GRAPH_LAYERS = {
+#   'ChebConv': gnn.ChebConv,
+#   'GraphConv': gnn.GraphConv,
+#   'GCNConv': gnn.GCNConv,
+#   'GATConv': gnn.GATConv,
+#   'DefaultNorm':DefaultGraphNorm,
+#   'InstanceNorm': gnn.InstanceNorm,
+#   'LayerNorm': gnn.LayerNorm,
+#   'BatchNorm': gnn.BatchNorm,
+#   'GraphNorm': gnn.GraphNorm,
+# }
+
+# _LAYER_KWARGS = {
+#   'ChebConv': {'K':1},
+#   'GraphConv': {},
+#   'GCNConv': {},
+#   'GATConv': {}
+# }
+# _ACTIVATIONS = {
+#     "relu": nn.ReLU,
+#     "leaky_relu": nn.LeakyReLU,
+#     "gelu": nn.GELU,
+#     "sigmoid": nn.Sigmoid,
+#     "linear": nn.Identity,
+#     "softmax": nn.Softmax
+# }
 
 
 def init_weights(m):
     if isinstance(m, gnn.ChebConv):
         for lin in m.lins:
-            nn.init.kaiming_normal_(lin.weight, nonlinearity='leaky_relu')
+            torch.nn.init.kaiming_normal_(lin.weight, nonlinearity='leaky_relu')
             lin.weight.data *= 0.1
             if lin.bias is not None:
-                nn.init.zeros_(lin.bias)
+                torch.nn.init.zeros_(lin.bias)
 
 def standardize_spatial_factors(factors, rank):
     """
@@ -159,3 +215,50 @@ def standardize_spatial_factors(factors, rank):
             )
 
     return standardized
+
+
+class PyGParameterError(TypeError):
+    pass
+
+class PyGWrapperError(TypeError):
+    pass
+
+
+
+def _match_attrs_to_signature(graph: Data, module: torch.nn.Module) -> list[str]:
+    """This function accepts a PyG data object and a Callable and returns common attributes"""
+    attrs = []
+    sig = inspect.signature(module.forward).parameters
+    for name, param in sig.items():
+        if hasattr(graph, name):
+            attrs.append(name)
+        elif param.default is inspect.Parameter.empty:
+            raise PyGParameterError(f"Attribute {name} is missing but is required for {module.__class__.__name__} layers.")
+    return attrs
+        
+
+
+# This will not be useable for pooling layers as they have multiple return Tensors. If requiered we will have to add this functionality. 
+class PyG_Wrapper(torch.nn.Module):
+
+    """
+    A wrapper for PyG modules to make the forward method accept and return a PyG Data object instead of separated attributes 
+    Needs to be initialised with a pre-initialised PyG Module. 
+    """
+    
+    def __init__(self, pyg_module: torch.nn.Module, **kwargs):
+        self.pyg_module = pyg_module
+
+    def forward(self, graph):
+        attrs = _match_attrs_to_signature(graph, self.pyg_module)
+        out = self.pyg_module(**{attr:getattr(graph,attr) for attr in attrs})
+        if not isinstance(out, torch.Tensor):
+            raise PyGWrapperError(f"PyG layers that have multiple outputs like {self.pyg_module.__class__.__name__} are not currently supported. Consider changing PyG layer or writing a custom wrapper")
+        
+        out_graph = deepcopy(graph)
+        out_graph.x = out
+        return out_graph
+
+
+
+    

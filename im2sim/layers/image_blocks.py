@@ -1,6 +1,8 @@
 import logging
+
 import torch
 from torch import nn
+
 from .layer_util import *
 
 logger = logging.getLogger(__name__)
@@ -157,7 +159,7 @@ class ImageResEncoder(nn.Module):
 
     def __init__(self,
                 in_channels, 
-                filters=[16,32,64,128,256],
+                filters=(16,32,64,128,256),
                 kernel_size=3,
                 res_depth=3,
                 res_blocks_per_level=2,
@@ -230,7 +232,7 @@ class ImageEncoder(nn.Module):
 
     def __init__(self,
                 in_channels, 
-                filters=[16,32,64,128,256],
+                filters=(16,32,64,128,256),
                 kernel_size=3,
                 conv_blocks_per_level=1,
                 rank=3,
@@ -294,7 +296,7 @@ class ImageDecoder(nn.Module):
     """
 
     def __init__(self,
-                 filters=[16,32,64,128,256],
+                 filters=(16,32,64,128,256),
                  kernel_size=3,
                  conv_blocks_per_level=1,
                  rank=3,

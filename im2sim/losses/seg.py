@@ -1,4 +1,4 @@
-import torch 
+import torch
 
 
 def dice_calc(y1: torch.Tensor, y2: torch.Tensor, smooth: float = 1e-5) -> torch.Tensor:

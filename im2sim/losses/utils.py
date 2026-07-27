@@ -1,5 +1,7 @@
-from torch import nn 
 import inspect
+
+from torch import nn
+
 
 class GraphLoss(nn.Module):
 

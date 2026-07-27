@@ -1,10 +1,10 @@
-from itertools import combinations
 import logging
-from ..data.mesh_utils import compute_edge_lengths
-
+from itertools import combinations
 
 import torch
 import torch.nn.functional as F
+
+from ..data.mesh_utils import compute_edge_lengths
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class AspectRatioLoss(torch.nn.Module):
         if isinstance(cell_key, str):
             self.select = lambda obj: getattr(obj, cell_key)
         else:
-            raise ValueError(f"face_key must be a graph attribute but is {cell_key}")
+            raise TypeError(f"face_key must be a graph attribute but is {cell_key}")
         
 
     def forward(self, gr1, gr2):
@@ -83,7 +83,7 @@ class FaceNormalLoss(torch.nn.Module):
         if isinstance(face_key, str):
             self.select = lambda obj: getattr(obj, face_key)
         else:
-            raise ValueError(f"face_key must be a graph attribute but is {face_key}")
+            raise TypeError(f"face_key must be a graph attribute but is {face_key}")
 
 
     def forward(self, gr1, gr2):
@@ -130,7 +130,7 @@ class InversionLoss(torch.nn.Module):
         if isinstance(cell_key, str):
             self.select = lambda obj: getattr(obj, cell_key)
         else:
-            raise ValueError(f"face_key must be a graph attribute but is {cell_key}")
+            raise TypeError(f"face_key must be a graph attribute but is {cell_key}")
         self.min_vol = min_vol
 
 

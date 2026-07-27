@@ -1,5 +1,6 @@
 import torch
-from im2sim.data.mesh_utils import * 
+
+from im2sim.data.mesh_utils import *
 
 
 def test_make_padded_batch_shapes():

@@ -1,13 +1,9 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from matplotlib import animation
 
 
-class PointCloudPlot():
+class PointCloudPlot:
 
     def __init__(self,
                  nrows,

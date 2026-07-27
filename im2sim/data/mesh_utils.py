@@ -1,11 +1,11 @@
+
 import numpy as np
 import torch
-from itertools import combinations
-from torch_geometric.utils import to_undirected
 import torch_geometric.nn as gnn
-from torch_geometric.data import Data
 from pyvista.core.pointset import PointGrid
-from typing import Dict, List, Tuple
+from torch_geometric.data import Data
+from torch_geometric.utils import to_undirected
+
 
 class InputMeshError(ValueError):
     pass
@@ -13,7 +13,7 @@ class InputMeshError(ValueError):
 
 
 
-def get_structure_ids(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
+def get_structure_ids(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[str, torch.Tensor]:
     """
     Extracts node ids for different substructures in a pyvista PointGrid object.
 
@@ -30,7 +30,7 @@ def get_structure_ids(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[s
 
 
 
-def get_structure_edges(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
+def get_structure_edges(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[str, torch.Tensor]:
     """
     Extracts edges for different substructures in a pyvista PointGrid object.
 
@@ -71,7 +71,7 @@ def get_edges(mesh:PointGrid, structure_id: int) -> torch.Tensor:
     return edges
 
 
-def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict[str, torch.Tensor]:
+def get_structure_cells(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[str, torch.Tensor]:
     """
     Extracts cells for different substructures in a pyvista PointGrid object.
 
@@ -100,16 +100,16 @@ def get_structure_cells(mesh: PointGrid, structure_dict: Dict[int, str]) -> Dict
     return out_dict
 
 
-def _has_missing_ids(mesh: PointGrid, structure_dict: Dict[int,str]) -> bool:
+def _has_missing_ids(mesh: PointGrid, structure_dict: dict[int,str]) -> bool:
     ids = np.unique(mesh['CellEntityIds'])
 
     missing_ids = set(structure_dict.keys()) - set(ids.tolist())
-    if len(missing_ids) != 0:
-        return True
-    return False
+    
+    return len(missing_ids) != 0
 
 
-def set_attrs(data:Data, attrs:Dict[str, torch.Tensor]) -> None:
+
+def set_attrs(data:Data, attrs:dict[str, torch.Tensor]) -> None:
     """
     A helper function to set multiple attributes of a PyG Data object with keys and values from a dictionary.
 
@@ -153,7 +153,7 @@ def get_edges_surf(mesh: PointGrid) -> torch.Tensor:
     edges = torch.Tensor(edges).T.long()
     return edges 
 
-def get_node_features(mesh:PointGrid, feature_names: List[str]) -> torch.Tensor:
+def get_node_features(mesh:PointGrid, feature_names: list[str]) -> torch.Tensor:
     """
     Extracts the node features from a pyvista mesh object based on the feature names provided.
 
@@ -169,7 +169,7 @@ def get_node_features(mesh:PointGrid, feature_names: List[str]) -> torch.Tensor:
 
 
 
-def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     """
     A helper function to pad a batch of data to the same size.
 
@@ -269,7 +269,7 @@ def cluster_pool(mesh: Data) -> Data:
     pooled_mesh = gnn.avg_pool(clusters, mesh)
     return pooled_mesh
 
-def rasterize(points: torch.Tensor, im_shape: List[int], vox_sizes: List[float]) -> torch.Tensor:
+def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float]) -> torch.Tensor:
     """
     Computes the squared Euclidean distance between voxel centroids in a grid to a pointcloud
 

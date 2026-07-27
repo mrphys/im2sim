@@ -2,14 +2,8 @@ import logging
 
 import torch
 from torch import nn
-import torch_geometric.nn as gnn
 
-from .projections import TrilinearProjection
-from ..data.mesh_utils import cluster_pool
 from .layer_util import *
-
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +51,7 @@ class GraphConvBlock(nn.Module):
                 filters, 
                 depth=1, 
                 conv_type='GATConv',
-                conv_kwargs={},
+                conv_kwargs=None,
                 activation='ReLU', 
                 norm_type='default',
                 norm_kwargs=None):
@@ -110,7 +104,7 @@ class GraphConvResBlock(nn.Module):
                 filters, 
                 depth=3, 
                 conv_type='GATConv',
-                conv_kwargs={},
+                conv_kwargs=None,
                 activation='ReLU', 
                 norm_type='InstanceNorm',
                 norm_kwargs=None):
@@ -179,8 +173,8 @@ class GraphResDecoderBlock(nn.Module):
                  res_depth = 3,
                  n_deform_blocks = 3,
                  template_edge_index=None,
-                 conv_type="ChebConv",
-                 conv_kwargs={'K':3},
+                 conv_type="GATConv",
+                 conv_kwargs=None,
                  activation="relu",
                  out_activation="linear",
                  norm_type="InstanceNorm"):
@@ -217,8 +211,8 @@ class GraphResDecoderBlock(nn.Module):
         self.edge_index=template_edge_index
     
     def forward(self, in_graph, prev_results, encoder_projection):
-        if edge_index is None:
-            edge_index=self.edge_index
+        if in_graph.edge_index is None and self.edge_index is not None:
+            in_graph.edge_index=self.edge_index
 
         graph = deepcopy(in_graph)
         graph = self.process_conv(graph)

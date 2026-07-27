@@ -3,6 +3,7 @@ import logging
 import torch
 import torch.nn.functional as F
 from torch import nn
+
 from ..data.mesh_utils import make_padded_batch
 
 logger = logging.getLogger(__name__)
@@ -107,14 +108,14 @@ class OGProjection(nn.Module):
             # mimic tf.gather_nd(image_features[0], ...)
             img0 = image_features[i]
 
-            def gather(xi, yi, zi):
-                return img0[...,xi, yi, zi]
+            def gather(img, xi, yi, zi):
+                return img[...,xi, yi, zi]
 
             # --- z1 plane ---
-            q11 = gather(x1, y1, z1)
-            q21 = gather(x2, y1, z1)
-            q12 = gather(x1, y2, z1)
-            q22 = gather(x2, y2, z1)
+            q11 = gather(img0, x1, y1, z1)
+            q21 = gather(img0,x2, y1, z1)
+            q12 = gather(img0,x1, y2, z1)
+            q22 = gather(img0,x2, y2, z1)
 
             wx  = (x - x1.float()).unsqueeze(0)
             wx2 = (x2.float() - x).unsqueeze(0)

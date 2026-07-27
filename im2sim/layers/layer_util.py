@@ -1,14 +1,17 @@
-import torch
-import torch.nn.functional as F
-import torch_geometric.nn as gnn
-import re
-from typing import Any, Callable
 import inspect
-from torch_geometric.data import Data
+import re
+from collections.abc import Callable
 from copy import deepcopy
+from typing import Any
+
+import torch
+import torch_geometric.nn as gnn
+from torch_geometric.data import Data
 
 
 def get_graph_layer(name, kwargs):
+    if kwargs is None:
+        kwargs = {}
     return PyG_Wrapper(PYG_LAYERS[name](**kwargs))
 
 

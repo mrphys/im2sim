@@ -2,7 +2,6 @@
 import logging
 
 import torch
-
 from torch_geometric.nn import knn_interpolate
 
 logger = logging.getLogger(__name__)

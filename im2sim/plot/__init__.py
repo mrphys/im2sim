@@ -1,1 +1,1 @@
-from .pointcloud import PointCloudPlot
+from .pointcloud import PointCloudPlot as PointCloudPlot

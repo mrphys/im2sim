@@ -1,16 +1,16 @@
 # This code is from https://github.com/echowve/meshGraphNets_pytorch/tree/master
 
 import torch
-import torch.nn as nn
-from torch_scatter import scatter_add
+from torch import nn
 from torch_geometric.data import Data
+from torch_scatter import scatter_add
 
 
 class MGNEdgeBlock(nn.Module):
 
     def __init__(self, custom_func:nn.Module):
         
-        super(MGNEdgeBlock, self).__init__()
+        super().__init__()
         self.net = custom_func
 
 
@@ -39,7 +39,7 @@ class MGNEdgeBlock(nn.Module):
 class MGNNodeBlock(nn.Module):
 
     def __init__(self, custom_func:nn.Module):
-        super(MGNNodeBlock, self).__init__()
+        super().__init__()
         self.net = custom_func
 
     def forward(self, graph):
@@ -81,7 +81,7 @@ class MGNEncoder(nn.Module):
                 edge_input_size=128,
                 node_input_size=128,
                 hidden_size=128):
-        super(MGNEncoder, self).__init__()
+        super().__init__()
 
         self.eb_encoder = build_mlp(edge_input_size, hidden_size, hidden_size)
         self.nb_encoder = build_mlp(node_input_size, hidden_size, hidden_size)
@@ -100,7 +100,7 @@ class MGNGnBlock(nn.Module):
 
     def __init__(self, hidden_size=128):
 
-        super(MGNGnBlock, self).__init__()
+        super().__init__()
 
 
         eb_input_dim = 3 * hidden_size
@@ -129,7 +129,7 @@ class MGNGnBlock(nn.Module):
 class MGNDecoder(nn.Module):
 
     def __init__(self, hidden_size=128, output_size=2):
-        super(MGNDecoder, self).__init__()
+        super().__init__()
         self.decode_module = build_mlp(hidden_size, hidden_size, output_size, lay_norm=False)
 
     def forward(self, graph):
@@ -140,7 +140,7 @@ class MeshGraphNet(nn.Module):
 
     def __init__(self, message_passing_num, node_input_size, edge_input_size, output_size, hidden_size=128):
 
-        super(MeshGraphNet, self).__init__()
+        super().__init__()
 
         self.encoder = MGNEncoder(edge_input_size=edge_input_size, node_input_size=node_input_size, hidden_size=hidden_size)
         

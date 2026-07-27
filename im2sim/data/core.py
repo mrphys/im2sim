@@ -1,9 +1,10 @@
-from abc import ABC, abstractmethod
 import copy
-import torch
-from torch_geometric.data import Data, Batch
 import logging
-from typing import Dict, Any
+from abc import ABC, abstractmethod
+from typing import Any
+
+import torch
+from torch_geometric.data import Batch, Data
 
 logger = logging.getLogger(__name__)
 
@@ -156,8 +157,7 @@ class Operation(ABC):
         helper function to check if attr is serializable
         """
         return (
-            isinstance(v, (int, float, str, bool))
-            or isinstance(v, torch.Tensor)
+            isinstance(v, (int, float, str, bool, torch.Tensor)) 
             or v is None
         )
     
@@ -257,10 +257,7 @@ class Transform:
     # -----------------------------
 
     def _get_target(self, data, key):
-        if self.attr is None:
-            return data[key]
-
-        elif self.attr == "all":
+        if self.attr is None or self.attr == "all":
             return data[key]
 
         elif hasattr(data[key], self.attr):
@@ -480,12 +477,12 @@ class Pipeline:
     def __call__(self, data):
         transforms = self._get_applicable_transforms(data.keys())
         for t in transforms:
-            logging.debug(f'before {t.name}')
+            logger.debug(f'before {t.name}')
             _log_data(data)
 
             data = t.forward(data)
 
-            logging.debug(f'after {t.name}')
+            logger.debug(f'after {t.name}')
             _log_data(data)
         return data
 
@@ -496,12 +493,12 @@ class Pipeline:
         transforms = self._get_applicable_transforms(data.keys())
         for t in reversed(transforms):
             if t.is_invertible:
-                logging.debug(f'before {t.name} inverse')
+                logger.debug(f'before {t.name} inverse')
                 _log_data(data)
 
                 data = t.inverse(data)
 
-                logging.debug(f'after {t.name} inverse')
+                logger.debug(f'after {t.name} inverse')
                 _log_data(data)
 
         return data
@@ -607,16 +604,16 @@ def load_pipeline(path):
 
     return pipeline
 
-def _log_data(data: Dict[str,Any]) -> None:
+def _log_data(data: dict[str,Any]) -> None:
     if logger.isEnabledFor(logging.DEBUG):
         for k,v in data.items():
-            logging.debug(k)
+            logger.debug(k)
         
             if isinstance(v, Data):
                 for c in range(v.x.shape[-1]):
-                    logging.debug(f'channel {c}- max:{v.x[...,c].max()}, min:{v.x[...,c].min()}')
+                    logger.debug(f'channel {c}- max:{v.x[...,c].max()}, min:{v.x[...,c].min()}')
             else:
-                logging.debug(v.shape)
+                logger.debug(v.shape)
 
 # ------------------------------------------------------------------------------------
 # TRANSFORM REGISTRY DEFINITION

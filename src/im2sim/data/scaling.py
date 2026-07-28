@@ -1,5 +1,4 @@
-# TODO: Investigate PowerScaling to replace the StandardScaler and DataProc 
-
+# TODO: Investigate PowerScaling to replace the StandardScaler and DataProc
 
 
 class StandardScaler:
@@ -23,6 +22,7 @@ class StandardScaler:
         standard deviation of node feature(s)
     """
 
+
 class Normaliser:
     """
     min-max normaliser for node features
@@ -44,7 +44,7 @@ class Normaliser:
         max value of node feature(s)
     """
 
-    
+
 class DataProcessor:
     """
     Node Data Processor for Im2Sim models
@@ -67,5 +67,4 @@ class DataProcessor:
     --------
     >>> obj = MyClass(param1=10, param2="test")
     >>> obj.method()
-    42 """
-
+    42"""

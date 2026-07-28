@@ -7,6 +7,7 @@ from .layer_util import *
 
 logger = logging.getLogger(__name__)
 
+
 class ImageConvBlock(nn.Module):
     """
     A convolutional block for image data
@@ -23,33 +24,50 @@ class ImageConvBlock(nn.Module):
 
     Returns:
         A `torch.nn.Module` object.
-    
+
     """
-    def __init__(self, 
-                in_channels, 
-                filters=32, 
-                kernel_size=3,
-                depth=1, 
-                rank=3,
-                activation='ReLU', 
-                norm_type=None,
-                dropout_rate=None):
-        super().__init__() 
 
-        conv = TORCH_LAYERS[f'Conv{rank}d']
-        self.convs = nn.ModuleList([
-            conv(in_channels if i==0 else filters, filters, kernel_size, padding=kernel_size//2)
-            for i in range(depth)
-        ])
+    def __init__(
+        self,
+        in_channels,
+        filters=32,
+        kernel_size=3,
+        depth=1,
+        rank=3,
+        activation="ReLU",
+        norm_type=None,
+        dropout_rate=None,
+    ):
+        super().__init__()
 
-        self.norms = nn.ModuleList([
-            TORCH_LAYERS[f'{norm_type}{rank}d'](filters, affine=True) if norm_type else nn.Identity()
-            for _ in range(depth)
-        ])
-        self.drop = TORCH_LAYERS(f'Dropout{rank}d')(p=dropout_rate) if dropout_rate else nn.Identity()
+        conv = TORCH_LAYERS[f"Conv{rank}d"]
+        self.convs = nn.ModuleList(
+            [
+                conv(
+                    in_channels if i == 0 else filters,
+                    filters,
+                    kernel_size,
+                    padding=kernel_size // 2,
+                )
+                for i in range(depth)
+            ]
+        )
+
+        self.norms = nn.ModuleList(
+            [
+                TORCH_LAYERS[f"{norm_type}{rank}d"](filters, affine=True)
+                if norm_type
+                else nn.Identity()
+                for _ in range(depth)
+            ]
+        )
+        self.drop = (
+            TORCH_LAYERS(f"Dropout{rank}d")(p=dropout_rate)
+            if dropout_rate
+            else nn.Identity()
+        )
 
         self.act = ACTIVATIONS[activation]
-        
 
     def forward(self, x):
         """
@@ -64,6 +82,7 @@ class ImageConvBlock(nn.Module):
             logger.debug("Image feature shape:%s", tuple(x.shape))
             x = self.act(norm(conv(x)))
         return self.drop(x)
+
 
 class ImageConvResBlock(nn.Module):
     """
@@ -81,46 +100,54 @@ class ImageConvResBlock(nn.Module):
 
     Returns:
         A `torch.nn.Module` object.
-    
+
     """
-    def __init__(self, 
-                in_channels, 
-                filters=32, 
-                kernel_size=3,
-                depth=3, 
-                rank=3,
-                activation='relu', 
-                norm_type=None,
-                dropout_rate=None):
-        super().__init__() 
 
+    def __init__(
+        self,
+        in_channels,
+        filters=32,
+        kernel_size=3,
+        depth=3,
+        rank=3,
+        activation="relu",
+        norm_type=None,
+        dropout_rate=None,
+    ):
+        super().__init__()
 
-        self.initial_conv = ImageConvBlock(in_channels=in_channels,
-                                            filters=filters,
-                                            kernel_size=kernel_size,
-                                            rank=rank,
-                                            activation='linear',
-                                            norm_type=norm_type,
-                                            depth=1,
-                                            dropout_rate=None)
-        
-        self.main_conv = ImageConvBlock(in_channels=filters,
-                                            filters=filters,
-                                            kernel_size=kernel_size,
-                                            rank=rank,
-                                            activation=activation,
-                                            norm_type=norm_type,
-                                            depth=depth-2,
-                                            dropout_rate=dropout_rate)
-        
-        self.out_conv = ImageConvBlock(in_channels=filters,
-                                            filters=filters,
-                                            kernel_size=kernel_size,
-                                            rank=rank,
-                                            activation='linear',
-                                            norm_type=norm_type,
-                                            depth=1,
-                                            dropout_rate=None)
+        self.initial_conv = ImageConvBlock(
+            in_channels=in_channels,
+            filters=filters,
+            kernel_size=kernel_size,
+            rank=rank,
+            activation="linear",
+            norm_type=norm_type,
+            depth=1,
+            dropout_rate=None,
+        )
+
+        self.main_conv = ImageConvBlock(
+            in_channels=filters,
+            filters=filters,
+            kernel_size=kernel_size,
+            rank=rank,
+            activation=activation,
+            norm_type=norm_type,
+            depth=depth - 2,
+            dropout_rate=dropout_rate,
+        )
+
+        self.out_conv = ImageConvBlock(
+            in_channels=filters,
+            filters=filters,
+            kernel_size=kernel_size,
+            rank=rank,
+            activation="linear",
+            norm_type=norm_type,
+            depth=1,
+            dropout_rate=None,
+        )
         # self.drop =  get_image_layer('Dropout', rank)(p=dropout_rate) if dropout_rate else nn.Identity()
         self.out_act = ACTIVATIONS[activation]
 
@@ -133,11 +160,12 @@ class ImageConvResBlock(nn.Module):
             torch.Tensor: Output feature maps [out_channels, ...]
         """
         x1 = self.initial_conv(x)
-        x = self.main_conv(x1) 
+        x = self.main_conv(x1)
         # x = self.drop(x)
         x = self.out_act(self.out_conv(x) + x1)
         return x
-    
+
+
 class ImageResEncoder(nn.Module):
     """
     A CNN encoder for images. Structured like the encoder of a ResUNet.
@@ -157,43 +185,52 @@ class ImageResEncoder(nn.Module):
         A `torch.nn.Module` object.
     """
 
-    def __init__(self,
-                in_channels, 
-                filters=(16,32,64,128,256),
-                kernel_size=3,
-                res_depth=3,
-                res_blocks_per_level=2,
-                rank=3,
-                norm_type=None,
-                pool_type='MaxPool',
-                pool_size=2,
-                activation='ReLU',
-                dropout_rate=None):
+    def __init__(
+        self,
+        in_channels,
+        filters=(16, 32, 64, 128, 256),
+        kernel_size=3,
+        res_depth=3,
+        res_blocks_per_level=2,
+        rank=3,
+        norm_type=None,
+        pool_type="MaxPool",
+        pool_size=2,
+        activation="ReLU",
+        dropout_rate=None,
+    ):
         super().__init__()
-        
+
         n_levels = len(filters)
         in_channels = [in_channels, *filters]
-        self.conv_blocks = nn.ModuleList([
-                nn.ModuleList([
-                    ImageConvResBlock(in_channels=in_channels[i] if j==0 else in_channels[i+1], 
-                                    filters=filters[i], 
-                                    kernel_size=kernel_size, 
-                                    depth=res_depth,
-                                    rank=rank,
-                                    activation=activation,
-                                    norm_type=norm_type,
-                                    dropout_rate=dropout_rate)
-                    for j in range(res_blocks_per_level)
-                    ])
-            for i in range(n_levels)
-        ])
-        pool = TORCH_LAYERS[f'{pool_type}{rank}d']
-        self.pools = nn.ModuleList([
-            pool(pool_size) if i>0 else nn.Identity()
-            for i in range(n_levels)
-        ])
+        self.conv_blocks = nn.ModuleList(
+            [
+                nn.ModuleList(
+                    [
+                        ImageConvResBlock(
+                            in_channels=in_channels[i]
+                            if j == 0
+                            else in_channels[i + 1],
+                            filters=filters[i],
+                            kernel_size=kernel_size,
+                            depth=res_depth,
+                            rank=rank,
+                            activation=activation,
+                            norm_type=norm_type,
+                            dropout_rate=dropout_rate,
+                        )
+                        for j in range(res_blocks_per_level)
+                    ]
+                )
+                for i in range(n_levels)
+            ]
+        )
+        pool = TORCH_LAYERS[f"{pool_type}{rank}d"]
+        self.pools = nn.ModuleList(
+            [pool(pool_size) if i > 0 else nn.Identity() for i in range(n_levels)]
+        )
 
-    def forward(self,x):
+    def forward(self, x):
         """
         Args:
             x (torch.Tensor): Input image [in_channels, ...]
@@ -205,12 +242,12 @@ class ImageResEncoder(nn.Module):
         outputs = []
         for pool, convs in zip(self.pools, self.conv_blocks):
             x = pool(x)
-            for conv in convs: 
+            for conv in convs:
                 x = conv(x)
             logger.debug("Conv output shape:%s", x.shape)
             outputs.append(x)
         return outputs
-    
+
 
 class ImageEncoder(nn.Module):
     """
@@ -230,38 +267,43 @@ class ImageEncoder(nn.Module):
         A `torch.nn.Module` object.
     """
 
-    def __init__(self,
-                in_channels, 
-                filters=(16,32,64,128,256),
-                kernel_size=3,
-                conv_blocks_per_level=1,
-                rank=3,
-                norm_type=None,
-                pool_type='MaxPool',
-                pool_size=2,
-                activation='ReLU',
-                dropout_rate=None):
+    def __init__(
+        self,
+        in_channels,
+        filters=(16, 32, 64, 128, 256),
+        kernel_size=3,
+        conv_blocks_per_level=1,
+        rank=3,
+        norm_type=None,
+        pool_type="MaxPool",
+        pool_size=2,
+        activation="ReLU",
+        dropout_rate=None,
+    ):
         super().__init__()
-        
-        n_levels = len(filters)
-        self.conv_blocks = nn.ModuleList([
-                ImageConvBlock(in_channels=in_channels if i==0 else filters[i-1], 
-                        filters=filters[i], 
-                        kernel_size=kernel_size, 
-                        depth=conv_blocks_per_level,
-                        rank=rank,
-                        activation=activation,
-                        norm_type=norm_type,
-                        dropout_rate=dropout_rate)
-            for i in range(n_levels)
-        ])
-        pool = TORCH_LAYERS[f'{pool_type}{rank}d']
-        self.maxpools = nn.ModuleList([
-            pool(pool_size) if i>0 else nn.Identity()
-            for i in range(n_levels)
-        ])
 
-    def forward(self,x):
+        n_levels = len(filters)
+        self.conv_blocks = nn.ModuleList(
+            [
+                ImageConvBlock(
+                    in_channels=in_channels if i == 0 else filters[i - 1],
+                    filters=filters[i],
+                    kernel_size=kernel_size,
+                    depth=conv_blocks_per_level,
+                    rank=rank,
+                    activation=activation,
+                    norm_type=norm_type,
+                    dropout_rate=dropout_rate,
+                )
+                for i in range(n_levels)
+            ]
+        )
+        pool = TORCH_LAYERS[f"{pool_type}{rank}d"]
+        self.maxpools = nn.ModuleList(
+            [pool(pool_size) if i > 0 else nn.Identity() for i in range(n_levels)]
+        )
+
+    def forward(self, x):
         """
         Args:
             x (torch.Tensor): Input image [in_channels, ...]
@@ -274,9 +316,6 @@ class ImageEncoder(nn.Module):
             x = conv(pool(x))
             outputs.append(x)
         return outputs
-
-
-
 
 
 class ImageDecoder(nn.Module):
@@ -295,16 +334,18 @@ class ImageDecoder(nn.Module):
         skip (bool): Use skip connections.
     """
 
-    def __init__(self,
-                 filters=(16,32,64,128,256),
-                 kernel_size=3,
-                 conv_blocks_per_level=1,
-                 rank=3,
-                 upsample_type="Upsample",
-                 activation="ReLU",
-                 norm_type=None,
-                 dropout_rate=None,
-                 skip=True):
+    def __init__(
+        self,
+        filters=(16, 32, 64, 128, 256),
+        kernel_size=3,
+        conv_blocks_per_level=1,
+        rank=3,
+        upsample_type="Upsample",
+        activation="ReLU",
+        norm_type=None,
+        dropout_rate=None,
+        skip=True,
+    ):
         super().__init__()
 
         self.skip = skip
@@ -312,52 +353,60 @@ class ImageDecoder(nn.Module):
 
         rev_filters = filters[::-1]
 
-        if upsample_type.lower() == 'upsample':
+        if upsample_type.lower() == "upsample":
             # if rank == 4:
             #     self.ups = nn.ModuleList([
             #         Upsample4d(scale_factor=(1, 2, 2, 2))
             #         for _ in range(n_levels - 1)
             #     ])
-            
+
             # else:
-            self.ups = nn.ModuleList([
-                nn.Upsample(scale_factor=2, mode='trilinear' if rank==3 else 'bilinear', align_corners=True)
-                for _ in range(n_levels - 1)
-            ])
-        else:
-            up_layer = TORCH_LAYERS[f'{upsample_type}{rank}d']
-            self.ups = nn.ModuleList([
-                up_layer(rev_filters[i], rev_filters[i+1], kernel_size=2, stride=2)
-                for i in range(n_levels - 1)
-            ])
-
-
-        self.conv_blocks = nn.ModuleList([
-            ImageConvBlock(
-                in_channels=(
-                    rev_filters[i] + rev_filters[i+1]
-                    if skip else rev_filters[i]
-                ),
-                filters=rev_filters[i+1],
-                kernel_size=kernel_size,
-                depth=conv_blocks_per_level,
-                rank=rank,
-                activation=activation,
-                norm_type=norm_type,
-                dropout_rate=dropout_rate
+            self.ups = nn.ModuleList(
+                [
+                    nn.Upsample(
+                        scale_factor=2,
+                        mode="trilinear" if rank == 3 else "bilinear",
+                        align_corners=True,
+                    )
+                    for _ in range(n_levels - 1)
+                ]
             )
-            for i in range(n_levels - 1)
-        ])
+        else:
+            up_layer = TORCH_LAYERS[f"{upsample_type}{rank}d"]
+            self.ups = nn.ModuleList(
+                [
+                    up_layer(
+                        rev_filters[i], rev_filters[i + 1], kernel_size=2, stride=2
+                    )
+                    for i in range(n_levels - 1)
+                ]
+            )
 
+        self.conv_blocks = nn.ModuleList(
+            [
+                ImageConvBlock(
+                    in_channels=(
+                        rev_filters[i] + rev_filters[i + 1] if skip else rev_filters[i]
+                    ),
+                    filters=rev_filters[i + 1],
+                    kernel_size=kernel_size,
+                    depth=conv_blocks_per_level,
+                    rank=rank,
+                    activation=activation,
+                    norm_type=norm_type,
+                    dropout_rate=dropout_rate,
+                )
+                for i in range(n_levels - 1)
+            ]
+        )
 
     def _match_size(self, x, skip):
         if x.shape[2:] != skip.shape[2:]:
             # center crop skip to x
             diff = [s - t for s, t in zip(skip.shape[2:], x.shape[2:])]
-            slices = [slice(d//2, d//2 + t) for d, t in zip(diff, x.shape[2:])]
+            slices = [slice(d // 2, d // 2 + t) for d, t in zip(diff, x.shape[2:])]
             skip = skip[(..., *slices)]
         return skip
-
 
     def forward(self, encoder_outputs):
         """
@@ -376,7 +425,6 @@ class ImageDecoder(nn.Module):
 
         # Traverse decoder levels
         for i, (up, conv) in enumerate(zip(self.ups, self.conv_blocks)):
-
             x = up(x)
 
             if self.skip:
@@ -387,10 +435,6 @@ class ImageDecoder(nn.Module):
             x = conv(x)
 
         return x
-
-
-
-
 
 
 # import torch
@@ -462,7 +506,7 @@ class ImageDecoder(nn.Module):
 #         out = self.act(out)
 
 #         return out
-    
+
 
 # class Encoder3D(nn.Module):
 #     def __init__(self, in_channels):

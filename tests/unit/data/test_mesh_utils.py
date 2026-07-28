@@ -19,19 +19,24 @@ def test_make_padded_batch_mask_correct():
 
     _, mask = make_padded_batch(x, batch)
 
-    expected = torch.tensor([
-        [True, True, True],
-        [True, False, False],
-        [True, False, False],
-    ])
+    expected = torch.tensor(
+        [
+            [True, True, True],
+            [True, False, False],
+            [True, False, False],
+        ]
+    )
 
     assert torch.equal(mask, expected)
 
+
 def test_compute_edge_lengths_simple():
-    points = torch.tensor([
-        [0.0, 0.0],
-        [3.0, 4.0],
-    ])
+    points = torch.tensor(
+        [
+            [0.0, 0.0],
+            [3.0, 4.0],
+        ]
+    )
     edges = torch.tensor([[0], [1]])
 
     distances = compute_edge_lengths(points, edges)
@@ -65,10 +70,7 @@ def test_soft_threshold_behavior():
 
 def test_set_attrs():
     data = Data()
-    attrs = {
-        "x": torch.tensor([[1.0]]),
-        "edge_index": torch.tensor([[0], [0]])
-    }
+    attrs = {"x": torch.tensor([[1.0]]), "edge_index": torch.tensor([[0], [0]])}
 
     set_attrs(data, attrs)
 

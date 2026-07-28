@@ -20,34 +20,47 @@ class ImageConvBlock(nn.Module):
 
     Returns:
         A `torch.nn.Module` object.
-    
+
     """
-    def __init__(self, 
-                in_channels, 
-                filters=32, 
-                kernel_size=3,
-                depth=1, 
-                rank=3,
-                activation='relu', 
-                norm_type=None,
-                dropout_rate=None):
-        super().__init__() 
 
-        conv = TORCH_LAYERS[f'Conv{rank}d']
-        drop = TORCH_LAYERS[f'Dropout{rank}d']
-        self.convs = nn.ModuleList([
-            conv(in_channels if i==0 else filters, filters, kernel_size, padding=kernel_size//2)
-            for i in range(depth)
-        ])
+    def __init__(
+        self,
+        in_channels,
+        filters=32,
+        kernel_size=3,
+        depth=1,
+        rank=3,
+        activation="relu",
+        norm_type=None,
+        dropout_rate=None,
+    ):
+        super().__init__()
 
-        self.norms = nn.ModuleList([
-            TORCH_LAYERS(f"{norm_type}{rank}d")(filters) if norm_type else nn.Identity()
-            for _ in range(depth)
-        ])
+        conv = TORCH_LAYERS[f"Conv{rank}d"]
+        drop = TORCH_LAYERS[f"Dropout{rank}d"]
+        self.convs = nn.ModuleList(
+            [
+                conv(
+                    in_channels if i == 0 else filters,
+                    filters,
+                    kernel_size,
+                    padding=kernel_size // 2,
+                )
+                for i in range(depth)
+            ]
+        )
+
+        self.norms = nn.ModuleList(
+            [
+                TORCH_LAYERS(f"{norm_type}{rank}d")(filters)
+                if norm_type
+                else nn.Identity()
+                for _ in range(depth)
+            ]
+        )
         self.drop = drop(p=dropout_rate) if dropout_rate else nn.Identity()
 
         self.act = ACTIVATIONS[activation]()
-        
 
     def forward(self, x):
         """
@@ -61,7 +74,7 @@ class ImageConvBlock(nn.Module):
         for conv, norm in zip(self.convs, self.norms):
             x = norm(self.act(conv(x)))
         return self.drop(x)
-    
+
 
 class ImageEncoder(nn.Module):
     """
@@ -81,44 +94,52 @@ class ImageEncoder(nn.Module):
         A `torch.nn.Module` object.
     """
 
-    def __init__(self,
-                in_channels, 
-                filters=(16,32,64,128,256),
-                pool_sizes = None,
-                kernel_size=3,
-                conv_blocks_per_level=1,
-                rank=3,
-                norm_type=None,
-                pool_type='MaxPool',
-                activation='relu',
-                dropout_rate=None):
+    def __init__(
+        self,
+        in_channels,
+        filters=(16, 32, 64, 128, 256),
+        pool_sizes=None,
+        kernel_size=3,
+        conv_blocks_per_level=1,
+        rank=3,
+        norm_type=None,
+        pool_type="MaxPool",
+        activation="relu",
+        dropout_rate=None,
+    ):
         super().__init__()
-        
+
         n_levels = len(filters)
-        self.conv_blocks = nn.ModuleList([
-                ImageConvBlock(in_channels=in_channels if i==0 else filters[i-1], 
-                        filters=filters[i], 
-                        kernel_size=kernel_size, 
-                        depth=conv_blocks_per_level,
-                        rank=rank,
-                        activation=activation,
-                        norm_type=norm_type,
-                        dropout_rate=dropout_rate)
-            for i in range(n_levels)
-        ])
+        self.conv_blocks = nn.ModuleList(
+            [
+                ImageConvBlock(
+                    in_channels=in_channels if i == 0 else filters[i - 1],
+                    filters=filters[i],
+                    kernel_size=kernel_size,
+                    depth=conv_blocks_per_level,
+                    rank=rank,
+                    activation=activation,
+                    norm_type=norm_type,
+                    dropout_rate=dropout_rate,
+                )
+                for i in range(n_levels)
+            ]
+        )
 
         if pool_sizes is None:
             pool_sizes = 2
 
         pool_sizes_standard = standardize_spatial_factors(pool_sizes, rank)
 
-        pool = TORCH_LAYERS[f'{pool_type}{rank}d']
-        self.maxpools = nn.ModuleList([
-            pool(pool_sizes_standard[i-1]) if i>0 else nn.Identity()
-            for i in range(n_levels)
-        ])
+        pool = TORCH_LAYERS[f"{pool_type}{rank}d"]
+        self.maxpools = nn.ModuleList(
+            [
+                pool(pool_sizes_standard[i - 1]) if i > 0 else nn.Identity()
+                for i in range(n_levels)
+            ]
+        )
 
-    def forward(self,x):
+    def forward(self, x):
         """
         Args:
             x (torch.Tensor): Input image [in_channels, ...]
@@ -149,18 +170,20 @@ class ImageDecoder(nn.Module):
         skip (bool): Use skip connections.
     """
 
-    def __init__(self,
-                 filters=(16,32,64,128,256),
-                 kernel_size=3,
-                 pool_sizes=None,
-                 upsample_sizes = None,
-                 conv_blocks_per_level=1,
-                 rank=3,
-                 upsample_type="ConvTranspose",
-                 activation="relu",
-                 norm_type=None,
-                 dropout_rate=None,
-                 skip=True):
+    def __init__(
+        self,
+        filters=(16, 32, 64, 128, 256),
+        kernel_size=3,
+        pool_sizes=None,
+        upsample_sizes=None,
+        conv_blocks_per_level=1,
+        rank=3,
+        upsample_type="ConvTranspose",
+        activation="relu",
+        norm_type=None,
+        dropout_rate=None,
+        skip=True,
+    ):
         super().__init__()
 
         self.skip = skip
@@ -181,34 +204,46 @@ class ImageDecoder(nn.Module):
         else:
             upsample_sizes = standardize_spatial_factors(upsample_sizes, rank)
 
-
-        if upsample_type.lower() == 'upsample':
-            self.ups = nn.ModuleList([
-                nn.Upsample(scale_factor=upsample_sizes[i], mode='trilinear' if rank==3 else 'bilinear', align_corners=True)
-                for i in range(n_levels - 1)
-            ])
+        if upsample_type.lower() == "upsample":
+            self.ups = nn.ModuleList(
+                [
+                    nn.Upsample(
+                        scale_factor=upsample_sizes[i],
+                        mode="trilinear" if rank == 3 else "bilinear",
+                        align_corners=True,
+                    )
+                    for i in range(n_levels - 1)
+                ]
+            )
         else:
             up_layer = TORCH_LAYERS(f"{upsample_type}{rank}d")
-            self.ups = nn.ModuleList([
-                up_layer(rev_filters[i], rev_filters[i+1], kernel_size=upsample_sizes[i], stride=upsample_sizes[i])
-                for i in range(n_levels - 1)
-            ])
-
-
-        self.conv_blocks = nn.ModuleList([
-            ImageConvBlock(
-                in_channels=rev_filters[i+1] * (2 if skip else 1),
-                filters=rev_filters[i+1],
-                kernel_size=kernel_size,
-                depth=conv_blocks_per_level,
-                rank=rank,
-                activation=activation,
-                norm_type=norm_type,
-                dropout_rate=dropout_rate
+            self.ups = nn.ModuleList(
+                [
+                    up_layer(
+                        rev_filters[i],
+                        rev_filters[i + 1],
+                        kernel_size=upsample_sizes[i],
+                        stride=upsample_sizes[i],
+                    )
+                    for i in range(n_levels - 1)
+                ]
             )
-            for i in range(n_levels - 1)
-        ])
 
+        self.conv_blocks = nn.ModuleList(
+            [
+                ImageConvBlock(
+                    in_channels=rev_filters[i + 1] * (2 if skip else 1),
+                    filters=rev_filters[i + 1],
+                    kernel_size=kernel_size,
+                    depth=conv_blocks_per_level,
+                    rank=rank,
+                    activation=activation,
+                    norm_type=norm_type,
+                    dropout_rate=dropout_rate,
+                )
+                for i in range(n_levels - 1)
+            ]
+        )
 
     def _match_size(self, x, skip):
         """
@@ -252,7 +287,6 @@ class ImageDecoder(nn.Module):
 
         return skip
 
-
     def forward(self, encoder_outputs):
         """
         Args:
@@ -281,6 +315,7 @@ class ImageDecoder(nn.Module):
 
         return x
 
+
 class UNet(nn.Module):
     """
     Flexible UNet for 2D or 3D images.
@@ -300,70 +335,80 @@ class UNet(nn.Module):
         final_activation (str): Output activation.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 filters=(16,32,64,128,256),
-                 pool_sizes = None,
-                 upsample_sizes = None,
-                 kernel_size=3,
-                 conv_blocks_per_level=1,
-                 rank=3,
-                 activation="relu",
-                 norm_type=None,
-                 dropout_rate=None,
-                 final_activation="linear"):
-        
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        filters=(16, 32, 64, 128, 256),
+        pool_sizes=None,
+        upsample_sizes=None,
+        kernel_size=3,
+        conv_blocks_per_level=1,
+        rank=3,
+        activation="relu",
+        norm_type=None,
+        dropout_rate=None,
+        final_activation="linear",
+    ):
+
         pool_sizes_temp = []
         if pool_sizes is None:
-            for i in range(len(filters)-1):
+            for i in range(len(filters) - 1):
                 pool_sizes_temp.append(2)
             pool_sizes = pool_sizes_temp
-        
+
         if not isinstance(pool_sizes, (list, tuple)):
             raise TypeError("pool_sizes must be a list or tuple")
-        
+
         for i, p in enumerate(pool_sizes):
-            if isinstance(p, int) and not isinstance(p,bool):
+            if isinstance(p, int) and not isinstance(p, bool):
                 if p < 1:
                     raise ValueError("pool_sizes must be positive")
-            elif isinstance(p, (tuple,list)):
+            elif isinstance(p, (tuple, list)):
                 if len(p) != rank:
                     raise ValueError("pool_sizes tuple must be same length as rank")
-                for j , ps in enumerate(p):
-                    if not isinstance(ps, int) or isinstance(ps,bool):
+                for j, ps in enumerate(p):
+                    if not isinstance(ps, int) or isinstance(ps, bool):
                         raise TypeError("pool_sizes must be an int")
                     if ps < 1:
                         raise ValueError("pool_sizes must be positive")
             else:
-                raise TypeError("each entry in pool_sizes must be either an int or a tuple or list")
-        
-        if len(filters) != (len(pool_sizes)+1):
-            raise ValueError(f"pool_sizes do not match number of filters. For {len(filters)}, please input {len(filters)-1} number of pools.")
-        
+                raise TypeError(
+                    "each entry in pool_sizes must be either an int or a tuple or list"
+                )
+
+        if len(filters) != (len(pool_sizes) + 1):
+            raise ValueError(
+                f"pool_sizes do not match number of filters. For {len(filters)}, please input {len(filters) - 1} number of pools."
+            )
 
         if upsample_sizes is not None:
             if not isinstance(upsample_sizes, (list, tuple)):
                 raise TypeError("upsample_sizes must be a list or tuple")
-            
+
             for i, p in enumerate(upsample_sizes):
-                if isinstance(p, int) and not isinstance(p,bool):
+                if isinstance(p, int) and not isinstance(p, bool):
                     if p < 1:
                         raise ValueError("upsample_sizes must be positive")
-                elif isinstance(p, (tuple,list)):
+                elif isinstance(p, (tuple, list)):
                     if len(p) != rank:
-                        raise ValueError("upsample_sizes tuple must be same length as rank")
-                    for j , ps in enumerate(p):
-                        if not isinstance(ps, int) or isinstance(ps,bool):
+                        raise ValueError(
+                            "upsample_sizes tuple must be same length as rank"
+                        )
+                    for j, ps in enumerate(p):
+                        if not isinstance(ps, int) or isinstance(ps, bool):
                             raise TypeError("upsample_sizes must be an int")
                         if ps < 1:
                             raise ValueError("upsample_sizes must be positive")
                 else:
-                    raise TypeError("each entry in upsample_sizes must be either an int or a tuple or list")
-            
-            if len(filters) != (len(upsample_sizes)+1):
-                raise ValueError(f"upsample_sizes do not match number of filters. For {len(filters)}, please input {len(filters)-1} number of upsamples.")
-            
+                    raise TypeError(
+                        "each entry in upsample_sizes must be either an int or a tuple or list"
+                    )
+
+            if len(filters) != (len(upsample_sizes) + 1):
+                raise ValueError(
+                    f"upsample_sizes do not match number of filters. For {len(filters)}, please input {len(filters) - 1} number of upsamples."
+                )
 
         super().__init__()
 
@@ -376,22 +421,22 @@ class UNet(nn.Module):
             rank=rank,
             activation=activation,
             norm_type=norm_type,
-            dropout_rate=dropout_rate
+            dropout_rate=dropout_rate,
         )
 
         self.decoder = ImageDecoder(
             filters=filters,
             pool_sizes=pool_sizes,
-            upsample_sizes = upsample_sizes,
+            upsample_sizes=upsample_sizes,
             kernel_size=kernel_size,
             conv_blocks_per_level=conv_blocks_per_level,
             rank=rank,
             activation=activation,
             norm_type=norm_type,
-            dropout_rate=dropout_rate
+            dropout_rate=dropout_rate,
         )
 
-        conv = TORCH_LAYERS[f'Conv{rank}d']
+        conv = TORCH_LAYERS[f"Conv{rank}d"]
 
         self.final_conv = conv(filters[0], out_channels, kernel_size=1)
 
@@ -407,6 +452,7 @@ class UNet(nn.Module):
         x = self.final_conv(x)
         x = self.final_act(x)
         return x
+
 
 class StandardUNet(UNet):
     """
@@ -426,30 +472,32 @@ class StandardUNet(UNet):
         final_activation (str): Output activation.
     """
 
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 filters=(16, 32, 64, 128, 256),
-                 pool_size = 2,
-                 kernel_size=3,
-                 conv_blocks_per_level=1,
-                 rank=3,
-                 activation="relu",
-                 norm_type=None,
-                 dropout_rate=None,
-                 final_activation="linear"):
-        
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        filters=(16, 32, 64, 128, 256),
+        pool_size=2,
+        kernel_size=3,
+        conv_blocks_per_level=1,
+        rank=3,
+        activation="relu",
+        norm_type=None,
+        dropout_rate=None,
+        final_activation="linear",
+    ):
+
         pool_size_standard = []
         if isinstance(pool_size, int):
             pool_size_single = []
             for j in range(rank):
                 pool_size_single.append(pool_size)
             pool_size_single = tuple(pool_size_single)
-            for i in range(len(filters)-1):
+            for i in range(len(filters) - 1):
                 pool_size_standard.append(pool_size_single)
-        elif isinstance(pool_size , (tuple,list)):
+        elif isinstance(pool_size, (tuple, list)):
             if len(pool_size) == rank:
-                for i in range(len(filters)-1):
+                for i in range(len(filters) - 1):
                     pool_size_standard.append(pool_size)
             else:
                 raise ValueError("pool_size must be an int or have same length as rank")

@@ -8,11 +8,11 @@ from .layer_util import *
 logger = logging.getLogger(__name__)
 
 
-@register_pyg_layer(name='defaultnorm')
+@register_pyg_layer(name="defaultnorm")
 class DefaultGraphNorm(torch.nn.Module):
     """
-    The default normalisation for im2sim graph blocks. 
-    Uses torch.nn.InstanceNorm2d applied to graph data, but all channels are normalised together. 
+    The default normalisation for im2sim graph blocks.
+    Uses torch.nn.InstanceNorm2d applied to graph data, but all channels are normalised together.
     """
 
     def __init__(self, in_channels, affine):
@@ -24,14 +24,15 @@ class DefaultGraphNorm(torch.nn.Module):
         shape = x.shape
 
         for b in torch.unique(batch):
-            x[batch==b] = self.norm(x[batch==b].unsqueeze(0).unsqueeze(0)).reshape(shape)
+            x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(
+                shape
+            )
         return x
-
 
 
 class GraphConvBlock(nn.Module):
     """
-    A convolutional block for graph data 
+    A convolutional block for graph data
 
     Args:
         in_channels (int): The number of channels in the input to the layer.
@@ -44,37 +45,44 @@ class GraphConvBlock(nn.Module):
 
     Returns:
         A `torch.nn.Module` object.
-    
+
     """
-    def __init__(self, 
-                in_channels, 
-                filters, 
-                depth=1, 
-                conv_type='GATConv',
-                conv_kwargs=None,
-                activation='ReLU', 
-                norm_type='default',
-                norm_kwargs=None):
-        super().__init__() 
+
+    def __init__(
+        self,
+        in_channels,
+        filters,
+        depth=1,
+        conv_type="GATConv",
+        conv_kwargs=None,
+        activation="ReLU",
+        norm_type="defaultnorm",
+        norm_kwargs=None,
+    ):
+        super().__init__()
 
         conv = get_graph_layer(conv_type, conv_kwargs)
 
-        self.convs = nn.ModuleList([
-            conv(in_channels if i==0 else filters, filters, **conv_kwargs)
-            for i in range(depth)
-        ])
+        self.convs = nn.ModuleList(
+            [
+                conv(in_channels if i == 0 else filters, filters, **conv_kwargs)
+                for i in range(depth)
+            ]
+        )
 
         if norm_kwargs == None:
-            norm_kwargs = {'in_channels':filters, 'affine':True}
+            norm_kwargs = {"in_channels": filters, "affine": True}
 
-        self.norms = nn.ModuleList([
-            get_graph_layer(norm_type, conv_kwargs) if norm_type else nn.Identity()
-            for _ in range(depth)
-        ])
+        self.norms = nn.ModuleList(
+            [
+                get_graph_layer(norm_type, conv_kwargs) if norm_type else nn.Identity()
+                for _ in range(depth)
+            ]
+        )
 
         self.act = ACTIVATIONS[activation]()
 
-    def forward(self,in_graph):
+    def forward(self, in_graph):
         out_graph = deepcopy(in_graph)
         for conv, norm in zip(self.convs, self.norms):
             out_graph = conv(out_graph)
@@ -82,9 +90,10 @@ class GraphConvBlock(nn.Module):
             out_graph.x = self.act(out_graph.x)
         return out_graph
 
+
 class GraphConvResBlock(nn.Module):
     """
-    A convolutional block for graph data 
+    A convolutional block for graph data
 
     Args:
         in_channels (int): The number of channels in the input to the layer.
@@ -97,48 +106,53 @@ class GraphConvResBlock(nn.Module):
 
     Returns:
         A `torch.nn.Module` object.
-    
+
     """
-    def __init__(self, 
-                in_channels, 
-                filters, 
-                depth=3, 
-                conv_type='GATConv',
-                conv_kwargs=None,
-                activation='ReLU', 
-                norm_type='InstanceNorm',
-                norm_kwargs=None):
-        super().__init__() 
+
+    def __init__(
+        self,
+        in_channels,
+        filters,
+        depth=3,
+        conv_type="GATConv",
+        conv_kwargs=None,
+        activation="ReLU",
+        norm_type="InstanceNorm",
+        norm_kwargs=None,
+    ):
+        super().__init__()
 
         conv = get_graph_layer(conv_type, conv_kwargs)
-        self.convs = nn.ModuleList([
-            conv(in_channels if i==0 else filters, filters, **conv_kwargs)
-            for i in range(depth)
-        ])
+        self.convs = nn.ModuleList(
+            [
+                conv(in_channels if i == 0 else filters, filters, **conv_kwargs)
+                for i in range(depth)
+            ]
+        )
 
         if norm_kwargs == None:
-            norm_kwargs = {'in_channels':filters, 'affine':True}
+            norm_kwargs = {"in_channels": filters, "affine": True}
 
-        self.norms = nn.ModuleList([
-            get_graph_layer(norm_type, norm_kwargs) if norm_type else nn.Identity()
-            for _ in range(depth)
-        ])
+        self.norms = nn.ModuleList(
+            [
+                get_graph_layer(norm_type, norm_kwargs) if norm_type else nn.Identity()
+                for _ in range(depth)
+            ]
+        )
 
         self.act = ACTIVATIONS[activation]()
-        
 
     def forward(self, in_graph):
         graph = deepcopy(in_graph)
-        for i, (conv,norm) in enumerate(zip(self.convs, self.norms)):
-
+        for i, (conv, norm) in enumerate(zip(self.convs, self.norms)):
             graph = norm(conv(graph))
 
-            if i==0:
+            if i == 0:
                 x1 = deepcopy(graph.x)
-            elif i<len(self.convs)-1:
+            elif i < len(self.convs) - 1:
                 graph.x = self.act(graph.x)
 
-        graph.x = self.act((graph.x+x1)/2)
+        graph.x = self.act((graph.x + x1) / 2)
 
         return graph
 
@@ -163,82 +177,79 @@ class GraphResDecoderBlock(nn.Module):
 
     Returns:
         A `torch.nn.Module` object.
-    
+
     """
-    def __init__(self,
-                 projection_channels,
-                 graph_channels,
-                 out_channels,
-                 filters,
-                 res_depth = 3,
-                 n_deform_blocks = 3,
-                 template_edge_index=None,
-                 conv_type="GATConv",
-                 conv_kwargs=None,
-                 activation="relu",
-                 out_activation="linear",
-                 norm_type="InstanceNorm"):
+
+    def __init__(
+        self,
+        projection_channels,
+        graph_channels,
+        out_channels,
+        filters,
+        res_depth=3,
+        n_deform_blocks=3,
+        template_edge_index=None,
+        conv_type="GATConv",
+        conv_kwargs=None,
+        activation="relu",
+        out_activation="linear",
+        norm_type="InstanceNorm",
+    ):
         super().__init__()
-                            
-        self.process_conv = GraphConvBlock(in_channels=graph_channels, 
-                                        filters=filters[0], 
-                                        depth=1, 
-                                        conv_type=conv_type,
-                                        conv_kwargs=conv_kwargs,
-                                        activation=activation, 
-                                        norm_type=None)
 
+        self.process_conv = GraphConvBlock(
+            in_channels=graph_channels,
+            filters=filters[0],
+            depth=1,
+            conv_type=conv_type,
+            conv_kwargs=conv_kwargs,
+            activation=activation,
+            norm_type=None,
+        )
 
-        self.deform_conv = nn.ModuleList([
-                GraphConvResBlock(in_channels=filters[0] + projection_channels+ out_channels if i==0 else filters[1], 
-                                filters=filters[1], 
-                                depth=res_depth, 
-                                conv_type=conv_type,
-                                conv_kwargs=conv_kwargs,
-                                activation=activation, 
-                                norm_type=norm_type)
+        self.deform_conv = nn.ModuleList(
+            [
+                GraphConvResBlock(
+                    in_channels=filters[0] + projection_channels + out_channels
+                    if i == 0
+                    else filters[1],
+                    filters=filters[1],
+                    depth=res_depth,
+                    conv_type=conv_type,
+                    conv_kwargs=conv_kwargs,
+                    activation=activation,
+                    norm_type=norm_type,
+                )
                 for i in range(n_deform_blocks)
-        ])
+            ]
+        )
 
-        self.out_conv = GraphConvBlock(in_channels=filters[1], 
-                                        filters=out_channels, 
-                                        depth=1, 
-                                        conv_type=conv_type,
-                                        conv_kwargs=conv_kwargs,
-                                        activation=out_activation, 
-                                        norm_type=None)
-        
-        self.edge_index=template_edge_index
-    
+        self.out_conv = GraphConvBlock(
+            in_channels=filters[1],
+            filters=out_channels,
+            depth=1,
+            conv_type=conv_type,
+            conv_kwargs=conv_kwargs,
+            activation=out_activation,
+            norm_type=None,
+        )
+
+        self.edge_index = template_edge_index
+
     def forward(self, in_graph, prev_results, encoder_projection):
         if in_graph.edge_index is None and self.edge_index is not None:
-            in_graph.edge_index=self.edge_index
+            in_graph.edge_index = self.edge_index
 
         graph = deepcopy(in_graph)
         graph = self.process_conv(graph)
         graph.x = torch.cat([graph.x, encoder_projection, prev_results], axis=-1)
 
-        for dconv in self.deform_conv: 
-            graph=dconv(graph)
+        for dconv in self.deform_conv:
+            graph = dconv(graph)
 
         new_results = self.out_conv(graph).x + prev_results
         return graph, new_results
 
-
-
-# class RecursiveClusterPooling(nn.Module):
-
-#     def __init__(self, n_levels = 5):
-#         super().__init__()
-#         self.n_levels = 5
-
-#     def forward(self, graph):
-#         multigraph = [graph.clone()]
-#         for _ in range(self.n_levels-1):
-#             graph = cluster_pool(graph)
-#             multigraph.append(graph.clone())
-#         return multigraph
- 
 
 
 
@@ -260,18 +271,18 @@ class GraphResDecoderBlock(nn.Module):
 #                  batched_ops = True):
 #         super().__init__()
 
-#         conv_config = dict(depth=res_depth, 
+#         conv_config = dict(depth=res_depth,
 #                             conv_type=conv_type,
 #                             conv_kwargs=conv_kwargs,
-#                             activation=activation, 
+#                             activation=activation,
 #                             norm_type=norm_type)
-        
+
 
 #         if n_align_blocks > 0:
 #             self.align=True
 #             self.align_conv = gnn.Sequential('x, edge_index, batch',[
 #                     (GraphConvResBlock(in_channels=out_channels*2 if i==0 else filters,
-#                                     filters=filters, 
+#                                     filters=filters,
 #                                     **conv_config), 'x, edge_index -> x')
 #                     for i in range(n_align_blocks)
 #             ])
@@ -280,23 +291,23 @@ class GraphResDecoderBlock(nn.Module):
 
 
 #         self.deform_conv = gnn.Sequential('x, edge_index, batch',[
-#                 (GraphConvResBlock(in_channels=out_channels+filters if i==0 else filters, 
-#                                 filters=filters, 
+#                 (GraphConvResBlock(in_channels=out_channels+filters if i==0 else filters,
+#                                 filters=filters,
 #                                 **conv_config), 'x, edge_index -> x')
 #                 for i in range(n_deform_blocks)
 #         ])
 
-#         self.convert_conv = GraphConvBlock(in_channels=filters, 
-#                                         filters=out_channels, 
-#                                         depth=1, 
+#         self.convert_conv = GraphConvBlock(in_channels=filters,
+#                                         filters=out_channels,
+#                                         depth=1,
 #                                         conv_type=conv_type,
 #                                         conv_kwargs=conv_kwargs,
-#                                         activation=out_activation, 
+#                                         activation=out_activation,
 #                                         norm_type=None)
-        
+
 #         self.projection_args = {"domain_size":domain_size, "batch_ops":batched_ops}
-        
-#     # INFO: removed graph features for now may want to add back 
+
+#     # INFO: removed graph features for now may want to add back
 #     def forward(self,image_features,prev_deformation,template_x,edge_index,batch):
 
 #         # Move all zero points after unpooling
@@ -315,4 +326,3 @@ class GraphResDecoderBlock(nn.Module):
 #         x = self.deform_conv(x, edge_index)
 #         x = self.convert_conv(x, edge_index)
 #         return x+prev_deformation
-        

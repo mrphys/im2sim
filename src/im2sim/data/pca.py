@@ -1,7 +1,6 @@
-
 class PCA:
     """
-    Principal Component Analysis 
+    Principal Component Analysis
 
     This class can be used for PCA-related operations such as computing PCs and saving PC projection matrices
 
@@ -21,31 +20,31 @@ class PCA:
     """
 
     def __init__(self, data, axis=-1):
-        '''
+        """
         takes the data and axis, computes the PCs matrix and stores in object attributes
-        '''
+        """
         raise NotImplementedError
 
     def save(self):
-        '''saves the PC data'''
+        """saves the PC data"""
         raise NotImplementedError
 
     def load(self, fname):
-        '''loads saved PC data'''
+        """loads saved PC data"""
         raise NotImplementedError
 
     def forward_transform(data):
-        '''forward transform'''
+        """forward transform"""
         raise NotImplementedError
-    
+
     def inverse_transform(data):
-        '''inverse transform'''
+        """inverse transform"""
         raise NotImplementedError
 
     def forward_transform_tf(data):
-        '''forward transform'''
+        """forward transform"""
         raise NotImplementedError
-    
+
     def inverse_transform_tf(data):
-        '''inverse transform'''
+        """inverse transform"""
         raise NotImplementedError

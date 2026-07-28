@@ -1,118 +1,22 @@
 import copy
 import logging
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Callable, Dict, Union, Optional
 
 import torch
 from torch_geometric.data import Batch, Data
+
 
 logger = logging.getLogger(__name__)
 
 
 
-
-
-
-def collate(batch):
-    '''
-    Collates a batch of data in the form of dict{str: torch.Tensor/PyG.Data} 
-    Tensors are batched by stacking in the 0 dim and PyG Data are batched by PyG (https://pytorch-geometric.readthedocs.io/en/2.5.2/advanced/batching.html)
-    '''
-    out_dict = {}
-    for key,val in batch[0].items():
-        if isinstance(val, torch.Tensor):
-            out_dict[key] = torch.utils.data.default_collate([b[key] for b in batch])
-        elif isinstance(val, Data):
-            out_dict[key] = Batch.from_data_list([b[key] for b in batch])
-        else:
-            raise TypeError(f"{key} is type {type(val)}. Generator outputs must be either torch.Tensor or torch_geometric.data.Data object")
-    return out_dict
-
-
-def DataLoader(dataset, **kwargs):
-    """
-    Create a DataLoader for an im2sim dataset.
-
-    Args:
-        dataset (im2sim.data.Dataset):
-            Dataset to wrap in a DataLoader.
-
-        **kwargs:
-            Additional keyword arguments passed to ``torch.utils.data.DataLoader``.
-            Common options include:
-
-            - batch_size (int, optional):
-                Number of samples per batch (default: 1).
-            - shuffle (bool, optional):
-                Whether to reshuffle the data at every epoch (default: False).
-            - num_workers (int, optional):
-                Number of subprocesses used for data loading. ``0`` means data
-                is loaded in the main process (default: 0).
-            - pin_memory (bool, optional):
-                If True, tensors are copied into CUDA pinned memory before returning.
-
-            See https://docs.pytorch.org/docs/stable/data.html for the full list
-            of supported arguments.
-
-    Returns:
-        im2sim.data.DataLoader:
-            Configured DataLoader instance.
-    """
-    return torch.utils.data.DataLoader(dataset, collate_fn=collate, **kwargs)
-
-class Dataset(torch.utils.data.Dataset):
-    """
-    Template for building im2sim datasets.
-
-    To build a custom dataset, create a new Dataset with a custom load function,
-    case files, and transforms.
-
-    Args:
-        load_fn (Callable[[str], dict[str, Tensor | PyGData]]):
-            Function that loads all files needed for a specific case and returns
-            a dictionary containing the data for that case.
-
-        cases (list[str]):
-            List of case names. These names are passed to `load_fn` to load data.
-
-        transforms (list[Transform] | Pipeline):
-            Transforms or pipeline applied to each sample.
-
-    Example:
-        >>> import torch
-        >>>
-        >>> cases = ['case1', 'case2', 'case3', 'case4']
-        >>>
-        >>> def load(case):
-        ...     img = torch.load(f'images/{case}.pt')
-        ...     graph = torch.load(f'graphs/{case}.pt')
-        ...     template = torch.load(f'template/{case}.pt')
-        ...     return {'image': img, 'template': template, 'out_graph': graph}
-        >>>
-        >>> dataset = im2sim.data.Dataset(load_fn=load, cases=cases)
-    """
-    def __init__(self, load_fn, cases, transforms=None):
-        self.load_fn = load_fn
-        self.cases = cases
-        self.transforms = transforms if transforms is not None else []
-
-    def __len__(self):
-        return len(self.cases)
-
-    def __getitem__(self, idx):
-        case = self.cases[idx]
-        sample = self.load_fn(case)
-
-        for transform in self.transforms:
-            sample = transform(sample)
-        return sample
-  
-
 class Operation(ABC):
     """
-    Abstract base class for making operations. 
+    Abstract base class for making operations.
     To make a new simple operation, subclass this and overwrite the forward method.
     """
+
     def __init_subclass__(cls):
         original_init = cls.__init__
 
@@ -151,25 +55,20 @@ class Operation(ABC):
         for k, v in state.items():
             setattr(self, k, v)
 
-
     def _is_serializable(self, v):
         """
         helper function to check if attr is serializable
         """
-        return (
-            isinstance(v, (int, float, str, bool, torch.Tensor)) 
-            or v is None
-        )
-    
+        return isinstance(v, (int, float, str, bool, torch.Tensor)) or v is None
+
     def to(self, device):
         """
-        method to move attrs to device for torch training 
+        method to move attrs to device for torch training
         """
         for k, v in self.__dict__.items():
             if isinstance(v, torch.Tensor):
                 setattr(self, k, v.to(device))
         return self
-    
 
 
 class InvertibleOperation(Operation):
@@ -198,7 +97,6 @@ class FittableOperation(InvertibleOperation):
         pass
 
 
-
 class Transform:
     """
     A wrapper for operations that allows the selective application of the operation by dict key, object attribute and channel
@@ -209,11 +107,11 @@ class Transform:
 
         keys (list[str]):
             List of keys in the data dict for the op to operate over
-        
-        attr (str, optional): 
-            If data[key] is an object, attr is the attribute of that object to perfrom the op over. 
-            If the op needs the full object, set attr to 'all' 
-            If data[key] is not an object attr=None 
+
+        attr (str, optional):
+            If data[key] is an object, attr is the attribute of that object to perfrom the op over.
+            If the op needs the full object, set attr to 'all'
+            If data[key] is not an object attr=None
             (default:None)
     """
 
@@ -221,14 +119,17 @@ class Transform:
         self,
         op,
         keys,
-        multikey = False,
+        multikey=False,
         attr=None,
         channels=None,
         per_channel=False,
         channel_dim=-1,
-        name=None
+        name=None,
     ):
-       
+
+        if keys is None or keys==[]:
+            raise ValueError("keys must be specified")
+
         self.keys = keys if isinstance(keys, list) else [keys]
         self.attr = attr
 
@@ -242,9 +143,13 @@ class Transform:
         self.channel_dim = channel_dim
         self.per_channel = per_channel
 
-        self.op = op 
+        self.op = op
 
-        self.name = name if name is not None else f"{op.__class__.__name__}_{'_'.join(self.keys)}"
+        self.name = (
+            name
+            if name is not None
+            else f"{op.__class__.__name__}_{'_'.join(self.keys)}"
+        )
 
         self.is_multikey = multikey
         self.is_invertible = isinstance(op, InvertibleOperation)
@@ -282,14 +187,9 @@ class Transform:
 
         x_moved = torch.moveaxis(x, self.channel_dim, 0)
 
-        channels = (
-            range(x_moved.shape[0])
-            if self.channels is None
-            else self.channels
-        )
+        channels = range(x_moved.shape[0]) if self.channels is None else self.channels
 
         self.op = [copy.deepcopy(self.op) for _ in channels]
-
 
     def _apply_channel_op(self, x, fn, no_return=False):
 
@@ -302,16 +202,10 @@ class Transform:
         if self.per_channel:
             self._ensure_per_channel_ops(x)
 
-        channels = (
-            range(x_moved.shape[0])
-            if self.channels is None
-            else self.channels
-        )
+        channels = range(x_moved.shape[0]) if self.channels is None else self.channels
 
         if self.per_channel:
-
             for i, c in enumerate(channels):
-
                 op = self.op[i]
                 fn_op = getattr(op, fn)
 
@@ -321,7 +215,6 @@ class Transform:
                     x_moved[c] = fn_op(x_moved[c])
 
         else:
-
             idx = self.channels if self.channels is not None else slice(None)
             fn_op = getattr(self.op, fn)
 
@@ -355,12 +248,11 @@ class Transform:
             if not isinstance(outputs, (list, tuple)):
                 outputs = [outputs]
 
-            
             for k, out in zip(self.keys, outputs):
                 self._set_target(data, k, out)
 
-        elif len(self.keys)>1:
-        # ---- single key op over mutliple keys ----
+        elif len(self.keys) > 1:
+            # ---- single key op over mutliple keys ----
             inputs = [self._get_target(data, k) for k in self.keys]
 
             if no_return:
@@ -368,12 +260,12 @@ class Transform:
                     self._apply_channel_op(i, fn, no_return)
                 return
 
-            for i,k in zip(inputs, self.keys):
+            for i, k in zip(inputs, self.keys):
                 out = self._apply_channel_op(i, fn, no_return)
                 self._set_target(data, k, out)
 
         else:
-        # --- single key ---
+            # --- single key ---
             key = self.keys[0]
 
             x = self._get_target(data, key)
@@ -382,21 +274,23 @@ class Transform:
 
             if no_return:
                 return None
-            
+
             self._set_target(data, key, x)
 
         return data
- 
+
     # -----------------------------
     # Public API
     # -----------------------------
 
     def forward(self, data):
+        data = copy.deepcopy(data)
         if self.is_fittable and not self.fitted:
             raise RuntimeError(f"Fittable transform {self.name} has not been fit")
         return self._apply_op(data, "forward")
 
     def inverse(self, data):
+        data = copy.deepcopy(data)
         if not self.is_invertible:
             raise RuntimeError(f"{self.name} is not invertible")
         if self.is_fittable and not self.fitted:
@@ -412,13 +306,14 @@ class Transform:
         print(self.op)
         if not self.is_fittable:
             return
-        
+
         for batch in dataloader:
             self._apply_op(batch, "fit_step", no_return=True)
 
         # finalize fit
         if self.per_channel:
-            for op in self.op: op.complete_fit()
+            for op in self.op:
+                op.complete_fit()
         else:
             self.op.complete_fit()
 
@@ -431,8 +326,12 @@ class Transform:
     def config(self):
         return {
             "type": self.__class__.__name__,
-            "op": self.op.__class__.__name__ if not self.per_channel else self.op[0].__class__.__name__,
-            "op_args": self.op.call_args if not self.per_channel else self.op[0].call_args,
+            "op": self.op.__class__.__name__
+            if not self.per_channel
+            else self.op[0].__class__.__name__,
+            "op_args": self.op.call_args
+            if not self.per_channel
+            else self.op[0].call_args,
             "name": self.name,
             "keys": self.keys,
             "attr": self.attr,
@@ -461,13 +360,13 @@ class Transform:
 
     def to(self, device):
         if self.per_channel:
-            for op in self.op: op.to(device)
+            for op in self.op:
+                op.to(device)
         else:
             self.op.to(device)
 
 
 class Pipeline:
-
     def __init__(self, transforms):
         self.transforms = transforms
 
@@ -477,12 +376,12 @@ class Pipeline:
     def __call__(self, data):
         transforms = self._get_applicable_transforms(data.keys())
         for t in transforms:
-            logger.debug(f'before {t.name}')
+            logger.debug(f"before {t.name}")
             _log_data(data)
 
             data = t.forward(data)
 
-            logger.debug(f'after {t.name}')
+            logger.debug(f"after {t.name}")
             _log_data(data)
         return data
 
@@ -493,12 +392,12 @@ class Pipeline:
         transforms = self._get_applicable_transforms(data.keys())
         for t in reversed(transforms):
             if t.is_invertible:
-                logger.debug(f'before {t.name} inverse')
+                logger.debug(f"before {t.name} inverse")
                 _log_data(data)
 
                 data = t.inverse(data)
 
-                logger.debug(f'after {t.name} inverse')
+                logger.debug(f"after {t.name} inverse")
                 _log_data(data)
 
         return data
@@ -509,12 +408,12 @@ class Pipeline:
             skip = False
             for key in t.keys:
                 if key not in keys:
-                    skip=True
+                    skip = True
                     break
             if not skip:
                 transforms.append(t)
         return transforms
-            
+
     # -----------------------------
     # Fit (only fittable transforms)
     # -----------------------------
@@ -524,25 +423,18 @@ class Pipeline:
         for i in range(n):
             if self.transforms[i].is_fittable:
                 temp_dataset.transforms = [Pipeline(self.transforms[:i])]
-                dataloader = DataLoader(temp_dataset,batch_size=1)
+                dataloader = DataLoader(temp_dataset, batch_size=1)
                 self.transforms[i].fit(dataloader)
         return self
-        
-
 
     # -----------------------------
     # Serialization
     # -----------------------------
     def config(self):
-        return {
-            "transforms": [t.config() for t in self.transforms]
-        }
+        return {"transforms": [t.config() for t in self.transforms]}
 
     def state_dict(self):
-        return {
-            t.name: t.state_dict()
-            for t in self.transforms
-        }
+        return {t.name: t.state_dict() for t in self.transforms}
 
     # -----------------------------
     # Loading
@@ -553,12 +445,17 @@ class Pipeline:
         transforms = []
 
         for tconf in config["transforms"]:
-
             op_cls = TRANSFORM_REGISTRY[tconf["op"]]
             op_args = tconf["op_args"]
 
-            op = op_cls(*op_args["args"], **op_args["kwargs"]) if not tconf["per_channel"]\
-                  else [op_cls(*op_args["args"], **op_args["kwargs"]) for _ in range(len(tconf["channels"]))]
+            op = (
+                op_cls(*op_args["args"], **op_args["kwargs"])
+                if not tconf["per_channel"]
+                else [
+                    op_cls(*op_args["args"], **op_args["kwargs"])
+                    for _ in range(len(tconf["channels"]))
+                ]
+            )
 
             t = Transform(
                 op=op,
@@ -567,7 +464,7 @@ class Pipeline:
                 channels=tconf["channels"],
                 per_channel=tconf["per_channel"],
                 channel_dim=tconf["channel_dim"],
-                name=tconf["name"]
+                name=tconf["name"],
             )
 
             transforms.append(t)
@@ -587,10 +484,7 @@ class Pipeline:
 
 def save_pipeline(pipeline, path):
 
-    obj = {
-        "config": pipeline.config(),
-        "state": pipeline.state_dict()
-    }
+    obj = {"config": pipeline.config(), "state": pipeline.state_dict()}
 
     torch.save(obj, path)
 
@@ -604,16 +498,20 @@ def load_pipeline(path):
 
     return pipeline
 
-def _log_data(data: dict[str,Any]) -> None:
+
+def _log_data(data: dict[str, Any]) -> None:
     if logger.isEnabledFor(logging.DEBUG):
-        for k,v in data.items():
+        for k, v in data.items():
             logger.debug(k)
-        
+
             if isinstance(v, Data):
                 for c in range(v.x.shape[-1]):
-                    logger.debug(f'channel {c}- max:{v.x[...,c].max()}, min:{v.x[...,c].min()}')
+                    logger.debug(
+                        f"channel {c}- max:{v.x[..., c].max()}, min:{v.x[..., c].min()}"
+                    )
             else:
                 logger.debug(v.shape)
+
 
 # ------------------------------------------------------------------------------------
 # TRANSFORM REGISTRY DEFINITION
@@ -622,6 +520,122 @@ def _log_data(data: dict[str,Any]) -> None:
 
 TRANSFORM_REGISTRY = {}
 
+
 def register_op(cls):
     TRANSFORM_REGISTRY[cls.__name__] = cls
     return cls
+
+
+# ------------------------------------------------------------------------------------
+# DATA LOADING
+# ------------------------------------------------------------------------------------
+
+
+
+LoadFn = Callable[[str], Dict[str, Union[torch.Tensor, Data]]]
+
+def collate(batch):
+    """
+    Collates a batch of data in the form of dict{str: torch.Tensor/PyG.Data}
+    Tensors are batched by stacking in the 0 dim and PyG Data are batched by PyG (https://pytorch-geometric.readthedocs.io/en/2.5.2/advanced/batching.html)
+    """
+    out_dict = {}
+    for key, val in batch[0].items():
+        if isinstance(val, torch.Tensor):
+            out_dict[key] = torch.utils.data.default_collate([b[key] for b in batch])
+        elif isinstance(val, Data):
+            out_dict[key] = Batch.from_data_list([b[key] for b in batch])
+        else:
+            raise TypeError(
+                f"{key} is type {type(val)}. Generator outputs must be either torch.Tensor or torch_geometric.data.Data object"
+            )
+    return out_dict
+
+
+def DataLoader(dataset, **kwargs):
+    """
+    Create a DataLoader for an im2sim dataset.
+
+    Args:
+        dataset (im2sim.data.Dataset):
+            Dataset to wrap in a DataLoader.
+
+        **kwargs:
+            Additional keyword arguments passed to ``torch.utils.data.DataLoader``.
+            Common options include:
+
+            - batch_size (int, optional):
+                Number of samples per batch (default: 1).
+            - shuffle (bool, optional):
+                Whether to reshuffle the data at every epoch (default: False).
+            - num_workers (int, optional):
+                Number of subprocesses used for data loading. ``0`` means data
+                is loaded in the main process (default: 0).
+            - pin_memory (bool, optional):
+                If True, tensors are copied into CUDA pinned memory before returning.
+
+            See https://docs.pytorch.org/docs/stable/data.html for the full list
+            of supported arguments.
+
+    Returns:
+        im2sim.data.DataLoader:
+            Configured DataLoader instance.
+    """
+    return torch.utils.data.DataLoader(dataset, collate_fn=collate, **kwargs)
+
+
+class Dataset(torch.utils.data.Dataset):
+    """
+    Template for building im2sim datasets.
+
+    To build a custom dataset, create a new Dataset with a custom load function,
+    case files, and transforms.
+
+    Args:
+        load_fn (Callable[[str], dict[str, Tensor | PyGData]]):
+            Function that loads all files needed for a specific case and returns
+            a dictionary containing the data for that case.
+
+        cases (list[str]):
+            List of case names. These names are passed to `load_fn` to load data.
+
+        transforms (list[Transform] | Pipeline):
+            Transforms or pipeline applied to each sample.
+
+    Example:
+        >>> import torch
+        >>>
+        >>> cases = ['case1', 'case2', 'case3', 'case4']
+        >>>
+        >>> def load(case):
+        ...     img = torch.load(f'images/{case}.pt')
+        ...     graph = torch.load(f'graphs/{case}.pt')
+        ...     template = torch.load(f'template/{case}.pt')
+        ...     return {'image': img, 'template': template, 'out_graph': graph}
+        >>>
+        >>> dataset = im2sim.data.Dataset(load_fn=load, cases=cases)
+    """
+
+    def __init__(self, load_fn: LoadFn, cases: list[str], transforms: Optional[list[Transform] | Pipeline] = None):
+        self.load_fn = load_fn
+        self.cases = cases
+        self.add_transforms(transforms)
+
+    def add_transforms(self, transforms: Optional[list[Transform] | Pipeline] = None):
+        if transforms is None:
+            self.transforms = []
+        elif isinstance(transforms, Pipeline):
+            self.transforms = [transforms]
+        elif isinstance(transforms, list):
+            self.transforms = transforms
+
+    def __len__(self) -> int:
+        return len(self.cases)
+
+    def __getitem__(self, idx: int) -> dict[str, Union[torch.Tensor, Data]]:
+        case = self.cases[idx]
+        sample = self.load_fn(case)
+
+        for transform in self.transforms:
+            sample = transform(sample)
+        return sample

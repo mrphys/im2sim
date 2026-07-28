@@ -4,19 +4,20 @@ from matplotlib import animation
 
 
 class PointCloudPlot:
-
-    def __init__(self,
-                 nrows,
-                 ncols,
-                 point_sets,
-                 color_sets=None,
-                 figsize=None,
-                 cmap='Blues_r',
-                 norm_mode='none',   # 'all', 'row', 'col', 'none'
-                 bound_mode='all',
-                 titles=None,       # NEW: optional titles
-                 elev=20,
-                 azim=90):
+    def __init__(
+        self,
+        nrows,
+        ncols,
+        point_sets,
+        color_sets=None,
+        figsize=None,
+        cmap="Blues_r",
+        norm_mode="none",  # 'all', 'row', 'col', 'none'
+        bound_mode="all",
+        titles=None,  # NEW: optional titles
+        elev=20,
+        azim=90,
+    ):
 
         self.cmap = cmap
         self.elev = elev
@@ -27,10 +28,7 @@ class PointCloudPlot:
 
         if color_sets is None:
             is_colored = False
-            color_sets = [
-                0.1 * np.ones(points.shape[0])
-                for points in point_sets
-            ]
+            color_sets = [0.1 * np.ones(points.shape[0]) for points in point_sets]
         else:
             is_colored = True
 
@@ -38,9 +36,7 @@ class PointCloudPlot:
             figsize = (ncols * 3, nrows * 3)
 
         self.fig, axes = plt.subplots(
-            nrows, ncols,
-            figsize=figsize,
-            subplot_kw={'projection': '3d'}
+            nrows, ncols, figsize=figsize, subplot_kw={"projection": "3d"}
         )
 
         self.axes = np.array(axes).reshape(-1)
@@ -68,15 +64,15 @@ class PointCloudPlot:
         def compute_norm_ranges(color_sets):
             color_sets = list(color_sets)
 
-            if norm_mode == 'none':
+            if norm_mode == "none":
                 return [(None, None)] * len(color_sets)
 
-            elif norm_mode == 'all':
+            elif norm_mode == "all":
                 all_vals = np.concatenate(color_sets)
                 vmin, vmax = all_vals.min(), all_vals.max()
                 return [(vmin, vmax)] * len(color_sets)
 
-            elif norm_mode == 'row':
+            elif norm_mode == "row":
                 ranges = []
                 for r in range(nrows):
                     row_vals = []
@@ -89,7 +85,7 @@ class PointCloudPlot:
                         ranges.append((vmin, vmax))
                 return ranges
 
-            elif norm_mode == 'col':
+            elif norm_mode == "col":
                 ranges = [None] * len(color_sets)
                 for c in range(ncols):
                     col_vals = []
@@ -112,21 +108,21 @@ class PointCloudPlot:
         # Plot creation
         # -----------------------------
         for i, (ax, points, colors) in enumerate(
-                zip(self.axes, point_sets, color_sets)):
-
+            zip(self.axes, point_sets, color_sets)
+        ):
             vmin, vmax = norm_ranges[i]
 
-            sc = ax.scatter(points[:, 0],
-                            points[:, 1],
-                            points[:, 2],
-                            c=colors,
-                            cmap=cmap,
-                            vmin=vmin,
-                            vmax=vmax)
+            sc = ax.scatter(
+                points[:, 0],
+                points[:, 1],
+                points[:, 2],
+                c=colors,
+                cmap=cmap,
+                vmin=vmin,
+                vmax=vmax,
+            )
 
-            ax.view_init(elev=elev,
-                         azim=azim,
-                         vertical_axis='y')
+            ax.view_init(elev=elev, azim=azim, vertical_axis="y")
 
             ax.set_xlim(mins[0], maxs[0])
             ax.set_ylim(mins[1], maxs[1])
@@ -160,15 +156,15 @@ class PointCloudPlot:
         def compute_norm_ranges(color_sets):
             color_sets = list(color_sets)
 
-            if self.norm_mode == 'none':
+            if self.norm_mode == "none":
                 return [(None, None)] * len(color_sets)
 
-            elif self.norm_mode == 'all':
+            elif self.norm_mode == "all":
                 all_vals = np.concatenate(color_sets)
                 vmin, vmax = all_vals.min(), all_vals.max()
                 return [(vmin, vmax)] * len(color_sets)
 
-            elif self.norm_mode == 'row':
+            elif self.norm_mode == "row":
                 ranges = []
                 for r in range(self.nrows):
                     row_vals = []
@@ -181,7 +177,7 @@ class PointCloudPlot:
                         ranges.append((vmin, vmax))
                 return ranges
 
-            elif self.norm_mode == 'col':
+            elif self.norm_mode == "col":
                 ranges = [None] * len(color_sets)
                 for c in range(self.ncols):
                     col_vals = []
@@ -199,16 +195,12 @@ class PointCloudPlot:
 
         new_scatters = []
 
-        for i, (ax, sc, pts, colors) in enumerate(zip(
-                self.axes,
-                self.scatters,
-                point_sets,
-                color_sets)):
-
+        for i, (ax, sc, pts, colors) in enumerate(
+            zip(self.axes, self.scatters, point_sets, color_sets)
+        ):
             vmin, vmax = norm_ranges[i]
 
             if sc is None or len(pts) != len(sc.get_offsets()):
-
                 if sc is not None:
                     sc.remove()
 
@@ -219,7 +211,7 @@ class PointCloudPlot:
                     c=colors,
                     cmap=self.cmap,
                     vmin=vmin,
-                    vmax=vmax
+                    vmax=vmax,
                 )
 
             else:
@@ -246,11 +238,13 @@ class PointCloudPlot:
     # ANIMATE
     # ---------------------------------------------------------
 
-    def animate(self,
-                point_sequence_sets,
-                color_sequence_sets=None,
-                filename="animation.gif",
-                fps=15):
+    def animate(
+        self,
+        point_sequence_sets,
+        color_sequence_sets=None,
+        filename="animation.gif",
+        fps=15,
+    ):
 
         n_frames = len(point_sequence_sets)
 
@@ -262,16 +256,10 @@ class PointCloudPlot:
                 colors = color_sequence_sets[frame]
 
             return self.draw_frame(
-                point_sets=point_sequence_sets[frame],
-                color_sets=colors
+                point_sets=point_sequence_sets[frame], color_sets=colors
             )
 
-        ani = animation.FuncAnimation(
-            self.fig,
-            update,
-            frames=n_frames,
-            blit=False
-        )
+        ani = animation.FuncAnimation(self.fig, update, frames=n_frames, blit=False)
 
         if filename.endswith(".gif"):
             ani.save(filename, writer="pillow", fps=fps)

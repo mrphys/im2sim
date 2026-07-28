@@ -9,6 +9,7 @@ setup(
     extras_require={
         "dev": [
             "pytest",
+            "hypothesis"
             "ruff",
         ],
     },

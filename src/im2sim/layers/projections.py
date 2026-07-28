@@ -4,10 +4,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from ..data.mesh_utils import make_padded_batch
-
 logger = logging.getLogger(__name__)
-
 
 
 class TrilinearProjection(nn.Module):
@@ -17,10 +14,9 @@ class TrilinearProjection(nn.Module):
 
     def forward(self, encoder_outputs, graph_coords, batch):
         projections = []
-        
+
         n_dims = graph_coords.shape[1]
         for i in torch.unique(batch).to(torch.int16):
-
             coords = graph_coords[batch == i]
             n_nodes = coords.shape[0]
 
@@ -32,7 +28,7 @@ class TrilinearProjection(nn.Module):
                 axis=-1,
             )  # normalise coords [-1,1] and divide by scale
 
-            grid = grid.reshape(1,n_nodes, 1, 1, n_dims) # [N,3]->[1,N,1,1,3]
+            grid = grid.reshape(1, n_nodes, 1, 1, n_dims)  # [N,3]->[1,N,1,1,3]
 
             grid = grid.type_as(encoder_outputs)
 

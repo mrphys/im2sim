@@ -251,8 +251,6 @@ class GraphResDecoderBlock(nn.Module):
         return graph, new_results
 
 
-
-
 # class GraphUNetDecoderBlock(nn.Module):
 
 #     def __init__(self,

@@ -1,17 +1,26 @@
-import pytest
-import torch
 import copy
 
-from im2sim.data import Transform, Pipeline, Operation, InvertibleOperation, FittableOperation, Pipeline, register_op
+import pytest
+import torch
 
+from im2sim.data import (
+    FittableOperation,
+    InvertibleOperation,
+    Operation,
+    Pipeline,
+    Transform,
+    register_op,
+)
 
 # -----------------------------
 # Helpers / Dummy Ops
 # -----------------------------
 
+
 class DummyOp(Operation):
     def forward(self, x):
         return x + 1
+
 
 class DummyInvertibleOp(InvertibleOperation):
     def forward(self, x):
@@ -36,7 +45,7 @@ class DummyFittableOp(FittableOperation):
 
     def forward(self, x):
         return x - self.mean
-    
+
     def inverse(self, x):
         return x + self.mean
 
@@ -44,6 +53,7 @@ class DummyFittableOp(FittableOperation):
 # -----------------------------
 # Transform Tests
 # -----------------------------
+
 
 def test_transform_single_key_forward():
     t = Transform(DummyOp(), keys="a")
@@ -62,8 +72,6 @@ def test_transform_multiple_keys():
     assert torch.allclose(out["b"], torch.tensor([3.0]))
 
 
-
-
 def test_transform_missing_attr():
     t = Transform(DummyOp(), keys="a", attr="missing")
     data = {"a": object()}
@@ -75,6 +83,7 @@ def test_transform_missing_attr():
 # -----------------------------
 # Channel Handling
 # -----------------------------
+
 
 def test_transform_channel_subset():
     t = Transform(DummyOp(), keys="a", channels=[0], channel_dim=0)
@@ -96,6 +105,7 @@ def test_transform_per_channel():
 # -----------------------------
 # Fittable Transform
 # -----------------------------
+
 
 def test_fittable_requires_fit():
     t = Transform(DummyFittableOp(), keys="a")
@@ -124,6 +134,7 @@ def test_fittable_fit_and_forward():
 # Invertibility
 # -----------------------------
 
+
 def test_invertible_transform():
     t = Transform(DummyInvertibleOp(), keys="a")
     t.is_invertible = True  # simulate isinstance check
@@ -147,6 +158,7 @@ def test_non_invertible_raises():
 # -----------------------------
 # Pipeline Tests
 # -----------------------------
+
 
 def test_pipeline_sequential():
     t1 = Transform(DummyOp(), keys="a")
@@ -189,6 +201,7 @@ def test_pipeline_skips_missing_keys():
 # Pipeline Fit
 # -----------------------------
 
+
 def test_pipeline_fit_only_fittable():
     t1 = Transform(DummyOp(), keys="a")
     t2 = Transform(DummyFittableOp(), keys="a")
@@ -218,6 +231,7 @@ def test_pipeline_fit_only_fittable():
 # -----------------------------
 # Serialization
 # -----------------------------
+
 
 def test_transform_state_dict_roundtrip():
     t = Transform(DummyFittableOp(), keys="a")
@@ -253,8 +267,6 @@ def test_pipeline_state_dict_roundtrip(tmp_path):
 
     torch.save({"config": p.config(), "state": p.state_dict()}, path)
 
-
-
     obj = torch.load(path)
     p2 = Pipeline.from_config(obj["config"])
     p2.load_state_dict(obj["state"])
@@ -266,6 +278,7 @@ def test_pipeline_state_dict_roundtrip(tmp_path):
 # Edge Cases
 # -----------------------------
 
+
 def test_empty_pipeline():
     p = Pipeline([])
     data = {"a": torch.tensor([1.0])}
@@ -276,4 +289,4 @@ def test_empty_pipeline():
 
 def test_no_keys_transform():
     with pytest.raises(ValueError):
-        t = Transform(DummyOp(), keys=[])
+        Transform(DummyOp(), keys=[])

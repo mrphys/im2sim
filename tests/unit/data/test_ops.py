@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 from im2sim.data.ops import *
 
@@ -89,4 +88,3 @@ def test_zero_variance_handling():
 
 
 ################## FITTABLE OPS #################
-

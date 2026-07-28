@@ -1,14 +1,13 @@
 import copy
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Union, Optional
+from collections.abc import Callable
+from typing import Any
 
 import torch
 from torch_geometric.data import Batch, Data
 
-
 logger = logging.getLogger(__name__)
-
 
 
 class Operation(ABC):
@@ -127,7 +126,7 @@ class Transform:
         name=None,
     ):
 
-        if keys is None or keys==[]:
+        if keys is None or keys == []:
             raise ValueError("keys must be specified")
 
         self.keys = keys if isinstance(keys, list) else [keys]
@@ -531,8 +530,8 @@ def register_op(cls):
 # ------------------------------------------------------------------------------------
 
 
+LoadFn = Callable[[str], dict[str, torch.Tensor | Data]]
 
-LoadFn = Callable[[str], Dict[str, Union[torch.Tensor, Data]]]
 
 def collate(batch):
     """
@@ -616,12 +615,17 @@ class Dataset(torch.utils.data.Dataset):
         >>> dataset = im2sim.data.Dataset(load_fn=load, cases=cases)
     """
 
-    def __init__(self, load_fn: LoadFn, cases: list[str], transforms: Optional[list[Transform] | Pipeline] = None):
+    def __init__(
+        self,
+        load_fn: LoadFn,
+        cases: list[str],
+        transforms: list[Transform] | Pipeline | None = None,
+    ):
         self.load_fn = load_fn
         self.cases = cases
         self.add_transforms(transforms)
 
-    def add_transforms(self, transforms: Optional[list[Transform] | Pipeline] = None):
+    def add_transforms(self, transforms: list[Transform] | Pipeline | None = None):
         if transforms is None:
             self.transforms = []
         elif isinstance(transforms, Pipeline):
@@ -632,7 +636,7 @@ class Dataset(torch.utils.data.Dataset):
     def __len__(self) -> int:
         return len(self.cases)
 
-    def __getitem__(self, idx: int) -> dict[str, Union[torch.Tensor, Data]]:
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor | Data]:
         case = self.cases[idx]
         sample = self.load_fn(case)
 

@@ -1,9 +1,10 @@
-import torch
-import pytest
-from torch_geometric.data import Data
 import copy
 
-from im2sim.data import Pipeline, transforms, Dataset
+import pytest
+import torch
+from torch_geometric.data import Data
+
+from im2sim.data import Dataset, Pipeline, transforms
 
 
 def make_toy_dataset():
@@ -16,7 +17,7 @@ def make_toy_dataset():
     """
 
     samples = {}
-    cases = ["1","2","3","4","5"]
+    cases = ["1", "2", "3", "4", "5"]
     for case in cases:
         num_nodes = 10
 
@@ -49,9 +50,6 @@ def make_toy_dataset():
     ds = Dataset(load, cases)
 
     return ds
-
-
-
 
 
 @pytest.fixture
@@ -106,17 +104,13 @@ def test_pipeline_inverse(pipeline):
     sample = make_toy_dataset()[0]
 
     # keep a copy before modification
-    original = {
-        key: value.x.clone()
-        for key, value in sample.items()
-    }
+    original = {key: value.x.clone() for key, value in sample.items()}
 
     transformed = pipeline(sample)
 
     recovered = pipeline.inverse(transformed)
 
     for key in ["input", "gt"]:
-
         torch.testing.assert_close(
             recovered[key].x,
             original[key],
@@ -139,7 +133,6 @@ def test_integrated_pipeline(pipeline):
     transformed = pipeline(sample2)
 
     for key in ["input", "gt"]:
-
         torch.testing.assert_close(
             recovered[key].x,
             sample2[key].x,

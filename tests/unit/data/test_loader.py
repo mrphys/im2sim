@@ -1,12 +1,13 @@
 import pytest
 import torch
-from torch_geometric.data import Data, Batch
+from torch_geometric.data import Batch, Data
 
-from im2sim.data import collate, Dataset, DataLoader
+from im2sim.data import DataLoader, Dataset, collate
 
 # -------------------------
 # Fixtures
 # -------------------------
+
 
 @pytest.fixture
 def tensor_sample():
@@ -34,6 +35,7 @@ def mixed_sample():
 # -------------------------
 # collate tests
 # -------------------------
+
 
 def test_collate_tensors(tensor_sample):
     batch = [tensor_sample, tensor_sample]
@@ -71,6 +73,7 @@ def test_collate_invalid_type():
 # Dataset tests
 # -------------------------
 
+
 def dummy_load_fn(case: str):
     return {"x": torch.tensor([len(case)])}
 
@@ -91,8 +94,6 @@ def test_dataset_getitem():
     assert torch.equal(sample["x"], torch.tensor([1]))
 
 
-
-
 def test_dataset_no_transforms():
     ds = Dataset(load_fn=dummy_load_fn, cases=["a"], transforms=None)
     sample = ds[0]
@@ -103,6 +104,7 @@ def test_dataset_no_transforms():
 # -------------------------
 # DataLoader tests
 # -------------------------
+
 
 def test_dataloader_basic():
     ds = Dataset(load_fn=dummy_load_fn, cases=["a", "bb", "ccc"])
@@ -118,7 +120,9 @@ def test_dataloader_basic():
 def test_dataloader_with_pyg():
     def load_fn(case):
         return {
-            "graph": Data(x=torch.randn(3, 2), edge_index=torch.tensor([[0, 1], [1, 2]]))
+            "graph": Data(
+                x=torch.randn(3, 2), edge_index=torch.tensor([[0, 1], [1, 2]])
+            )
         }
 
     ds = Dataset(load_fn=load_fn, cases=["a", "b", "c"])

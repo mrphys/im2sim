@@ -29,9 +29,7 @@ def build_tetra_mesh():
     celltypes = np.array([pv.CellType.TETRA, pv.CellType.TETRA])
     grid = pv.UnstructuredGrid(cells, celltypes, points)
 
-    grid["CellEntityIds"] = np.array(
-        [0] * 2
-    )  # Assign the same entity ID to both tetrahedra
+    grid["CellEntityIds"] = np.array([0] * 2)  # Assign the same entity ID to both tetrahedra
     grid["vtkOriginalPointIds"] = np.arange(len(points))
     return grid
 
@@ -55,9 +53,7 @@ def build_triangle_mesh():
         ]
     )
     grid = pv.PolyData(points, faces)
-    grid["CellEntityIds"] = np.array(
-        [0] * 2
-    )  # Assign the same entity ID to both tetrahedra
+    grid["CellEntityIds"] = np.array([0] * 2)  # Assign the same entity ID to both tetrahedra
     grid["vtkOriginalPointIds"] = np.arange(len(points))
     return grid
 

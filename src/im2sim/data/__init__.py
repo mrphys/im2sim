@@ -1,4 +1,19 @@
-from . import mesh_utils as mesh_utils
-from . import ops as ops
-from . import transforms as transforms
-from .core import *
+from . import mesh_utils, ops, transforms
+from .core import (
+    FittableOperation,
+    InvertibleOperation,
+    Operation,
+    Transform,
+    register_op,
+)
+
+__all__ = [
+    "mesh_utils",
+    "ops",
+    "transforms",
+    "Operation",
+    "InvertibleOperation",
+    "FittableOperation",
+    "register_op",
+    "Transform",
+]

@@ -46,9 +46,7 @@ class MGNNodeBlock(nn.Module):
 
         _, receivers_idx = graph.edge_index
         num_nodes = graph.num_nodes
-        agg_received_edges = scatter_add(
-            edge_attr, receivers_idx, dim=0, dim_size=num_nodes
-        )
+        agg_received_edges = scatter_add(edge_attr, receivers_idx, dim=0, dim_size=num_nodes)
 
         nodes_to_collect.append(graph.x)
         nodes_to_collect.append(agg_received_edges)
@@ -120,9 +118,7 @@ class MGNGnBlock(nn.Module):
 class MGNDecoder(nn.Module):
     def __init__(self, hidden_size=128, output_size=2):
         super().__init__()
-        self.decode_module = build_mlp(
-            hidden_size, hidden_size, output_size, lay_norm=False
-        )
+        self.decode_module = build_mlp(hidden_size, hidden_size, output_size, lay_norm=False)
 
     def forward(self, graph):
         return self.decode_module(graph.x)

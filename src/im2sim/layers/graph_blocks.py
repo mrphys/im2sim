@@ -4,7 +4,7 @@ from copy import copy
 import torch
 from torch import nn
 
-from .layer_util import *
+from .layer_util import get_activation, get_graph_layer, register_pyg_layer
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +29,7 @@ class DefaultGraphNorm(torch.nn.Module):
             batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
 
         for b in torch.unique(batch):
-            x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(
-                shape
-            )
+            x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(shape)
         return x
 
 
@@ -66,23 +64,20 @@ class GraphConvBlock(nn.Module):
     ):
         super().__init__()
 
-
         self.convs = nn.ModuleList(
             [
-                get_graph_layer(name=conv_type, 
-                                args=[in_channels if i == 0 else filters, filters],
-                                kwargs = conv_kwargs)
+                get_graph_layer(
+                    name=conv_type,
+                    args=[in_channels if i == 0 else filters, filters],
+                    kwargs=conv_kwargs,
+                )
                 for i in range(depth)
             ]
         )
 
         self.norms = nn.ModuleList(
             [
-                get_graph_layer(name=norm_type, 
-                                kwargs=norm_kwargs) 
-                if norm_type 
-                else nn.Identity()
-
+                get_graph_layer(name=norm_type, kwargs=norm_kwargs) if norm_type else nn.Identity()
                 for _ in range(depth)
             ]
         )
@@ -91,7 +86,7 @@ class GraphConvBlock(nn.Module):
 
     def forward(self, in_graph):
         graph = copy(in_graph)
-        for conv, norm in zip(self.convs, self.norms):
+        for conv, norm in zip(self.convs, self.norms, strict=True):
             graph = conv(graph)
             graph = norm(graph)
             graph.x = self.act(graph.x)
@@ -131,20 +126,18 @@ class GraphConvResBlock(nn.Module):
 
         self.convs = nn.ModuleList(
             [
-                get_graph_layer(name=conv_type, 
-                                args=[in_channels if i == 0 else filters, filters],
-                                kwargs = conv_kwargs)
+                get_graph_layer(
+                    name=conv_type,
+                    args=[in_channels if i == 0 else filters, filters],
+                    kwargs=conv_kwargs,
+                )
                 for i in range(depth)
             ]
         )
 
         self.norms = nn.ModuleList(
             [
-                get_graph_layer(name=norm_type, 
-                                kwargs=norm_kwargs) 
-                if norm_type 
-                else nn.Identity()
-
+                get_graph_layer(name=norm_type, kwargs=norm_kwargs) if norm_type else nn.Identity()
                 for _ in range(depth)
             ]
         )
@@ -153,7 +146,7 @@ class GraphConvResBlock(nn.Module):
 
     def forward(self, in_graph):
         graph = copy(in_graph)
-        for i, (conv, norm) in enumerate(zip(self.convs, self.norms)):
+        for i, (conv, norm) in enumerate(zip(self.convs, self.norms, strict=True)):
             graph = norm(conv(graph))
 
             if i == 0:

@@ -3,7 +3,7 @@ import logging
 import torch
 from torch import nn
 
-from .layer_util import *
+from .layer_util import get_activation, get_torch_layer
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +62,7 @@ class ImageConvBlock(nn.Module):
             ]
         )
         self.drop = (
-            get_torch_layer("Dropout", rank)(p=dropout_rate)
-            if dropout_rate
-            else nn.Identity()
+            get_torch_layer("Dropout", rank)(p=dropout_rate) if dropout_rate else nn.Identity()
         )
 
         self.act = get_activation(activation)
@@ -78,7 +76,7 @@ class ImageConvBlock(nn.Module):
             torch.Tensor: Output feature maps [out_channels, ...]
         """
 
-        for conv, norm in zip(self.convs, self.norms):
+        for conv, norm in zip(self.convs, self.norms, strict=True):
             logger.debug("Image feature shape:%s", tuple(x.shape))
             x = self.act(norm(conv(x)))
         return self.drop(x)
@@ -209,9 +207,7 @@ class ImageResEncoder(nn.Module):
                 nn.ModuleList(
                     [
                         ImageConvResBlock(
-                            in_channels=in_channels[i]
-                            if j == 0
-                            else in_channels[i + 1],
+                            in_channels=in_channels[i] if j == 0 else in_channels[i + 1],
                             filters=filters[i],
                             kernel_size=kernel_size,
                             depth=res_depth,
@@ -241,7 +237,7 @@ class ImageResEncoder(nn.Module):
         """
         logger.debug("IN ENCODER")
         outputs = []
-        for pool, convs in zip(self.pools, self.conv_blocks):
+        for pool, convs in zip(self.pools, self.conv_blocks, strict=True):
             x = pool(x)
             for conv in convs:
                 x = conv(x)
@@ -313,7 +309,7 @@ class ImageEncoder(nn.Module):
             List[torch.Tensor]: Output feature maps from each level ordered from top to bottom [Tensor([filters[0], ...], ..., Tensor([filters[N], ...])
         """
         outputs = []
-        for pool, conv in zip(self.maxpools, self.conv_blocks):
+        for pool, conv in zip(self.maxpools, self.conv_blocks, strict=True):
             x = conv(pool(x))
             outputs.append(x)
         return outputs
@@ -373,12 +369,10 @@ class ImageDecoder(nn.Module):
                 ]
             )
         else:
-            up_layer = TORCH_LAYERS[f"{upsample_type}{rank}d"]
+            up_layer = get_torch_layer(upsample_type, rank)
             self.ups = nn.ModuleList(
                 [
-                    up_layer(
-                        rev_filters[i], rev_filters[i + 1], kernel_size=2, stride=2
-                    )
+                    up_layer(rev_filters[i], rev_filters[i + 1], kernel_size=2, stride=2)
                     for i in range(n_levels - 1)
                 ]
             )
@@ -386,9 +380,7 @@ class ImageDecoder(nn.Module):
         self.conv_blocks = nn.ModuleList(
             [
                 ImageConvBlock(
-                    in_channels=(
-                        rev_filters[i] + rev_filters[i + 1] if skip else rev_filters[i]
-                    ),
+                    in_channels=(rev_filters[i] + rev_filters[i + 1] if skip else rev_filters[i]),
                     filters=rev_filters[i + 1],
                     kernel_size=kernel_size,
                     depth=conv_blocks_per_level,
@@ -404,8 +396,8 @@ class ImageDecoder(nn.Module):
     def _match_size(self, x, skip):
         if x.shape[2:] != skip.shape[2:]:
             # center crop skip to x
-            diff = [s - t for s, t in zip(skip.shape[2:], x.shape[2:])]
-            slices = [slice(d // 2, d // 2 + t) for d, t in zip(diff, x.shape[2:])]
+            diff = [s - t for s, t in zip(skip.shape[2:], x.shape[2:], strict=True)]
+            slices = [slice(d // 2, d // 2 + t) for d, t in zip(diff, x.shape[2:], strict=True)]
             skip = skip[(..., *slices)]
         return skip
 
@@ -425,7 +417,7 @@ class ImageDecoder(nn.Module):
         x = rev_enc[0]
 
         # Traverse decoder levels
-        for i, (up, conv) in enumerate(zip(self.ups, self.conv_blocks)):
+        for i, (up, conv) in enumerate(zip(self.ups, self.conv_blocks, strict=True)):
             x = up(x)
 
             if self.skip:

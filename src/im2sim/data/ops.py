@@ -1,4 +1,6 @@
-from .core import *
+import torch
+
+from .core import FittableOperation, InvertibleOperation, Operation, register_op
 
 # TODO: fix the PowerScaleOp
 # ------------------------------------------------------------------------------------

@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
-    if b1 == None:
+    if b1 is None:
         b1 = torch.zeros(y1.shape[0])
-    if b2 == None:
+    if b2 is None:
         b2 = torch.zeros(y2.shape[0])
     logger.debug(
         "shapes - y1:%s, y2:%s, b1:%s, b2%s",

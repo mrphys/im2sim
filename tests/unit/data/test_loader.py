@@ -19,9 +19,7 @@ def tensor_sample():
 
 @pytest.fixture
 def pyg_sample():
-    return {
-        "graph": Data(x=torch.randn(5, 3), edge_index=torch.tensor([[0, 1], [1, 2]]))
-    }
+    return {"graph": Data(x=torch.randn(5, 3), edge_index=torch.tensor([[0, 1], [1, 2]]))}
 
 
 @pytest.fixture
@@ -119,11 +117,7 @@ def test_dataloader_basic():
 
 def test_dataloader_with_pyg():
     def load_fn(case):
-        return {
-            "graph": Data(
-                x=torch.randn(3, 2), edge_index=torch.tensor([[0, 1], [1, 2]])
-            )
-        }
+        return {"graph": Data(x=torch.randn(3, 2), edge_index=torch.tensor([[0, 1], [1, 2]]))}
 
     ds = Dataset(load_fn=load_fn, cases=["a", "b", "c"])
     loader = DataLoader(ds, batch_size=2)

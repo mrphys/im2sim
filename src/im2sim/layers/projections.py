@@ -21,10 +21,7 @@ class TrilinearProjection(nn.Module):
             n_nodes = coords.shape[0]
 
             grid = torch.stack(
-                [
-                    (2 * coords[:, j] / (d - 1)) - 1
-                    for j, d in enumerate(self.domain_size)
-                ],
+                [(2 * coords[:, j] / (d - 1)) - 1 for j, d in enumerate(self.domain_size)],
                 axis=-1,
             )  # normalise coords [-1,1] and divide by scale
 
@@ -73,24 +70,12 @@ class OGProjection(nn.Module):
             z = z / factor
 
             # floor / ceil with clamp
-            x1 = torch.minimum(
-                torch.floor(x), torch.tensor(h - 1, dtype=x.dtype, device=x.device)
-            )
-            x2 = torch.minimum(
-                torch.ceil(x), torch.tensor(h - 1, dtype=x.dtype, device=x.device)
-            )
-            y1 = torch.minimum(
-                torch.floor(y), torch.tensor(w - 1, dtype=x.dtype, device=x.device)
-            )
-            y2 = torch.minimum(
-                torch.ceil(y), torch.tensor(w - 1, dtype=x.dtype, device=x.device)
-            )
-            z1 = torch.minimum(
-                torch.floor(z), torch.tensor(d - 1, dtype=x.dtype, device=x.device)
-            )
-            z2 = torch.minimum(
-                torch.ceil(z), torch.tensor(d - 1, dtype=x.dtype, device=x.device)
-            )
+            x1 = torch.minimum(torch.floor(x), torch.tensor(h - 1, dtype=x.dtype, device=x.device))
+            x2 = torch.minimum(torch.ceil(x), torch.tensor(h - 1, dtype=x.dtype, device=x.device))
+            y1 = torch.minimum(torch.floor(y), torch.tensor(w - 1, dtype=x.dtype, device=x.device))
+            y2 = torch.minimum(torch.ceil(y), torch.tensor(w - 1, dtype=x.dtype, device=x.device))
+            z1 = torch.minimum(torch.floor(z), torch.tensor(d - 1, dtype=x.dtype, device=x.device))
+            z2 = torch.minimum(torch.ceil(z), torch.tensor(d - 1, dtype=x.dtype, device=x.device))
 
             # cast to int for indexing
             x1 = x1.long()

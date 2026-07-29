@@ -28,10 +28,8 @@ def graph():
         edge_index=edge_index,
     )
 
-graph_blocks = {"GraphConv": GraphConvBlock, "GraphRes":GraphConvResBlock}
 
-
-
+graph_blocks = {"GraphConv": GraphConvBlock, "GraphRes": GraphConvResBlock}
 
 
 @pytest.mark.parametrize(
@@ -108,6 +106,7 @@ def test_graph_structure_is_preserved(graph, graph_block_type):
         graph.edge_index,
     )
 
+
 @pytest.mark.parametrize(
     "graph_block_type",
     [
@@ -132,6 +131,7 @@ def test_input_graph_is_not_modified(graph, graph_block_type):
         original_x,
     )
 
+
 @pytest.mark.parametrize(
     "graph_block_type",
     [
@@ -150,6 +150,7 @@ def test_output_is_finite(graph, graph_block_type):
     out = model(graph)
 
     assert torch.isfinite(out.x).all()
+
 
 @pytest.mark.parametrize(
     "graph_block_type",
@@ -191,13 +192,7 @@ def test_gradients_flow(graph, graph_block_type):
 )
 @pytest.mark.parametrize(
     "activation",
-    [
-        "ReLU",
-        "leakyrelu",
-        "gelu",
-        "sigmoid",
-        None
-    ],
+    ["ReLU", "leakyrelu", "gelu", "sigmoid", None],
 )
 def test_supported_activations(graph, activation, graph_block_type):
     model = graph_blocks[graph_block_type](
@@ -211,6 +206,7 @@ def test_supported_activations(graph, activation, graph_block_type):
     out = model(graph)
 
     assert out.x.shape == (4, 16)
+
 
 @pytest.mark.parametrize(
     "graph_block_type",
@@ -236,6 +232,7 @@ def test_no_normalisation(graph, graph_block_type):
     out = model(graph)
 
     assert out.x.shape == (4, 16)
+
 
 @pytest.mark.parametrize(
     "graph_block_type",
@@ -270,9 +267,7 @@ def test_serialisation(graph, tmp_path, graph_block_type):
         conv_kwargs={},
     )
 
-    model2.load_state_dict(
-        torch.load(path)
-    )
+    model2.load_state_dict(torch.load(path))
 
     model2.eval()
 

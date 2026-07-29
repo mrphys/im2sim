@@ -10,9 +10,7 @@ class InputMeshError(ValueError):
     pass
 
 
-def get_structure_ids(
-    mesh: PointGrid, structure_dict: dict[int, str]
-) -> dict[str, torch.Tensor]:
+def get_structure_ids(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[str, torch.Tensor]:
     """
     Extracts node ids for different substructures in a pyvista PointGrid object.
 
@@ -24,15 +22,11 @@ def get_structure_ids(
         ids (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(N), where N is the number of nodes in the structure.
     """
     cells = get_structure_edges(mesh, structure_dict)
-    ids = {
-        f"{k.split('_edge_index')[0]}_index": torch.unique(v) for k, v in cells.items()
-    }
+    ids = {f"{k.split('_edge_index')[0]}_index": torch.unique(v) for k, v in cells.items()}
     return ids
 
 
-def get_structure_edges(
-    mesh: PointGrid, structure_dict: dict[int, str]
-) -> dict[str, torch.Tensor]:
+def get_structure_edges(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[str, torch.Tensor]:
     """
     Extracts edges for different substructures in a pyvista PointGrid object.
 
@@ -74,9 +68,7 @@ def get_edges(mesh: PointGrid, structure_id: int) -> torch.Tensor:
     return edges
 
 
-def get_structure_cells(
-    mesh: PointGrid, structure_dict: dict[int, str]
-) -> dict[str, torch.Tensor]:
+def get_structure_cells(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[str, torch.Tensor]:
     """
     Extracts cells for different substructures in a pyvista PointGrid object.
 
@@ -168,15 +160,11 @@ def get_node_features(mesh: PointGrid, feature_names: list[str]) -> torch.Tensor
     Returns:
         features (torch.Tensor): A tensor of shape [N,C] where N is the number of nodes and C is len(feature_names).
     """
-    features = torch.from_numpy(
-        np.array([mesh.point_data[name] for name in feature_names]).T
-    )
+    features = torch.from_numpy(np.array([mesh.point_data[name] for name in feature_names]).T)
     return features
 
 
-def make_padded_batch(
-    x: torch.Tensor, batch: torch.Tensor
-) -> tuple[torch.Tensor, torch.Tensor]:
+def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     """
     A helper function to pad a batch of data to the same size.
 
@@ -279,9 +267,7 @@ def cluster_pool(mesh: Data) -> Data:
     return pooled_mesh
 
 
-def rasterize(
-    points: torch.Tensor, im_shape: list[int], vox_sizes: list[float]
-) -> torch.Tensor:
+def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float]) -> torch.Tensor:
     """
     Computes the squared Euclidean distance between voxel centroids in a grid to a pointcloud
 
@@ -298,7 +284,7 @@ def rasterize(
             is the distance of the voxel centroid to the pointcloud.
     """
     im_coords = [
-        torch.arange(size / 2, n, size) for n, size in zip(im_shape, vox_sizes)
+        torch.arange(size / 2, n, size) for n, size in zip(im_shape, vox_sizes, strict=True)
     ]
     grids = torch.meshgrid(*im_coords, indexing="ij")  # three [128,128,128] tensors
     coord_tensor = torch.stack(grids, dim=-1).reshape(-1, 3)

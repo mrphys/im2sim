@@ -144,11 +144,7 @@ class Transform:
 
         self.op = op
 
-        self.name = (
-            name
-            if name is not None
-            else f"{op.__class__.__name__}_{'_'.join(self.keys)}"
-        )
+        self.name = name if name is not None else f"{op.__class__.__name__}_{'_'.join(self.keys)}"
 
         self.is_multikey = multikey
         self.is_invertible = isinstance(op, InvertibleOperation)
@@ -247,7 +243,7 @@ class Transform:
             if not isinstance(outputs, (list, tuple)):
                 outputs = [outputs]
 
-            for k, out in zip(self.keys, outputs):
+            for k, out in zip(self.keys, outputs, strict=True):
                 self._set_target(data, k, out)
 
         elif len(self.keys) > 1:
@@ -259,7 +255,7 @@ class Transform:
                     self._apply_channel_op(i, fn, no_return)
                 return
 
-            for i, k in zip(inputs, self.keys):
+            for i, k in zip(inputs, self.keys, strict=True):
                 out = self._apply_channel_op(i, fn, no_return)
                 self._set_target(data, k, out)
 
@@ -328,9 +324,7 @@ class Transform:
             "op": self.op.__class__.__name__
             if not self.per_channel
             else self.op[0].__class__.__name__,
-            "op_args": self.op.call_args
-            if not self.per_channel
-            else self.op[0].call_args,
+            "op_args": self.op.call_args if not self.per_channel else self.op[0].call_args,
             "name": self.name,
             "keys": self.keys,
             "attr": self.attr,
@@ -350,7 +344,7 @@ class Transform:
     def load_state_dict(self, state):
 
         if self.per_channel:
-            for op, s in zip(self.op, state):
+            for op, s in zip(self.op, state, strict=True):
                 op.load_state_dict(s)
         else:
             self.op.load_state_dict(state)
@@ -505,9 +499,7 @@ def _log_data(data: dict[str, Any]) -> None:
 
             if isinstance(v, Data):
                 for c in range(v.x.shape[-1]):
-                    logger.debug(
-                        f"channel {c}- max:{v.x[..., c].max()}, min:{v.x[..., c].min()}"
-                    )
+                    logger.debug(f"channel {c}- max:{v.x[..., c].max()}, min:{v.x[..., c].min()}")
             else:
                 logger.debug(v.shape)
 

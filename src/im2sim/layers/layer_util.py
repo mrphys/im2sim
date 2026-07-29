@@ -6,7 +6,6 @@ from typing import Any
 
 import torch
 import torch_geometric.nn as gnn
-from torch_geometric.data import Data
 
 
 def make_registry(lib: Any, regex: Callable):
@@ -62,8 +61,7 @@ TORCH_LAYERS, register_torch_layer = make_registry(torch.nn, layer_pattern)
 PYG_LAYERS, register_pyg_layer = make_registry(gnn, layer_pattern)
 
 
-
-def get_torch_layer(name: str, rank:int) -> torch.nn.Module:
+def get_torch_layer(name: str, rank: int) -> torch.nn.Module:
     """
     Get a PyTorch layer by name, with optional arguments.
     """
@@ -78,10 +76,10 @@ def get_torch_layer(name: str, rank:int) -> torch.nn.Module:
         return TORCH_LAYERS[name]
     except KeyError:
         ValueError(f"Layer {name} with rank {rank} not found in PyTorch layers registry")
-    
-def get_activation(name: str|None) -> torch.nn.Module:
-    return ACTIVATIONS[name]() if name is not None else torch.nn.Identity()
 
+
+def get_activation(name: str | None) -> torch.nn.Module:
+    return ACTIVATIONS[name]() if name is not None else torch.nn.Identity()
 
 
 class PyGParameterError(TypeError):
@@ -97,7 +95,7 @@ def _match_attrs_to_signature(graph, module):
 
     attrs = []
 
-    for name, param in sig.parameters.items():
+    for name, _param in sig.parameters.items():
         if name == "self":
             continue
 
@@ -136,10 +134,11 @@ class PyG_Wrapper(torch.nn.Module):
         out_graph.x = out
         return out_graph
 
-def get_graph_layer(name: str, 
-                    args: list[Any] = None, 
-                    kwargs: dict[str, Any] = None) -> PyG_Wrapper:
-    
+
+def get_graph_layer(
+    name: str, args: list[Any] = None, kwargs: dict[str, Any] = None
+) -> PyG_Wrapper:
+
     if args is None:
         args = []
     if kwargs is None:
@@ -147,9 +146,6 @@ def get_graph_layer(name: str,
 
     module = PYG_LAYERS[name](*args, **kwargs)
     return PyG_Wrapper(module)
-
-
-
 
 
 def init_weights(m):
@@ -173,8 +169,6 @@ def standardize_spatial_factors(factors, rank):
         elif isinstance(f, (tuple, list)):
             standardized.append(tuple(f))
         else:
-            raise TypeError(
-                f"Each factor must be an int, tuple, or list, got {type(f).__name__}"
-            )
+            raise TypeError(f"Each factor must be an int, tuple, or list, got {type(f).__name__}")
 
     return standardized

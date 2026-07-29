@@ -81,7 +81,7 @@ class PointCloudPlot:
                         row_vals.append(color_sets[idx])
                     row_vals = np.concatenate(row_vals)
                     vmin, vmax = row_vals.min(), row_vals.max()
-                    for c in range(ncols):
+                    for _ in range(ncols):
                         ranges.append((vmin, vmax))
                 return ranges
 
@@ -108,7 +108,7 @@ class PointCloudPlot:
         # Plot creation
         # -----------------------------
         for i, (ax, points, colors) in enumerate(
-            zip(self.axes, point_sets, color_sets)
+            zip(self.axes, point_sets, color_sets, strict=True)
         ):
             vmin, vmax = norm_ranges[i]
 
@@ -173,7 +173,7 @@ class PointCloudPlot:
                         row_vals.append(color_sets[idx])
                     row_vals = np.concatenate(row_vals)
                     vmin, vmax = row_vals.min(), row_vals.max()
-                    for c in range(self.ncols):
+                    for _ in range(self.ncols):
                         ranges.append((vmin, vmax))
                 return ranges
 
@@ -196,7 +196,7 @@ class PointCloudPlot:
         new_scatters = []
 
         for i, (ax, sc, pts, colors) in enumerate(
-            zip(self.axes, self.scatters, point_sets, color_sets)
+            zip(self.axes, self.scatters, point_sets, color_sets, strict=True)
         ):
             vmin, vmax = norm_ranges[i]
 
@@ -250,14 +250,9 @@ class PointCloudPlot:
 
         def update(frame):
 
-            if color_sequence_sets is None:
-                colors = None
-            else:
-                colors = color_sequence_sets[frame]
+            colors = None if color_sequence_sets is None else color_sequence_sets[frame]
 
-            return self.draw_frame(
-                point_sets=point_sequence_sets[frame], color_sets=colors
-            )
+            return self.draw_frame(point_sets=point_sequence_sets[frame], color_sets=colors)
 
         ani = animation.FuncAnimation(self.fig, update, frames=n_frames, blit=False)
 

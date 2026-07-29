@@ -41,6 +41,4 @@ def dice_loss(
     if channel_weights is None:
         return torch.mean(1 - dice_calc(y1, y2, smooth))
     else:
-        return torch.mean(
-            torch.mean(1 - dice_calc(y1, y2, smooth), dim=0) * channel_weights
-        )
+        return torch.mean(torch.mean(1 - dice_calc(y1, y2, smooth), dim=0) * channel_weights)

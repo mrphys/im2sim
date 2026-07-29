@@ -12,3 +12,6 @@ Thumbs.db
 
 # pytest
 .pytest_cache/
+
+# dev tests
+*.ipynb

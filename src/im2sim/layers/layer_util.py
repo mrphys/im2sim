@@ -1,18 +1,12 @@
 import inspect
 import re
 from collections.abc import Callable
-from copy import deepcopy
+from copy import copy
 from typing import Any
 
 import torch
 import torch_geometric.nn as gnn
 from torch_geometric.data import Data
-
-
-def get_graph_layer(name, kwargs):
-    if kwargs is None:
-        kwargs = {}
-    return PyG_Wrapper(PYG_LAYERS[name](**kwargs))
 
 
 def make_registry(lib: Any, regex: Callable):
@@ -32,6 +26,7 @@ def make_registry(lib: Any, regex: Callable):
 
 
 def normalize_key(key: str) -> str:
+    print(key)
     return key.replace(" ", "").replace("_", "").lower()
 
 
@@ -45,6 +40,7 @@ class NormalizedDict:
         self._data[normalize_key(key)] = value
 
     def __getitem__(self, key):
+        print(key)
         return self._data[normalize_key(key)]
 
     def __str__(self):
@@ -64,6 +60,96 @@ layer_pattern = r"(Conv|Pool|Norm|UpSample|PixelShuffle|Dropout)"
 
 TORCH_LAYERS, register_torch_layer = make_registry(torch.nn, layer_pattern)
 PYG_LAYERS, register_pyg_layer = make_registry(gnn, layer_pattern)
+
+
+
+def get_torch_layer(name: str, rank:int) -> torch.nn.Module:
+    """
+    Get a PyTorch layer by name, with optional arguments.
+    """
+
+    rank_name = f"{name}{rank}d"
+    try:
+        return TORCH_LAYERS[rank_name]
+    except KeyError:
+        pass
+
+    try:
+        return TORCH_LAYERS[name]
+    except KeyError:
+        ValueError(f"Layer {name} with rank {rank} not found in PyTorch layers registry")
+    
+def get_activation(name: str|None) -> torch.nn.Module:
+    return ACTIVATIONS[name]() if name is not None else torch.nn.Identity()
+
+
+
+class PyGParameterError(TypeError):
+    pass
+
+
+class PyGWrapperError(TypeError):
+    pass
+
+
+def _match_attrs_to_signature(graph, module):
+    sig = inspect.signature(module.forward)
+
+    attrs = []
+
+    for name, param in sig.parameters.items():
+        if name == "self":
+            continue
+
+        if hasattr(graph, name):
+            value = getattr(graph, name)
+
+            # Ignore methods/functions
+            if callable(value):
+                continue
+
+            attrs.append(name)
+
+    return attrs
+
+
+# This will not be useable for pooling layers as they have multiple return Tensors. If requiered we will have to add this functionality.
+class PyG_Wrapper(torch.nn.Module):
+    """
+    A wrapper for PyG modules to make the forward method accept and return a PyG Data object instead of separated attributes
+    Needs to be initialised with a pre-initialised PyG Module.
+    """
+
+    def __init__(self, pyg_module: torch.nn.Module):
+        super().__init__()
+        self.pyg_module = pyg_module
+
+    def forward(self, graph):
+        attrs = _match_attrs_to_signature(graph, self.pyg_module)
+        out = self.pyg_module(**{attr: getattr(graph, attr) for attr in attrs})
+        if not isinstance(out, torch.Tensor):
+            raise PyGWrapperError(
+                f"PyG layers that have multiple outputs like {self.pyg_module.__class__.__name__} are not currently supported. Consider changing PyG layer or writing a custom wrapper"
+            )
+
+        out_graph = copy(graph)
+        out_graph.x = out
+        return out_graph
+
+def get_graph_layer(name: str, 
+                    args: list[Any] = None, 
+                    kwargs: dict[str, Any] = None) -> PyG_Wrapper:
+    
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
+
+    module = PYG_LAYERS[name](*args, **kwargs)
+    return PyG_Wrapper(module)
+
+
+
 
 
 def init_weights(m):
@@ -92,48 +178,3 @@ def standardize_spatial_factors(factors, rank):
             )
 
     return standardized
-
-
-class PyGParameterError(TypeError):
-    pass
-
-
-class PyGWrapperError(TypeError):
-    pass
-
-
-def _match_attrs_to_signature(graph: Data, module: torch.nn.Module) -> list[str]:
-    """This function accepts a PyG data object and a Callable and returns common attributes"""
-    attrs = []
-    sig = inspect.signature(module.forward).parameters
-    for name, param in sig.items():
-        if hasattr(graph, name):
-            attrs.append(name)
-        elif param.default is inspect.Parameter.empty:
-            raise PyGParameterError(
-                f"Attribute {name} is missing but is required for {module.__class__.__name__} layers."
-            )
-    return attrs
-
-
-# This will not be useable for pooling layers as they have multiple return Tensors. If requiered we will have to add this functionality.
-class PyG_Wrapper(torch.nn.Module):
-    """
-    A wrapper for PyG modules to make the forward method accept and return a PyG Data object instead of separated attributes
-    Needs to be initialised with a pre-initialised PyG Module.
-    """
-
-    def __init__(self, pyg_module: torch.nn.Module, **kwargs):
-        self.pyg_module = pyg_module
-
-    def forward(self, graph):
-        attrs = _match_attrs_to_signature(graph, self.pyg_module)
-        out = self.pyg_module(**{attr: getattr(graph, attr) for attr in attrs})
-        if not isinstance(out, torch.Tensor):
-            raise PyGWrapperError(
-                f"PyG layers that have multiple outputs like {self.pyg_module.__class__.__name__} are not currently supported. Consider changing PyG layer or writing a custom wrapper"
-            )
-
-        out_graph = deepcopy(graph)
-        out_graph.x = out
-        return out_graph

@@ -1,4 +1,5 @@
 import logging
+from copy import copy
 
 import torch
 from torch import nn
@@ -15,13 +16,17 @@ class DefaultGraphNorm(torch.nn.Module):
     Uses torch.nn.InstanceNorm2d applied to graph data, but all channels are normalised together.
     """
 
-    def __init__(self, in_channels, affine):
+    def __init__(self):
+        super().__init__()
         self.norm = torch.nn.InstanceNorm2d(1, affine=True, eps=1e-3)
 
     def forward(self, x, batch):
         if x.dim() != 2:
             raise RuntimeError(f"Expected x.dim()==2, got {x.dim()}")
         shape = x.shape
+
+        if batch is None:
+            batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
 
         for b in torch.unique(batch):
             x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(
@@ -38,10 +43,10 @@ class GraphConvBlock(nn.Module):
         in_channels (int): The number of channels in the input to the layer.
         filters (int, optional): The number of filters in each convolutional layer (default: 32)
         depth (int, optional): The number of successive convolutional layers (default: 2)
-        conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: "GraphConv", "GCNConv", "GATConv")
+        conv_type (str, optional): The type of graph convolution to apply (default: "GATConv", options: All PyG Convs)
         conv_kwargs(dict, optional): Dictionary of keyword arguments for the chosen conv_type
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
-        norm_type (str, optional): The normalization method to apply between convolutions (default:"InstanceNorm", options: "BatchNorm",  "LayerNorm")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: All torch activations)
+        norm_type (str, optional): The normalization method to apply between convolutions (default:"defaultnorm", options: All PyG Norms)
 
     Returns:
         A `torch.nn.Module` object.
@@ -61,34 +66,36 @@ class GraphConvBlock(nn.Module):
     ):
         super().__init__()
 
-        conv = get_graph_layer(conv_type, conv_kwargs)
 
         self.convs = nn.ModuleList(
             [
-                conv(in_channels if i == 0 else filters, filters, **conv_kwargs)
+                get_graph_layer(name=conv_type, 
+                                args=[in_channels if i == 0 else filters, filters],
+                                kwargs = conv_kwargs)
                 for i in range(depth)
             ]
         )
 
-        if norm_kwargs == None:
-            norm_kwargs = {"in_channels": filters, "affine": True}
-
         self.norms = nn.ModuleList(
             [
-                get_graph_layer(norm_type, conv_kwargs) if norm_type else nn.Identity()
+                get_graph_layer(name=norm_type, 
+                                kwargs=norm_kwargs) 
+                if norm_type 
+                else nn.Identity()
+
                 for _ in range(depth)
             ]
         )
 
-        self.act = ACTIVATIONS[activation]()
+        self.act = get_activation(activation)
 
     def forward(self, in_graph):
-        out_graph = deepcopy(in_graph)
+        graph = copy(in_graph)
         for conv, norm in zip(self.convs, self.norms):
-            out_graph = conv(out_graph)
-            out_graph = norm(out_graph)
-            out_graph.x = self.act(out_graph.x)
-        return out_graph
+            graph = conv(graph)
+            graph = norm(graph)
+            graph.x = self.act(graph.x)
+        return graph
 
 
 class GraphConvResBlock(nn.Module):
@@ -99,10 +106,10 @@ class GraphConvResBlock(nn.Module):
         in_channels (int): The number of channels in the input to the layer.
         filters (int, optional): The number of filters in each convolutional layer (default: 32)
         depth (int, optional): The number of successive convolutional layers (default: 2)
-        conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: "GraphConv", "GCNConv", "GATConv")
+        conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: All PyG Convs)
         conv_kwargs(dict, optional): Dictionary of keyword arguments for the chosen conv_type
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
-        norm_type (str, optional): The normalization method to apply between convolutions (default:"InstanceNorm", options: "BatchNorm",  "LayerNorm")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: All torch activations)
+        norm_type (str, optional): The normalization method to apply between convolutions (default:"InstanceNorm", options: All PyG Norms)
 
     Returns:
         A `torch.nn.Module` object.
@@ -117,38 +124,40 @@ class GraphConvResBlock(nn.Module):
         conv_type="GATConv",
         conv_kwargs=None,
         activation="ReLU",
-        norm_type="InstanceNorm",
+        norm_type="defaultnorm",
         norm_kwargs=None,
     ):
         super().__init__()
 
-        conv = get_graph_layer(conv_type, conv_kwargs)
         self.convs = nn.ModuleList(
             [
-                conv(in_channels if i == 0 else filters, filters, **conv_kwargs)
+                get_graph_layer(name=conv_type, 
+                                args=[in_channels if i == 0 else filters, filters],
+                                kwargs = conv_kwargs)
                 for i in range(depth)
             ]
         )
 
-        if norm_kwargs == None:
-            norm_kwargs = {"in_channels": filters, "affine": True}
-
         self.norms = nn.ModuleList(
             [
-                get_graph_layer(norm_type, norm_kwargs) if norm_type else nn.Identity()
+                get_graph_layer(name=norm_type, 
+                                kwargs=norm_kwargs) 
+                if norm_type 
+                else nn.Identity()
+
                 for _ in range(depth)
             ]
         )
 
-        self.act = ACTIVATIONS[activation]()
+        self.act = get_activation(activation)
 
     def forward(self, in_graph):
-        graph = deepcopy(in_graph)
+        graph = copy(in_graph)
         for i, (conv, norm) in enumerate(zip(self.convs, self.norms)):
             graph = norm(conv(graph))
 
             if i == 0:
-                x1 = deepcopy(graph.x)
+                x1 = graph.x
             elif i < len(self.convs) - 1:
                 graph.x = self.act(graph.x)
 
@@ -169,11 +178,11 @@ class GraphResDecoderBlock(nn.Module):
         n_process_blocks (int, optional): The number of residual blocks prior to projection(default: 1)
         n_deform_blocks (int, optional): The number of residual blocks after projection(default: 3)
         template_edge_index (torch.Tensor, optional): If template tensor is the fixed it can be passed (default: None)
-        conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: "GraphConv", "GCNConv", "GATConv")
+        conv_type (str, optional): The type of graph convolution to apply (default: "ChebConv", options: All PyG Convs)
         conv_kwargs(dict, optional): Dictionary of keyword arguments for the chosen conv_type
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
-        out_activation (str, optional): The activation function applied after each convolution (default: "linear", options: "leakyrelu","gelu","sigmoid","relu","softmax")
-        norm_type (str, optional): The normalization method to apply between convolutions (default:"InstanceNorm", options: "BatchNorm",  "LayerNorm")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: All torch activations)
+        out_activation (str, optional): The activation function applied after each convolution (default: "linear", options: All torch activations)
+        norm_type (str, optional): The normalization method to apply between convolutions (default:"InstanceNorm",  options: All PyG Norms)
 
     Returns:
         A `torch.nn.Module` object.
@@ -240,7 +249,7 @@ class GraphResDecoderBlock(nn.Module):
         if in_graph.edge_index is None and self.edge_index is not None:
             in_graph.edge_index = self.edge_index
 
-        graph = deepcopy(in_graph)
+        graph = copy(in_graph)
         graph = self.process_conv(graph)
         graph.x = torch.cat([graph.x, encoder_projection, prev_results], axis=-1)
 

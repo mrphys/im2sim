@@ -18,7 +18,7 @@ class ImageConvBlock(nn.Module):
         kernel_size (int, optional): The kernel(filter) size for the convolutional layers (default: 3)
         depth (int, optional): The number of successive convolutional layers (default: 2)
         rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:2),
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid",)
         norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
         dropout_rate (float, optional): The spatial dropout rate to be applied to the final convolution output (default:None)
 
@@ -40,7 +40,7 @@ class ImageConvBlock(nn.Module):
     ):
         super().__init__()
 
-        conv = TORCH_LAYERS[f"Conv{rank}d"]
+        conv = get_torch_layer("Conv", rank)
         self.convs = nn.ModuleList(
             [
                 conv(
@@ -55,19 +55,19 @@ class ImageConvBlock(nn.Module):
 
         self.norms = nn.ModuleList(
             [
-                TORCH_LAYERS[f"{norm_type}{rank}d"](filters, affine=True)
+                get_torch_layer(norm_type, rank)(filters, affine=True)
                 if norm_type
                 else nn.Identity()
                 for _ in range(depth)
             ]
         )
         self.drop = (
-            TORCH_LAYERS(f"Dropout{rank}d")(p=dropout_rate)
+            get_torch_layer("Dropout", rank)(p=dropout_rate)
             if dropout_rate
             else nn.Identity()
         )
 
-        self.act = ACTIVATIONS[activation]
+        self.act = get_activation(activation)
 
     def forward(self, x):
         """
@@ -94,7 +94,7 @@ class ImageConvResBlock(nn.Module):
         kernel_size (int, optional): The kernel(filter) size for the convolutional layers (default: 3)
         depth (int, optional): The number of successive convolutional layers (default: 3)
         rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:2),
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid",)
         norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
         dropout_rate (float, optional): The spatial dropout rate to be applied to the convolution prior to residual connection (default:None)
 
@@ -115,13 +115,14 @@ class ImageConvResBlock(nn.Module):
         dropout_rate=None,
     ):
         super().__init__()
+        assert depth >= 2
 
         self.initial_conv = ImageConvBlock(
             in_channels=in_channels,
             filters=filters,
             kernel_size=kernel_size,
             rank=rank,
-            activation="linear",
+            activation=None,
             norm_type=norm_type,
             depth=1,
             dropout_rate=None,
@@ -143,13 +144,13 @@ class ImageConvResBlock(nn.Module):
             filters=filters,
             kernel_size=kernel_size,
             rank=rank,
-            activation="linear",
+            activation=None,
             norm_type=norm_type,
             depth=1,
             dropout_rate=None,
         )
         # self.drop =  get_image_layer('Dropout', rank)(p=dropout_rate) if dropout_rate else nn.Identity()
-        self.out_act = ACTIVATIONS[activation]
+        self.out_act = get_activation(activation)
 
     def forward(self, x):
         """
@@ -177,7 +178,7 @@ class ImageResEncoder(nn.Module):
         res_depth (int, optional): The number of successive convolutional layers in each residual block (default: 3)
         res_blocks_per_level (int, optional): The number of successive residual blocks per encoder level (default: 2)
         rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:3),
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid",)
         norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
         dropout_rate (float, optional): The spatial dropout rate to be applied to each residual block prior to residual connection (default:None)
 
@@ -225,7 +226,7 @@ class ImageResEncoder(nn.Module):
                 for i in range(n_levels)
             ]
         )
-        pool = TORCH_LAYERS[f"{pool_type}{rank}d"]
+        pool = get_torch_layer(pool_type, rank)
         self.pools = nn.ModuleList(
             [pool(pool_size) if i > 0 else nn.Identity() for i in range(n_levels)]
         )
@@ -259,7 +260,7 @@ class ImageEncoder(nn.Module):
         kernel_size (int, optional): The kernel(filter) size for the convolutional layers (default: 3)
         conv_blocks_per_level (int, optional): The number of successive convolutional blocks per encoder level (default: 1)
         rank (int, optional): The number of spatial dimensions in the data i.e., 2D, 3D (default:3),
-        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid","linear")
+        activation (str, optional): The activation function applied after each convolution (default: "relu", options: "leakyrelu","gelu","sigmoid",)
         norm_type (str, optional): The normalization method to apply between convolutions (default:None, options: "BatchNorm", "InstanceNorm", "LayerNorm")
         dropout_rate (float, optional): The spatial dropout rate to be applied to each residual block prior to residual connection (default:None)
 
@@ -298,7 +299,7 @@ class ImageEncoder(nn.Module):
                 for i in range(n_levels)
             ]
         )
-        pool = TORCH_LAYERS[f"{pool_type}{rank}d"]
+        pool = get_torch_layer(pool_type, rank)
         self.maxpools = nn.ModuleList(
             [pool(pool_size) if i > 0 else nn.Identity() for i in range(n_levels)]
         )

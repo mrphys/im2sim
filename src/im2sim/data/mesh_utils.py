@@ -227,9 +227,7 @@ def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Ten
             lengths.
     """
     coords = points[edges]
-    print(coords, coords.shape)
     distances = torch.linalg.norm(coords[0] - coords[1], dim=-1)
-    print(distances.shape)
     return distances
 
 

@@ -25,7 +25,6 @@ def make_registry(lib: Any, regex: Callable):
 
 
 def normalize_key(key: str) -> str:
-    print(key)
     return key.replace(" ", "").replace("_", "").lower()
 
 
@@ -39,7 +38,6 @@ class NormalizedDict:
         self._data[normalize_key(key)] = value
 
     def __getitem__(self, key):
-        print(key)
         return self._data[normalize_key(key)]
 
     def __str__(self):

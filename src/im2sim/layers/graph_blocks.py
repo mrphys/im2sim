@@ -4,12 +4,12 @@ from copy import copy
 import torch
 from torch import nn
 
-from .layer_util import get_activation, get_graph_layer, register_pyg_layer
+from .layer_util import get_activation, get_graph_layer, register_graph_layer
 
 logger = logging.getLogger(__name__)
 
 
-@register_pyg_layer(name="defaultnorm")
+@register_graph_layer(name="defaultnorm")
 class DefaultGraphNorm(torch.nn.Module):
     """
     The default normalisation for im2sim graph blocks.

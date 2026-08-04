@@ -2,10 +2,16 @@ import logging
 
 import torch
 from torch import nn
+from dataclasses import dataclass 
+from typing import Any
 
-from .layer_util import get_activation, get_torch_layer
+from .layer_util import (get_activation, 
+                        get_image_layer, 
+                        BaseImageConvBlock)
 
 logger = logging.getLogger(__name__)
+
+
 
 
 class ImageConvBlock(nn.Module):
@@ -40,7 +46,7 @@ class ImageConvBlock(nn.Module):
     ):
         super().__init__()
 
-        conv = get_torch_layer("Conv", rank)
+        conv = get_image_layer("Conv", rank)
         self.convs = nn.ModuleList(
             [
                 conv(
@@ -55,14 +61,14 @@ class ImageConvBlock(nn.Module):
 
         self.norms = nn.ModuleList(
             [
-                get_torch_layer(norm_type, rank)(filters, affine=True)
+                get_image_layer(norm_type, rank)(filters, affine=True)
                 if norm_type
                 else nn.Identity()
                 for _ in range(depth)
             ]
         )
         self.drop = (
-            get_torch_layer("Dropout", rank)(p=dropout_rate) if dropout_rate else nn.Identity()
+            get_image_layer("Dropout", rank)(p=dropout_rate) if dropout_rate else nn.Identity()
         )
 
         self.act = get_activation(activation)
@@ -222,7 +228,7 @@ class ImageResEncoder(nn.Module):
                 for i in range(n_levels)
             ]
         )
-        pool = get_torch_layer(pool_type, rank)
+        pool = get_image_layer(pool_type, rank)
         self.pools = nn.ModuleList(
             [pool(pool_size) if i > 0 else nn.Identity() for i in range(n_levels)]
         )
@@ -295,7 +301,7 @@ class ImageEncoder(nn.Module):
                 for i in range(n_levels)
             ]
         )
-        pool = get_torch_layer(pool_type, rank)
+        pool = get_image_layer(pool_type, rank)
         self.maxpools = nn.ModuleList(
             [pool(pool_size) if i > 0 else nn.Identity() for i in range(n_levels)]
         )
@@ -369,7 +375,7 @@ class ImageDecoder(nn.Module):
                 ]
             )
         else:
-            up_layer = get_torch_layer(upsample_type, rank)
+            up_layer = get_image_layer(upsample_type, rank)
             self.ups = nn.ModuleList(
                 [
                     up_layer(rev_filters[i], rev_filters[i + 1], kernel_size=2, stride=2)

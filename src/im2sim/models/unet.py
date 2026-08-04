@@ -36,8 +36,8 @@
 #     ):
 #         super().__init__()
 
-#         conv = TORCH_LAYERS[f"Conv{rank}d"]
-#         drop = TORCH_LAYERS[f"Dropout{rank}d"]
+#         conv = IMAGE_LAYERS[f"Conv{rank}d"]
+#         drop = IMAGE_LAYERS[f"Dropout{rank}d"]
 #         self.convs = nn.ModuleList(
 #             [
 #                 conv(
@@ -52,7 +52,7 @@
 
 #         self.norms = nn.ModuleList(
 #             [
-#                 TORCH_LAYERS(f"{norm_type}{rank}d")(filters)
+#                 IMAGE_LAYERS(f"{norm_type}{rank}d")(filters)
 #                 if norm_type
 #                 else nn.Identity()
 #                 for _ in range(depth)
@@ -131,7 +131,7 @@
 
 #         pool_sizes_standard = standardize_spatial_factors(pool_sizes, rank)
 
-#         pool = TORCH_LAYERS[f"{pool_type}{rank}d"]
+#         pool = IMAGE_LAYERS[f"{pool_type}{rank}d"]
 #         self.maxpools = nn.ModuleList(
 #             [
 #                 pool(pool_sizes_standard[i - 1]) if i > 0 else nn.Identity()
@@ -216,7 +216,7 @@
 #                 ]
 #             )
 #         else:
-#             up_layer = TORCH_LAYERS(f"{upsample_type}{rank}d")
+#             up_layer = IMAGE_LAYERS(f"{upsample_type}{rank}d")
 #             self.ups = nn.ModuleList(
 #                 [
 #                     up_layer(
@@ -436,7 +436,7 @@
 #             dropout_rate=dropout_rate,
 #         )
 
-#         conv = TORCH_LAYERS[f"Conv{rank}d"]
+#         conv = IMAGE_LAYERS[f"Conv{rank}d"]
 
 #         self.final_conv = conv(filters[0], out_channels, kernel_size=1)
 

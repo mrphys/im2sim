@@ -3,6 +3,10 @@ import re
 from collections.abc import Callable
 from copy import copy
 from typing import Any
+from enum import Enum
+from dataclasses import dataclass, asdict, fields
+from functools import partial, wraps
+
 
 import torch
 import torch_geometric.nn as gnn
@@ -52,26 +56,48 @@ activation_pattern = re.compile(
 ACTIVATIONS, register_activation = make_registry(torch.nn, activation_pattern)
 
 
-layer_pattern = r"(Conv|Pool|Norm|UpSample|PixelShuffle|Dropout)"
+layer_pattern = r"(Conv|Pool|Norm|Upsample|PixelShuffle|Dropout)"
 
 
-TORCH_LAYERS, register_torch_layer = make_registry(torch.nn, layer_pattern)
-PYG_LAYERS, register_pyg_layer = make_registry(gnn, layer_pattern)
+IMAGE_LAYERS, register_image_layer = make_registry(torch.nn, layer_pattern)
+GRAPH_LAYERS, register_graph_layer = make_registry(gnn, layer_pattern)
 
 
-def get_torch_layer(name: str, rank: int) -> torch.nn.Module:
+def register_with_ranks(base_name, ranks=(1, 2, 3)):
+    def decorator(cls):
+        for r in ranks:
+            name = f"{base_name}{r}d"
+
+            layer_cls = type(
+                name,
+                (cls,),
+                {
+                    "__init__": lambda self, *args, _rank=r, **kwargs:
+                        cls.__init__(self, *args, rank=_rank, **kwargs)
+                },
+            )
+
+            register_image_layer(name=name)(layer_cls)
+
+        return cls
+    return decorator
+
+def get_image_layer(name: str, rank: int) -> torch.nn.Module:
     """
     Get a PyTorch layer by name, with optional arguments.
     """
-
+    if name is None:
+        return torch.nn.Identity
+    
     rank_name = f"{name}{rank}d"
+
     try:
-        return TORCH_LAYERS[rank_name]
+        return IMAGE_LAYERS[rank_name]
     except KeyError:
         pass
 
     try:
-        return TORCH_LAYERS[name]
+        return IMAGE_LAYERS[name]
     except KeyError:
         ValueError(f"Layer {name} with rank {rank} not found in PyTorch layers registry")
 
@@ -142,7 +168,7 @@ def get_graph_layer(
     if kwargs is None:
         kwargs = {}
 
-    module = PYG_LAYERS[name](*args, **kwargs)
+    module = GRAPH_LAYERS[name](*args, **kwargs)
     return PyG_Wrapper(module)
 
 
@@ -170,3 +196,93 @@ def standardize_spatial_factors(factors, rank):
             raise TypeError(f"Each factor must be an int, tuple, or list, got {type(f).__name__}")
 
     return standardized
+
+class ResidualConnectionType(Enum):
+    ADD = "add"  # Standard addition residual connection
+    CONCAT = "concat"  # Concatenation residual connection
+    MULTIPLY = "multiply"  # Element-wise multiplication residual connection
+    AVERAGE = "average"  # Element-wise average residual connection
+
+
+def apply_residual_connection(*inputs, connection_type: ResidualConnectionType):
+    if len(inputs) == 0:
+        raise ValueError("At least one input tensor is required")
+
+    if connection_type == ResidualConnectionType.ADD:
+        return torch.stack(inputs, dim=0).sum(dim=0)
+
+    elif connection_type == ResidualConnectionType.CONCAT:
+        return torch.cat(inputs, dim=1)
+
+    elif connection_type == ResidualConnectionType.MULTIPLY:
+        result = inputs[0]
+        for x in inputs[1:]:
+            result = result * x
+        return result
+
+    elif connection_type == ResidualConnectionType.AVERAGE:
+        return torch.stack(inputs, dim=0).mean(dim=0)
+
+    else:
+        raise ValueError(f"Unsupported residual connection type: {connection_type}")
+    
+
+
+@dataclass
+class LayerSpec:
+    name: str 
+    kwargs: dict[str, Any] = None
+
+
+
+class ConfigRegistry:
+    def __init__(self):
+        self._registry = {}
+
+    def register(self, name):
+        def decorator(fn):
+            self._registry[name] = fn
+            return fn
+        return decorator
+
+    def apply(self, name, cfg):
+        if name not in self._registry:
+            raise ValueError(f"Unknown config: {name}")
+        return self._registry[name](copy(cfg))
+
+    def list(self):
+        return list(self._registry.keys())
+    
+
+def shallow_asdict(obj):
+    return {f.name: getattr(obj, f.name) for f in fields(obj)}
+
+
+class ConfigurableModule:
+    @classmethod
+    def from_config(cls, rank, in_channels, out_channels, cfg):
+        return cls(in_channels, out_channels, **shallow_asdict(cfg), rank=rank)
+    
+
+class ModuleSpec:
+    def __init__(self, module_cls, config_cls):
+        self.module_cls = module_cls
+        self.config_cls = config_cls
+        self.config_registry = ConfigRegistry()
+
+    def register_config(self, name):
+        return self.config_registry.register(name)
+    
+    def apply_presets(self, cfg, presets=None):
+        out_cfg = copy(cfg)
+        if presets is not None:
+            if isinstance(presets, str):
+                presets = [presets]
+
+            for preset in presets:
+                out_cfg = self.config_registry.apply(preset, cfg)
+        return out_cfg
+
+    def build(self, rank, in_channels, out_channels, cfg, presets=None):
+        cfg = self.apply_presets(cfg, presets)
+        return self.module_cls.from_config(rank, in_channels, out_channels, cfg)

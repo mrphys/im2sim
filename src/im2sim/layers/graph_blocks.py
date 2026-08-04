@@ -195,7 +195,7 @@ class GraphResDecoderBlock(nn.Module):
         conv_kwargs=None,
         activation="relu",
         out_activation="linear",
-        norm_type="InstanceNorm",
+        norm_type="defaultnorm",
     ):
         super().__init__()
 

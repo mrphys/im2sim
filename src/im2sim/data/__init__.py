@@ -5,6 +5,9 @@ from .core import (
     Operation,
     Transform,
     register_op,
+    DataLoader,
+    Dataset,
+    Pipeline
 )
 
 __all__ = [
@@ -16,4 +19,7 @@ __all__ = [
     "FittableOperation",
     "register_op",
     "Transform",
+    "DataLoader",
+    "Dataset",
+    "Pipeline"
 ]

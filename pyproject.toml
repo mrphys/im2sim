@@ -1,0 +1,126 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "im2sim"
+version = "0.1.0"
+description = "A framework for ML-accelerated digital twins"
+readme = "README.rst"
+requires-python = ">=3.10"
+license = { text = "ElasticV2" }
+authors = [
+    { name = "Anirudh Raman", email = "anirudh.raman.24@ucl.ac.uk" }
+]
+
+dependencies = [
+    "torch==2.3.1",
+    "torch_geometric==2.7.0",
+    "pyvista==0.47.0",
+    "numpy",
+    "matplotlib",
+    "scikit-learn"
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "pre-commit",
+]
+docs = [
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx-last-updated-by-git",
+    "sphinx-sitemap",
+    "sphinx_rtd_theme",
+    "myst-nb",
+    "myst-parser",
+    "shibuya",
+]
+
+[tool.setuptools.packages.find]
+where = ["im2sim"]
+
+
+# -------------------------
+# Ruff configuration
+# -------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # import sorting
+    "B",    # bugbear
+    "UP",   # pyupgrade
+    "SIM",  # simplify
+]
+
+ignore = [
+    "E501", # handled by formatter
+]
+
+fixable = [
+    "ALL",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "im2sim",
+]
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+
+# -------------------------
+# Pytest configuration
+# -------------------------
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+
+addopts = [
+    "-ra",
+    "--strict-markers",
+]
+
+
+# -------------------------
+# Coverage configuration
+# -------------------------
+
+[tool.coverage.run]
+branch = true
+source = [
+    "im2sim",
+]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "if TYPE_CHECKING:",
+    "pragma: no cover",
+]

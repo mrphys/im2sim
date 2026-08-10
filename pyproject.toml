@@ -32,9 +32,11 @@ dev = [
     "pre-commit",
 ]
 docs = [
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings[python]"
+    "sphinx",
+    "shibuya",
+    "myst-parser",
+    "sphinxcontrib-bibtex",
+    "sphinx-design",
 ]
 
 [tool.setuptools.packages.find]

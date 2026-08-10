@@ -33,10 +33,13 @@ dev = [
 ]
 docs = [
     "sphinx",
-    "shibuya",
+    "sphinx-autodoc-typehints",
+    "sphinx-last-updated-by-git",
+    "sphinx-sitemap",
+    "sphinx_rtd_theme",
+    "myst-nb",
     "myst-parser",
-    "sphinxcontrib-bibtex",
-    "sphinx-design",
+    "shibuya",
 ]
 
 [tool.setuptools.packages.find]

@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 name = "im2sim"
 version = "0.1.0"
 description = "A framework for ML-accelerated digital twins"
-readme = "README.md"
+readme = "README.rst"
 requires-python = ">=3.10"
 license = { text = "ElasticV2" }
 authors = [
@@ -38,7 +38,7 @@ docs = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["im2sim"]
 
 
 # -------------------------
@@ -78,7 +78,7 @@ fixable = [
 
 [tool.ruff.lint.isort]
 known-first-party = [
-    "your_package_name",
+    "im2sim",
 ]
 
 
@@ -110,7 +110,7 @@ addopts = [
 [tool.coverage.run]
 branch = true
 source = [
-    "your_package_name",
+    "im2sim",
 ]
 
 [tool.coverage.report]

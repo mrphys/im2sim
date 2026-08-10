@@ -1,0 +1,43 @@
+name: Documentation
+
+on:
+  push:
+  pull_request:
+    paths:
+      - "tools/**"
+      - "src/**"
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[docs]"
+
+      - name: Build docs
+        run: |
+          rm -rf tools/docs/_build
+          rm -rf tools/docs/_templates
+          rm -rf tools/docs/api_docs
+          $(PYTHON) tools/docs/create_templates.py
+          $(PYTHON) tools/docs/create_documents.py
+          $(MAKE) -C tools/docs dirhtml PY_VERSION=$(PY_VERSION)
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/build/html

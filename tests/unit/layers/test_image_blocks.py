@@ -2,7 +2,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from im2sim.layers import (
+from im2sim.src.layers import (
     ImageConvBlock,
     ImageConvResBlock,
     ImageEncoder,

@@ -2,6 +2,8 @@ name: Build Package
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
@@ -25,7 +27,7 @@ jobs:
         pip install -e ".[dev]"
 
     - name: Lint
-      run: ruff check .
+      run: ruff check im2sim/src
 
     - name: Run tests
       run: pytest

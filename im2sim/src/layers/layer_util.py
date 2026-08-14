@@ -2,12 +2,10 @@ import inspect
 import re
 from collections.abc import Callable
 from copy import copy
-from enum import Enum
 from typing import Any
 
 import torch
 import torch_geometric.nn as gnn
-
 
 
 def make_registry(lib: Any, regex: Callable):
@@ -63,18 +61,29 @@ GRAPH_LAYERS, register_graph_layer = make_registry(gnn, layer_pattern)
 
 def register_with_ranks(base_name, ranks=(1, 2, 3)):
     def decorator(cls):
+        original_init = cls.__init__
+        original_signature = inspect.signature(original_init)
+
+        parameters = [
+            p for name, p in original_signature.parameters.items() if name not in ("self", "rank")
+        ]
+
+        signature = original_signature.replace(parameters=parameters)
+
         for r in ranks:
             name = f"{base_name}{r}d"
+
+            def __init__(self, *args, _rank=r, _init=original_init, **kwargs):
+                _init(self, *args, rank=_rank, **kwargs)
+
+            __init__.__signature__ = signature
 
             layer_cls = type(
                 name,
                 (cls,),
-                {
-                    "__init__": lambda self, *args, _rank=r, **kwargs: cls.__init__(
-                        self, *args, rank=_rank, **kwargs
-                    )
-                },
+                {"__init__": __init__},
             )
+            layer_cls.__signature__ = signature
 
             register_image_layer(name=name)(layer_cls)
 
@@ -105,7 +114,15 @@ def get_image_layer(name: str, rank: int) -> torch.nn.Module:
 
 
 def get_activation(name: str | None) -> torch.nn.Module:
-    return ACTIVATIONS[name]() if name is not None else torch.nn.Identity()
+    if name is None:
+        return torch.nn.Identity()
+
+    activation = ACTIVATIONS[name]
+
+    if activation is torch.nn.Softmax:
+        return torch.nn.Softmax(dim=1)
+
+    return activation()
 
 
 class PyGParameterError(TypeError):
@@ -191,31 +208,30 @@ def standardize_spatial_factors(factors, rank):
     return standardized
 
 
-class ResidualConnectionType(Enum):
-    ADD = "add"  # Standard addition residual connection
-    CONCAT = "concat"  # Concatenation residual connection
-    MULTIPLY = "multiply"  # Element-wise multiplication residual connection
-    AVERAGE = "average"  # Element-wise average residual connection
-
-
-def apply_residual_connection(*inputs, connection_type: ResidualConnectionType):
+def apply_residual_connection(*inputs, connection_type: str = "add"):
     if len(inputs) == 0:
         raise ValueError("At least one input tensor is required")
 
-    if connection_type == ResidualConnectionType.ADD:
+    if connection_type.lower().strip() == "add":
         return torch.stack(inputs, dim=0).sum(dim=0)
 
-    elif connection_type == ResidualConnectionType.CONCAT:
+    elif connection_type.lower().strip() == "concat":
         return torch.cat(inputs, dim=1)
 
-    elif connection_type == ResidualConnectionType.MULTIPLY:
+    elif connection_type.lower().strip() == "multiply":
         result = inputs[0]
         for x in inputs[1:]:
             result = result * x
         return result
 
-    elif connection_type == ResidualConnectionType.AVERAGE:
+    elif connection_type.lower().strip() == "average":
         return torch.stack(inputs, dim=0).mean(dim=0)
 
     else:
         raise ValueError(f"Unsupported residual connection type: {connection_type}")
+
+
+def call_with_supported_kwargs(fn, kwargs):
+    sig = inspect.signature(fn)
+    supported = {k: v for k, v in kwargs.items() if k in sig.parameters}
+    return fn(**supported)

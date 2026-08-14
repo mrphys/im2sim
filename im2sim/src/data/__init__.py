@@ -7,6 +7,7 @@ from im2sim.src.data.core import (
     Operation,
     Pipeline,
     Transform,
+    collate,
     register_op,
 )
 
@@ -20,6 +21,7 @@ __all__ = [
     "register_op",
     "Transform",
     "DataLoader",
+    "collate",
     "Dataset",
     "Pipeline",
 ]

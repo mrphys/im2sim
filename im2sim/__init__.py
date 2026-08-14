@@ -14,6 +14,7 @@ from im2sim._api import ops
 from im2sim._api import losses
 from im2sim._api import models
 from im2sim._api import plot
+from im2sim._api import _internal
 
 # Make sure directory containing top level submodules is in
 # the __path__ so that "from tensorflow_mri.foo import bar" works.

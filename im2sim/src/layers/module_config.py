@@ -1,12 +1,10 @@
 import json
-from enum import Enum
-from copy import deepcopy
 from dataclasses import dataclass, fields
-from typing import Any, TypeVar, get_args, get_origin, get_type_hints
-import inspect
+from enum import Enum
+from types import UnionType
+from typing import Any, TypeVar, Union, get_args, get_origin, get_type_hints
 
 from im2sim.src.utils import api_util
-
 
 T = TypeVar("T", bound="Config")
 
@@ -15,133 +13,94 @@ T = TypeVar("T", bound="Config")
 @dataclass
 class Config:
     """
-    Base class for recursively serialisable configuration objects. 
+    Base class for recursively serialisable configuration objects.
 
-    This class provides:  
-    - Recursive (de)serialization to/from dictionaries and JSON  
-    - Preset system for modifying configs declaratively  
-    - Type-aware reconstruction using type hints  
+    This class provides recursive (de)serialization to/from dictionaries and JSON
 
-    Subclasses should be defined as dataclasses.  
+    Subclasses should be defined as dataclasses.
 
-    Example:  
+    Example:
         ```python
-        cfg = MyConfig(...)  
-        cfg = cfg.apply_presets(["fast", "lightweight"])  
-        cfg.save("config.json")  
 
-        cfg2 = MyConfig().load("config.json") 
+        cfg = MyConfig(...)
+
+        cfg.save("config.json")
+
+        cfg2 = MyConfig().load("config.json")
+
         ```
     """
 
-
     def __init_subclass__(cls):
-        """ Automatically initialise a preset registry for each subclass. """
+        """Automatically initialise a preset registry for each subclass."""
         super().__init_subclass__()
         cls._presets = {}
-    
-    @classmethod
-    def register_preset(cls, name):
-        """ 
-        Register a preset function for this config class. 
-        
-        A preset is a function that takes a config instance and modifies it. 
-        Args: 
-            name (str): Name of the preset. 
-            Returns: decorator: Function decorator. 
-        
-        Example: 
-            ```python
-            @MyConfig.register_preset("small") 
-            def small(cfg): 
-                cfg.hidden_dim = 32 
-                return cfg 
-            ```
+
+    def mod(self, **kwargs):
         """
-        def decorator(fn):
-            cls._presets[name] = fn
-            return fn
-        return decorator
+        Create a modified copy of the config with updated fields.
 
-    def apply_presets(self, names: list[str]):
-        """ 
-        Apply a sequence of presets to a copy of this config. 
+        Args:
+            **kwargs: Field names and their new values.
 
-        Presets are applied in order. 
-        
-        Args: 
-            names (list[str]): List of preset names. 
-
-        Returns: 
-            Config: Modified config instance. 
+        Returns:
+            Config: A new config instance with updated fields.
         """
-        
-        cfg = deepcopy(self)
-        for name in names:
-            cfg = self._presets[name](cfg)
-        return cfg
-    
+        return self.__class__(**{**self.as_kwargs(), **kwargs})
 
     def as_kwargs(self):
-        """ 
-        Convert config fields into keyword arguments. 
-
-        Returns: 
-            dict: Mapping of field names to values. 
         """
-        return {
-            f.name: getattr(self, f.name)
-            for f in fields(self)
-        }
+        Convert config fields into keyword arguments.
+
+        Returns:
+            dict: Mapping of field names to values.
+        """
+        return {f.name: getattr(self, f.name) for f in fields(self)}
 
     def to_dict(self):
-        """ 
-        Recursively convert config into a serialisable dictionary. 
+        """
+        Recursively convert config into a serialisable dictionary.
 
-        Returns: 
-            dict: Serialized representation. """
+        Returns:
+            dict: Serialized representation."""
         return {
             "__class__": self.__class__.__name__,
-            **{
-                f.name: self._serialize_value(getattr(self, f.name))
-                for f in fields(self)
-            }
+            **{f.name: self._serialize_value(getattr(self, f.name)) for f in fields(self)},
         }
 
     @classmethod
     def from_dict(cls: type[T], data: dict[str, Any]) -> T:
-        """ 
-        Reconstruct a config object from a dictionary. 
-        Uses type hints to correctly deserialize nested configs, enums, lists, etc. 
+        """
+        Reconstruct a config object from a dictionary.
 
-        Args: 
-            data (dict): Serialized config. 
+        Args:
+            data: Serialized config dictionary.
 
-        Returns: 
-            Config: Reconstructed config object. """
-        
+        Returns:
+            Reconstructed config object.
+        """
+
         hints = get_type_hints(cls)
 
         kwargs = {}
 
-        for key, value in data.items():
-            if key == "__class__":
+        for field in fields(cls):
+            if field.name not in data:
                 continue
 
-            field_type = hints.get(key)
+            value = data[field.name]
+            field_type = hints.get(field.name)
 
             if field_type is not None:
                 value = cls._deserialize_value(value, field_type)
 
-            kwargs[key] = value
+            kwargs[field.name] = value
 
         return cls(**kwargs)
-    
-    
 
     @staticmethod
     def _serialize_value(value):
-        """ Recursively serialize values into JSON-compatible structures. """
+        """Recursively serialize values into JSON-compatible structures."""
         if isinstance(value, Config):
             return value.to_dict()
 
@@ -155,114 +114,87 @@ class Config:
             return [Config._serialize_value(v) for v in value]
 
         if isinstance(value, dict):
-            return {
-                k: Config._serialize_value(v)
-                for k, v in value.items()
-            }
+            return {k: Config._serialize_value(v) for k, v in value.items()}
 
         return value
 
     @staticmethod
     def _deserialize_value(value, typ):
-        """ Recursively deserialize values based on type hints. """
+        """Recursively deserialize values based on type hints."""
+
+        if value is None:
+            return None
+
         origin = get_origin(typ)
         args = get_args(typ)
 
-        # Optional / Union
-        if origin is type(None):
-            return value
-
-        if origin is list:
-            subtype = args[0]
-            return [
-                Config._deserialize_value(v, subtype)
-                for v in value
-            ]
-
-        if origin is dict:
-            key_type, val_type = args
-            return {
-                k: Config._deserialize_value(v, val_type)
-                for k, v in value.items()
-            }
-
-        # Handle Optional[T] / Union[T, None]
-        if origin is not None and origin.__name__ == "Union":
+        # Optional[T] / T | None / Union[T, None]
+        if origin in (Union, UnionType):
             for subtype in args:
                 if subtype is type(None):
                     continue
+
                 try:
                     return Config._deserialize_value(value, subtype)
-                except Exception:
-                    pass
+                except (TypeError, ValueError):
+                    continue
+
             return value
 
-        # Nested configs
+        # list[T]
+        if origin is list:
+            subtype = args[0]
+
+            return [Config._deserialize_value(v, subtype) for v in value]
+
+        # dict[K, V]
+        if origin is dict:
+            key_type, value_type = args
+
+            return {
+                Config._deserialize_value(k, key_type): Config._deserialize_value(v, value_type)
+                for k, v in value.items()
+            }
+
+        # Nested Config
         if isinstance(typ, type) and issubclass(typ, Config):
             return typ.from_dict(value)
 
-        # Enums
+        # Enum
         if isinstance(typ, type) and issubclass(typ, Enum):
             return typ(value)
 
         return value
-    
+
     def save(self, filepath):
-        """ 
-        Save config to a JSON file. 
-
-        Args: 
-            filepath (str): Path to file. 
         """
-        with open(filepath, 'w') as f:
-            json.dump(self.to_dict(), f, indent=4)
-        
-    def load(self, filepath):
-        """ 
-        Load config from a JSON file. 
+        Save config to a JSON file.
 
-        Args: 
-            filepath (str): Path to file. 
-        
-        Returns: 
-            Config: Loaded config instance. 
+        Args:
+            filepath (str): Path to file.
+        """
+        with open(filepath, "w") as f:
+            json.dump(self.to_dict(), f, indent=4)
+
+    @classmethod
+    def load(cls, filepath):
+        """
+        Load config from a JSON file.
+
+        Args:
+            filepath (str): Path to file.
+
+        Returns:
+            Config: Loaded config instance.
         """
         with open(filepath) as f:
             data = json.load(f)
-        return self.from_dict(data)
-    
-    @classmethod
-    def generate_documentation(cls) -> str:
-        """ 
-        Generate documentation for all registered presets. 
 
-        Returns: 
-            str: Formatted documentation string. 
-        """
-        cls_doc = inspect.getdoc(fn) or "No class docstring provided."
-        preset_docs = []
-        for name, fn in cls._presets.items():
-            doc = inspect.getdoc(fn) or "No description provided."
-            preset_docs.append(f"""
-                        {name}
-                        {'-' * len(name)}
-
-                        {doc}
-                        """.strip()
-                                )
-        preset_text = "\n\n".join(preset_docs)
-        return f"""
-                {cls_doc}
-
-                Preset Configurations
-                =====================
-
-                {preset_text}
-                """.strip()
+        return cls.from_dict(data)
 
 
-    
 CONFIG_REGISTRY = {}
+
 
 @api_util.export("_internal.register_config")
 def register_config(cls):
@@ -286,39 +218,24 @@ def register_config(cls):
 class LayerConfig(Config):
     """
     Configuration for a single layer/module.
-    Attributes:
-        name (str): The name of the layer/module. (e.g., 'Conv', 'Linear', 'BatchNorm', etc.)
-        kwargs (dict[str, Any]): A dictionary of keyword arguments for the layer/module. (e.g. {'kernel_size': 3, 'stride': 1, 'padding': 1})
+
+    Args:
+        name (str):
+            The name of the layer/module. (e.g., 'Conv', 'Linear', 'BatchNorm', etc.)
+
+        kwargs (dict[str, Any]):
+            A dictionary of keyword arguments for the layer/module. (e.g. {'kernel_size': 3, 'stride': 1, 'padding': 1})
+
+    Examples:
+        >>> conv_cfg = LayerConfig(name='Conv', kwargs={'kernel_size': 3, 'stride': 1, 'padding': 1})
+        >>> batchnorm_cfg = LayerConfig(name='BatchNorm', kwargs={'affine': True})
+
+    Note:
+    If being used within an im2sim model, inferred inputs like `in_channels` and `out_channels` should not be included and
+    will be automatically set based on the model's architecture.
+    The rank will also be inferred from the model's architecture and should not be included in the configuration.
+
     """
+
     name: str
     kwargs: dict[str, Any] = None
-
-
-@api_util.export("_internal.ConfigurableModule")
-class ConfigurableModule:
-    """
-    Base class for modules that can be constructed from a Config.
-    Provides a standard interface for building modules from configs.
-    """
-    @classmethod
-    def build(cls, 
-            rank:int, 
-            in_channels:int, 
-            out_channels:int, 
-            cfg: Config):
-        """ 
-        Instantiate a module using a config object. 
-
-        Args: 
-            rank (int): Spatial rank (1D, 2D, 3D). 
-            in_channels (int): Input channels. 
-            out_channels (int): Output channels. 
-            cfg (Config): Configuration object. 
-
-        Returns: 
-            nn.Module: Instantiated module. 
-        """
-        return cls(in_channels, out_channels, **cfg.as_kwargs(), rank=rank)
-
-
-

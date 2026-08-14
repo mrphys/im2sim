@@ -1,6 +1,12 @@
-from im2sim.src.layers.graph_blocks import GraphConvBlock, GraphConvResBlock, GraphResDecoderBlock
 # from image_blocks import ImageConvBlock, ImageConvResBlock, ImageDecoder, ImageEncoder
-from im2sim.src.layers import custom_image_layers, image_conv_blocks, halfunet, reverse_halfunet
+from im2sim.src.layers import (
+    custom_image_layers,
+    halfunet,
+    image_conv_blocks,
+    reverse_halfunet,
+    unet,
+)
+from im2sim.src.layers.graph_blocks import GraphConvBlock, GraphConvResBlock, GraphResDecoderBlock
 from im2sim.src.layers.layer_util import (
     get_activation,
     get_image_layer,
@@ -9,6 +15,7 @@ from im2sim.src.layers.layer_util import (
     register_image_layer,
     standardize_spatial_factors,
 )
+
 # from .meshgraphnets import MeshGraphNet, MGNDecoder, MGNEdgeBlock, MGNGnBlock, MGNNodeBlock
 from im2sim.src.layers.projections import OGProjection
 
@@ -35,5 +42,6 @@ __all__ = [
     "custom_image_layers",
     "image_conv_blocks",
     "halfunet",
+    "unet",
     "reverse_halfunet",
 ]

@@ -2,5 +2,7 @@
 # Do not edit.
 """Configuration classes for model and training settings."""
 
-from im2sim.src.layers.image_conv_blocks import ImageConvBlockConfig as ImageConvBlockConfig
+from im2sim.src.layers.module_config import LayerConfig as LayerConfig
 from im2sim.src.layers.halfunet import HalfUNetConfig as HalfUNetConfig
+from im2sim.src.layers.reverse_halfunet import ReverseHalfUNetConfig as ReverseHalfUNetConfig
+from im2sim.src.layers.unet import UNetConfig as UNetConfig

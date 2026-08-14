@@ -1,5 +1,13 @@
 from im2sim.src.data.core import Operation, Transform
-from im2sim.src.data.ops import FitNormOp, FitRangeNormOp, FitZScoreOp, NormOp, PowerScaleOp, RangeNormOp, ZScoreOp
+from im2sim.src.data.ops import (
+    FitNormOp,
+    FitRangeNormOp,
+    FitZScoreOp,
+    NormOp,
+    PowerScaleOp,
+    RangeNormOp,
+    ZScoreOp,
+)
 
 
 def transform_from_fn(

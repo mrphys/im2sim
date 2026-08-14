@@ -3,3 +3,5 @@
 """Predefined deep learning models for various tasks."""
 
 from im2sim.src.layers.halfunet import HalfUNet as HalfUNet
+from im2sim.src.layers.reverse_halfunet import ReverseHalfUNet as ReverseHalfUNet
+from im2sim.src.layers.unet import UNet as UNet

@@ -3,12 +3,12 @@ import torch
 from im2sim.src.data.core import FittableOperation, InvertibleOperation, Operation, register_op
 from im2sim.src.utils import api_util
 
-
 # TODO: fix the PowerScaleOp
 # ------------------------------------------------------------------------------------
 # OP FUNCTION LIBRARY
 # ------------------------------------------------------------------------------------
 eps = 1e-8
+
 
 @api_util.export("ops.normtorange")
 def normtorange(x, max=None, min=None, a=0, b=1):

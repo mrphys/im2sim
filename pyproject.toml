@@ -102,6 +102,14 @@ testpaths = [
     "tests",
 ]
 
+pythonpath = [
+    ".",
+]
+
+filterwarnings = [
+    "ignore:.*torch_geometric.distributed.*:DeprecationWarning",
+]
+
 addopts = [
     "-ra",
     "--strict-markers",

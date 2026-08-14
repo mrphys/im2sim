@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Non-uniform fast Fourier transform (NUFFT) - IM2SIM Documentation</title><link rel="shortcut icon" href="../_static/im2sim_logo.png"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+      <link rel="canonical" href="https://mrphys.github.io/im2sim/guide/nufft.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=be2c45d6" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://mrphys.github.io/im2sim/guide/nufft.html"/>
+  <meta property="og:title" content="Non-uniform fast Fourier transform (NUFFT)"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      <img class="light-logo" src="../_static/im2sim_logo.png" alt="im2sim" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/im2sim_logo.png" alt="im2sim" height="28" loading="lazy" />
+      <strong>im2sim</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials"></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs.html">API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim.html">im2sim</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/_internal.html">im2sim._internal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/_internal/Config.html">im2sim._internal.Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/_internal/register_config.html">im2sim._internal.register_config</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/configs.html">im2sim.configs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/LayerConfig.html">im2sim.configs.LayerConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/data.html">im2sim.data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/layers.html">im2sim.layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/DefaultGraphNorm.html">im2sim.layers.DefaultGraphNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/losses.html">im2sim.losses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/F1Loss.html">im2sim.losses.F1Loss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/models.html">im2sim.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/UNet.html">im2sim.models.UNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/ops.html">im2sim.ops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/ops/normtorange.html">im2sim.ops.normtorange</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/plot.html">im2sim.plot</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#guided-example">Guided example</a><ul>
+<li><a class="reference internal" href="#forward-transform-image-to-k-space">Forward transform (image to <em>k</em>-space)</a></li>
+<li><a class="reference internal" href="#adjoint-transform-k-space-to-image">Adjoint transform (<em>k</em>-space to image)</a></li>
+<li><a class="reference internal" href="#use-the-linear-operator">Use the linear operator</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">im2sim</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Non-uniform fast Fourier transform (NUFFT)</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <div class="copy-page-wrapper relative pb-4 lg:absolute lg:top-8 lg:right-6 xl:right-12">
+  <div id="copy-page-trigger">
+    <button
+      type="button"
+      class="js-copy px-3 py-1 inline-flex items-center gap-1"
+      data-url="https://mrphys.github.io/im2sim/_sources/guide/nufft.ipynb.txt"
+    >
+      <i class="i-lucide" data-icon="copy"></i>
+      <span>Copy page</span>
+    </button>
+    <button class="js-menu px-2 py-1" type="button" aria-label="More actions"
+      aria-haspopup="menu" aria-expanded="false" aria-controls="copy-page-content">
+      <i class="i-lucide chevron-down"></i>
+    </button>
+  </div>
+  <div id="copy-page-content" role="menu" aria-orientation="vertical" aria-hidden="true">
+    <div role="presentation">
+      <div class="flex flex-col" role="group">
+        <button class="js-copy" type="button" role="menuitem"
+          data-url="https://mrphys.github.io/im2sim/_sources/guide/nufft.ipynb.txt">
+          <span class="iconify-icon">
+            <i class="i-lucide" data-icon="copy"></i>
+          </span>
+          <span>Copy page</span>
+        </button>
+        <a role="menuitem" href="https://mrphys.github.io/im2sim/_sources/guide/nufft.ipynb.txt" target="_blank" rel="nofollow"><iconify-icon icon="bi:code-slash"></iconify-icon>
+            <span>View Source</span></a><a role="menuitem" href="https://chatgpt.com/?hints=search&q=Read%20https%3A//mrphys.github.io/im2sim/_sources/guide/nufft.ipynb.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:openai"></iconify-icon>
+          <span>Open in ChatGPT</span>
+        </a><a role="menuitem" href="https://claude.ai/new?q=Read%20https%3A//mrphys.github.io/im2sim/_sources/guide/nufft.ipynb.txt%20so%20I%20can%20ask%20questions%20about%20it." target="_blank" rel="nofollow">
+          <iconify-icon icon="bi:claude"></iconify-icon>
+          <span>Open in Claude</span>
+        </a></div>
+    </div>
+  </div>
+</div><article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="non-uniform-fast-fourier-transform-nufft">
+<h1>Non-uniform fast Fourier transform (NUFFT)<a class="headerlink" href="#non-uniform-fast-fourier-transform-nufft" title="Link to this heading">#</a></h1>
+<p>TensorFlow MRI provides an efficient NUFFT operator for both CPU and GPU, based
+on the algorithms by the Flatiron Institute (see
+<a class="reference external" href="https://doi.org/10.1137/18M120885X">this paper</a> and
+<a class="reference external" href="https://doi.ieeecomputersociety.org/10.1109/IPDPSW52791.2021.00105">this paper</a>
+for more details). The operator is available as
+<a class="reference external" href="https://mrphys.github.io/tensorflow-mri/api_docs/tfmri/signal/nufft/"><code class="docutils literal notranslate"><span class="pre">tfmri.signal.nufft</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">tfmri.signal.nufft</span></code> function is an alias of the <code class="docutils literal notranslate"><span class="pre">nufft</span></code> function in the
+<a class="reference external" href="https://mrphys.github.io/tensorflow-nufft/">TensorFlow NUFFT</a>
+stand-alone package. Please direct any issues about the NUFFT function directly
+to the TensorFlow NUFFT <a class="reference external" href="https://github.com/mrphys/tensorflow-nufft/">repository</a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The current NUFFT implementation uses the <a class="reference external" href="https://www.fftw.org/">FFTW</a> library,
+which is released under the GNU GPL. If you are using the NUFFT for commercial
+purposes, you will need to purchase a license from MIT or adapt the code to use
+a different FFT library. If you do the latter, please consider
+<a class="reference external" href="https://mrphys.github.io/tensorflow-mri/guide/contribute/">contributing</a>
+your modification so others may benefit.</p>
+</div>
+<p>The NUFFT function can be used to efficiently evaluate the Fourier transform
+when either the input data or the output data does not lie on a uniform grid,
+in which case the standard fast Fourier transform (FFT) algorithm cannot be
+used. There are 3 transform types depending whether the input is non-uniform,
+the output is non-uniform or both input and output are non-uniform.</p>
+<ul class="simple">
+<li><p>A <strong>type-1</strong> transform evaluates the Fourier transform on a uniform grid
+given a set of arbitrary points (i.e, non-uniform to uniform).</p></li>
+<li><p>A <strong>type-2</strong> transform evaluates the Fourier transform on a set of arbitrary
+points given a uniform grid. (i.e., uniform to non-uniform).</p></li>
+<li><p>A <strong>type-3</strong> transform evaluates the Fourier transform on a set of arbitrary
+points given a set of arbitrary points (i.e., non-uniform to non-uniform).</p></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The type of the transform can be specified using the <code class="docutils literal notranslate"><span class="pre">transform_type</span></code> argument.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>NUFFT type-3 is not currently supported or planned, but contributions will be
+accepted.</p>
+</div>
+<p>The NUFFT may be <strong>forward</strong> (signal to frequency domain) or <strong>backward</strong>
+(frequency to signal domain), regardless of the transform type.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The direction of the transform can be specified using the <code class="docutils literal notranslate"><span class="pre">fft_direction</span></code>
+argument.</p>
+</div>
+<section id="guided-example">
+<h2>Guided example<a class="headerlink" href="#guided-example" title="Link to this heading">#</a></h2>
+<p>As an example, let’s take an image of the Shepp-Logan phantom and evaluate its
+Fourier transform on a set of sampling points defining a radial <em>k</em>-space
+trajectory, using a forward, type-2 NUFFT. Then we will see how to recover
+the image from the radial <em>k</em>-space data, using a backward, type-1 NUFFT.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">%</span><span class="k">pip</span> install -q tensorflow tensorflow-mri
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class=" -Color -Color-Yellow">WARNING: You are using pip version 22.0.4; however, version 22.2 is available.</span>
+</span><span data-line="2"><span class=" -Color -Color-Yellow">You should consider upgrading via the &#39;/usr/local/bin/python3.8 -m pip install --upgrade pip&#39; command.</span>
+</span><span data-line="3">Note: you may need to restart the kernel to use updated packages.
+</span></pre></div>
+</div>
+</div>
+</div>
+<p>Now import both packages and create an example image using
+<a class="reference external" href="https://mrphys.github.io/tensorflow-mri/api_docs/tfmri/image/phantom/"><code class="docutils literal notranslate"><span class="pre">tfmri.image.phantom</span></code></a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow_mri</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tfmri</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Create</span>
+</span><span data-line="5"><span class="n">image_shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">]</span>
+</span><span data-line="6"><span class="n">image</span> <span class="o">=</span> <span class="n">tfmri</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">phantom</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">image_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;image: </span><span class="se">\n</span><span class="s2"> - shape: </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> - dtype: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">2022-07-21 17:25:43.649824: I tensorflow/core/util/util.cc:169] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+</span><span data-line="2">2022-07-21 17:25:59.264266: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="3">2022-07-21 17:25:59.268928: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="4">2022-07-21 17:25:59.269048: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="5">2022-07-21 17:25:59.269524: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F AVX512_VNNI FMA
+</span><span data-line="6">To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+</span><span data-line="7">2022-07-21 17:25:59.270142: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="8">2022-07-21 17:25:59.270251: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="9">2022-07-21 17:25:59.270327: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="10">2022-07-21 17:25:59.612269: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="11">2022-07-21 17:25:59.612401: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="12">2022-07-21 17:25:59.612481: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:975] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+</span><span data-line="13">2022-07-21 17:25:59.612559: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1532] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 14239 MB memory:  -&gt; device: 0, name: NVIDIA GeForce RTX 3080 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 8.6
+</span></pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">image: 
+</span><span data-line="2"> - shape: (256, 256)
+</span><span data-line="3"> - dtype: &lt;dtype: &#39;complex64&#39;&gt;
+</span></pre></div>
+</div>
+</div>
+</div>
+<p>Let us also create a <em>k</em>-space trajectory. In this example we will create a
+radial trajectory.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">trajectory</span> <span class="o">=</span> <span class="n">tfmri</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">radial_trajectory</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">base_resolution</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="mi">233</span><span class="p">,</span> <span class="n">flatten_encoding_dims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;trajectory: </span><span class="se">\n</span><span class="s2"> - shape: </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> - dtype: </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> - range: [</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">trajectory</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">reduce_min</span><span class="p">(</span><span class="n">trajectory</span><span class="p">),</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">reduce_max</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)))</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">trajectory: 
+</span><span data-line="2"> - shape: (119296, 2)
+</span><span data-line="3"> - dtype: &lt;dtype: &#39;float32&#39;&gt;
+</span><span data-line="4"> - range: [-3.1415927410125732, 3.141521453857422]
+</span></pre></div>
+</div>
+</div>
+</div>
+<p>The trajectory should have shape <code class="docutils literal notranslate"><span class="pre">[...,</span> <span class="pre">M,</span> <span class="pre">N]</span></code>, where <code class="docutils literal notranslate"><span class="pre">M</span></code> is the number of
+points and <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of dimensions. Any additional dimensions <code class="docutils literal notranslate"><span class="pre">...</span></code> will
+be treated as batch dimensions.</p>
+<p>Batch dimensions for <code class="docutils literal notranslate"><span class="pre">image</span></code> and <code class="docutils literal notranslate"><span class="pre">traj</span></code>, if any, will be broadcasted.</p>
+<p>Spatial frequencies should be provided in radians/voxel, ie, in the range
+<code class="docutils literal notranslate"><span class="pre">[-pi,</span> <span class="pre">pi]</span></code>.</p>
+<p>Finally, we’ll also need density compensation weights for our set of nonuniform
+points. These are necessary in the adjoint transform, to compensate for the fact
+that the sampling density in a radial trajectory is not uniform.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">density</span> <span class="o">=</span> <span class="n">tfmri</span><span class="o">.</span><span class="n">sampling</span><span class="o">.</span><span class="n">radial_density</span><span class="p">(</span><span class="n">base_resolution</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">views</span><span class="o">=</span><span class="mi">233</span><span class="p">)</span>
+</span><span data-line="2"><span class="n">density</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">density</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;density: </span><span class="se">\n</span><span class="s2"> - shape: </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> - dtype: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">density</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">density</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">density: 
+</span><span data-line="2"> - shape: (119296,)
+</span><span data-line="3"> - dtype: &lt;dtype: &#39;float32&#39;&gt;
+</span></pre></div>
+</div>
+</div>
+</div>
+<section id="forward-transform-image-to-k-space">
+<h3>Forward transform (image to <em>k</em>-space)<a class="headerlink" href="#forward-transform-image-to-k-space" title="Link to this heading">#</a></h3>
+<p>Next, let’s calculate the k-space coefficients for the given image and trajectory points (image to k-space transform).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">kspace</span> <span class="o">=</span> <span class="n">tfmri</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">nufft</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span>
+</span><span data-line="2">                            <span class="n">transform_type</span><span class="o">=</span><span class="s1">&#39;type_2&#39;</span><span class="p">,</span>
+</span><span data-line="3">                            <span class="n">fft_direction</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;kspace: </span><span class="se">\n</span><span class="s2"> - shape: </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> - dtype: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kspace</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">kspace</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">kspace: 
+</span><span data-line="2"> - shape: (119296,)
+</span><span data-line="3"> - dtype: &lt;dtype: &#39;complex64&#39;&gt;
+</span></pre></div>
+</div>
+</div>
+</div>
+<p>We are using a type-2 transform (uniform to nonuniform) and a forward FFT
+(image domain to frequency domain). These are the default values for
+<code class="docutils literal notranslate"><span class="pre">transform_type</span></code> and <code class="docutils literal notranslate"><span class="pre">fft_direction</span></code>, so providing them was not necessary in
+this case.</p>
+</section>
+<section id="adjoint-transform-k-space-to-image">
+<h3>Adjoint transform (<em>k</em>-space to image)<a class="headerlink" href="#adjoint-transform-k-space-to-image" title="Link to this heading">#</a></h3>
+<p>We will now perform the adjoint transform to recover the image given the
+<em>k</em>-space data. In this case, we will use a type-1 transform (nonuniform to
+uniform) and a backward FFT (frequency domain to image domain). Also note that,
+prior to evaluating the NUFFT, we will compensate for the nonuniform sampling
+density by simply dividing the <em>k</em>-space samples by the density weights.
+Finally, for type-1 transforms we need to specify an additional <code class="docutils literal notranslate"><span class="pre">grid_shape</span></code>
+argument, which should be the size of the image. If there are any batch
+dimensions, <code class="docutils literal notranslate"><span class="pre">grid_shape</span></code> should <strong>not</strong> include them.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Apply density compensation.</span>
+</span><span data-line="2"><span class="n">kspace</span> <span class="o">/=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">density</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">recon</span> <span class="o">=</span> <span class="n">tfmri</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">nufft</span><span class="p">(</span><span class="n">kspace</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span>
+</span><span data-line="5">                           <span class="n">grid_shape</span><span class="o">=</span><span class="n">image_shape</span><span class="p">,</span>
+</span><span data-line="6">                           <span class="n">transform_type</span><span class="o">=</span><span class="s1">&#39;type_1&#39;</span><span class="p">,</span>
+</span><span data-line="7">                           <span class="n">fft_direction</span><span class="o">=</span><span class="s1">&#39;backward&#39;</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;recon: </span><span class="se">\n</span><span class="s2"> - shape: </span><span class="si">{}</span><span class="se">\n</span><span class="s2"> - dtype: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">recon</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">recon</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">recon: 
+</span><span data-line="2"> - shape: (256, 256)
+</span><span data-line="3"> - dtype: &lt;dtype: &#39;complex64&#39;&gt;
+</span></pre></div>
+</div>
+</div>
+</div>
+<p>Finally, let’s visualize the images.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">plot_images</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">recon</span><span class="p">):</span>
+</span><span data-line="3">  <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">9.6</span><span class="p">,</span> <span class="mf">5.4</span><span class="p">))</span>
+</span><span data-line="4">  <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+</span><span data-line="5">  <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Original image&quot;</span><span class="p">)</span>
+</span><span data-line="6">  <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">recon</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+</span><span data-line="7">  <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Image after forward</span><span class="se">\n</span><span class="s2">and adjoint NUFFT&quot;</span><span class="p">)</span>
+</span><span data-line="8">  <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span><span data-line="9"><span class="n">plot_images</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">recon</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ed739320bcec44e952e2c94e8c30931e2f1565301f14f6e2722599cc273859a5.png" src="../_images/ed739320bcec44e952e2c94e8c30931e2f1565301f14f6e2722599cc273859a5.png" />
+</div>
+</div>
+</section>
+<section id="use-the-linear-operator">
+<h3>Use the linear operator<a class="headerlink" href="#use-the-linear-operator" title="Link to this heading">#</a></h3>
+<p>You can also use
+<a class="reference external" href="https://mrphys.github.io/tensorflow-mri/api_docs/tfmri/linalg/LinearOperatorNUFFT/"><code class="docutils literal notranslate"><span class="pre">tfmri.linalg.LinearOperatorNUFFT</span></code></a>
+to perform forward and adjoint NUFFT. This might be particularly useful when
+building MRI reconstruction methods, as you can take advantage of the features
+of the <a class="reference external" href="https://mrphys.github.io/tensorflow-mri/guide/linalg/">linear algebra framework</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Create the linear operator for the specified image shape, trajectory and</span>
+</span><span data-line="2"><span class="c1"># density.</span>
+</span><span data-line="3"><span class="n">linop_nufft</span> <span class="o">=</span> <span class="n">tfmri</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinearOperatorNUFFT</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">image_shape</span><span class="p">,</span> <span class="n">trajectory</span><span class="o">=</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Apply forward transform to obtain the *k*-space signal given an image.</span>
+</span><span data-line="7"><span class="n">kspace</span> <span class="o">=</span> <span class="n">linop_nufft</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Apply adjoint transform to obtain an image given a *k*-space signal.</span>
+</span><span data-line="10"><span class="n">recon</span> <span class="o">=</span> <span class="n">linop_nufft</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">kspace</span><span class="p">,</span> <span class="n">adjoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="n">plot_images</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">recon</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ed739320bcec44e952e2c94e8c30931e2f1565301f14f6e2722599cc273859a5.png" src="../_images/ed739320bcec44e952e2c94e8c30931e2f1565301f14f6e2722599cc273859a5.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026 University College London</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials"></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

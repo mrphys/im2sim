@@ -1,0 +1,254 @@
+{
+    "__class__": "ReverseHalfUNetConfig",
+    "hidden_channels": 64,
+    "n_levels": 3,
+    "pool_cfg": [
+        {
+            "__class__": "LayerConfig",
+            "name": "MaxPool",
+            "kwargs": {
+                "kernel_size": 2
+            }
+        },
+        {
+            "__class__": "LayerConfig",
+            "name": "MaxPool",
+            "kwargs": {
+                "kernel_size": 2
+            }
+        }
+    ],
+    "upsample_cfg": [
+        {
+            "__class__": "LayerConfig",
+            "name": "Upsample",
+            "kwargs": {
+                "scale_factor": 2,
+                "mode": "trilinear"
+            }
+        },
+        {
+            "__class__": "LayerConfig",
+            "name": "Upsample",
+            "kwargs": {
+                "scale_factor": 2,
+                "mode": "trilinear"
+            }
+        }
+    ],
+    "block_cfg": {
+        "__class__": "ImageConvBlockConfig",
+        "depth": 1,
+        "activation": null,
+        "out_activation": null,
+        "conv_cfg": {
+            "__class__": "LayerConfig",
+            "name": "Conv",
+            "kwargs": {
+                "kernel_size": 1,
+                "padding": 0,
+                "stride": 1
+            }
+        },
+        "norm_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "dropout_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "attn_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "dropout_position": 1,
+        "residual_connections": null,
+        "residual_type": "add"
+    },
+    "stem_block_cfg": {
+        "__class__": "ImageConvBlockConfig",
+        "depth": 1,
+        "activation": "ReLU",
+        "out_activation": null,
+        "conv_cfg": {
+            "__class__": "LayerConfig",
+            "name": "DepthwiseSeparableConv",
+            "kwargs": {
+                "kernel_size": 3,
+                "padding": "same"
+            }
+        },
+        "norm_cfg": {
+            "__class__": "LayerConfig",
+            "name": "InstanceNorm",
+            "kwargs": {
+                "affine": true
+            }
+        },
+        "dropout_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "attn_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "dropout_position": 1,
+        "residual_connections": null,
+        "residual_type": "add"
+    },
+    "decoder_block_cfg": [
+        {
+            "__class__": "ImageConvBlockConfig",
+            "depth": 1,
+            "activation": "ReLU",
+            "out_activation": null,
+            "conv_cfg": {
+                "__class__": "LayerConfig",
+                "name": "DepthwiseSeparableConv",
+                "kwargs": {
+                    "kernel_size": 3,
+                    "padding": "same"
+                }
+            },
+            "norm_cfg": {
+                "__class__": "LayerConfig",
+                "name": "InstanceNorm",
+                "kwargs": {
+                    "affine": true
+                }
+            },
+            "dropout_cfg": {
+                "__class__": "LayerConfig",
+                "name": null,
+                "kwargs": {}
+            },
+            "attn_cfg": {
+                "__class__": "LayerConfig",
+                "name": null,
+                "kwargs": {}
+            },
+            "dropout_position": 1,
+            "residual_connections": null,
+            "residual_type": "add"
+        },
+        {
+            "__class__": "ImageConvBlockConfig",
+            "depth": 1,
+            "activation": "ReLU",
+            "out_activation": null,
+            "conv_cfg": {
+                "__class__": "LayerConfig",
+                "name": "DepthwiseSeparableConv",
+                "kwargs": {
+                    "kernel_size": 3,
+                    "padding": "same"
+                }
+            },
+            "norm_cfg": {
+                "__class__": "LayerConfig",
+                "name": "InstanceNorm",
+                "kwargs": {
+                    "affine": true
+                }
+            },
+            "dropout_cfg": {
+                "__class__": "LayerConfig",
+                "name": null,
+                "kwargs": {}
+            },
+            "attn_cfg": {
+                "__class__": "LayerConfig",
+                "name": null,
+                "kwargs": {}
+            },
+            "dropout_position": 1,
+            "residual_connections": {
+                "0": [
+                    0
+                ]
+            },
+            "residual_type": "add"
+        },
+        {
+            "__class__": "ImageConvBlockConfig",
+            "depth": 1,
+            "activation": "ReLU",
+            "out_activation": null,
+            "conv_cfg": {
+                "__class__": "LayerConfig",
+                "name": "DepthwiseSeparableConv",
+                "kwargs": {
+                    "kernel_size": 3,
+                    "padding": "same"
+                }
+            },
+            "norm_cfg": {
+                "__class__": "LayerConfig",
+                "name": "InstanceNorm",
+                "kwargs": {
+                    "affine": true
+                }
+            },
+            "dropout_cfg": {
+                "__class__": "LayerConfig",
+                "name": null,
+                "kwargs": {}
+            },
+            "attn_cfg": {
+                "__class__": "LayerConfig",
+                "name": null,
+                "kwargs": {}
+            },
+            "dropout_position": 1,
+            "residual_connections": {
+                "0": [
+                    0
+                ]
+            },
+            "residual_type": "add"
+        }
+    ],
+    "out_block_cfg": {
+        "__class__": "ImageConvBlockConfig",
+        "depth": 1,
+        "activation": null,
+        "out_activation": null,
+        "conv_cfg": {
+            "__class__": "LayerConfig",
+            "name": "Conv",
+            "kwargs": {
+                "kernel_size": 1,
+                "padding": 0,
+                "stride": 1
+            }
+        },
+        "norm_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "dropout_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "attn_cfg": {
+            "__class__": "LayerConfig",
+            "name": null,
+            "kwargs": {}
+        },
+        "dropout_position": 1,
+        "residual_connections": null,
+        "residual_type": "add"
+    },
+    "decoder_blocks_per_level": 1,
+    "fusion_type": "add",
+    "out_activation": null
+}

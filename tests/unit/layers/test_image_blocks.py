@@ -1,632 +1,647 @@
 import pytest
 import torch
-import torch.nn as nn
 
-from im2sim.src.layers import (
+from im2sim.src.layers.image_conv_blocks import (
     ImageConvBlock,
-    ImageConvResBlock,
-    ImageEncoder,
-    ImageResEncoder,
-    ImageDecoder,
+    ImageConvBlockConfig,
 )
+from im2sim.src.layers.module_config import LayerConfig
 
 
-# ---------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------
+# ---------------------------------------------------------------------------
+# ImageConvBlockConfig
+# ---------------------------------------------------------------------------
 
 
-@pytest.fixture
-def image_2d():
-    # BCHW
-    return torch.randn(2, 3, 64, 64, requires_grad=True)
+class TestImageConvBlockConfig:
+    def test_default_config(self):
+        cfg = ImageConvBlockConfig()
 
+        assert cfg.depth == 1
+        assert cfg.activation == "ReLU"
+        assert cfg.out_activation is None
 
-@pytest.fixture
-def image_3d():
-    # BCDHW
-    return torch.randn(2, 3, 32, 32, 32, requires_grad=True)
+        assert cfg.conv_cfg.name == "Conv"
+        assert cfg.conv_cfg.kwargs == {
+            "kernel_size": 3,
+            "padding": "same",
+        }
 
+        assert cfg.norm_cfg.name == "InstanceNorm"
+        assert cfg.norm_cfg.kwargs == {"affine": True}
 
-@pytest.fixture
-def small_filters():
-    return (8, 16, 32)
+        assert cfg.dropout_cfg.name is None
+        assert cfg.attn_cfg.name is None
 
+        assert cfg.dropout_position == 1
+        assert cfg.residual_connections is None
+        assert cfg.residual_type == "add"
 
-# ---------------------------------------------------------
-# ImageConvBlock
-# ---------------------------------------------------------
+    def test_layer_config_defaults_are_independent(self):
+        cfg1 = ImageConvBlockConfig()
+        cfg2 = ImageConvBlockConfig()
 
+        cfg1.conv_cfg.kwargs["kernel_size"] = 5
 
-@pytest.mark.parametrize(
-    "rank,input_shape,expected_spatial",
-    [
-        (2, (2, 3, 64, 64), (64, 64)),
-        (3, (2, 3, 32, 32, 32), (32, 32, 32)),
-    ],
-)
-def test_image_conv_block_shapes(rank, input_shape, expected_spatial):
+        assert cfg2.conv_cfg.kwargs["kernel_size"] == 3
 
-    model = ImageConvBlock(
-        in_channels=3,
-        filters=16,
-        depth=2,
-        rank=rank,
-    )
-
-    x = torch.randn(*input_shape)
-
-    y = model(x)
-
-    assert y.shape == (
-        input_shape[0],
-        16,
-        *expected_spatial,
-    )
-
-
-@pytest.mark.parametrize(
-    "activation",
-    [
-        "ReLU",
-        "relu",
-        "gelu",
-        "sigmoid",
-        None,
-    ],
-)
-def test_image_conv_block_activations(activation):
-
-    model = ImageConvBlock(
-        in_channels=3,
-        filters=8,
-        rank=2,
-        activation=activation,
-    )
-
-    x = torch.randn(1, 3, 32, 32)
-
-    y = model(x)
-
-    assert y.shape == (1, 8, 32, 32)
-
-
-@pytest.mark.parametrize(
-    "norm",
-    [
-        None,
-        "BatchNorm",
-        "InstanceNorm",
-    ],
-)
-def test_image_conv_block_normalisation(norm):
-
-    model = ImageConvBlock(
-        in_channels=3,
-        filters=8,
-        rank=2,
-        norm_type=norm,
-    )
-
-    x = torch.randn(2, 3, 32, 32)
-
-    y = model(x)
-
-    assert y.shape == (2, 8, 32, 32)
-
-
-def test_image_conv_block_dropout():
-
-    model = ImageConvBlock(
-        in_channels=3,
-        filters=8,
-        rank=2,
-        dropout_rate=0.5,
-    )
-
-    assert isinstance(model.drop, nn.Dropout2d)
-
-    x = torch.randn(2, 3, 32, 32)
-
-    model.train()
-
-    y1 = model(x)
-    y2 = model(x)
-
-    assert not torch.equal(y1, y2)
-
-
-def test_image_conv_block_gradients():
-
-    model = ImageConvBlock(
-        in_channels=3,
-        filters=8,
-        rank=2,
-        depth=3,
-    )
-
-    x = torch.randn(
-        2,
-        3,
-        32,
-        32,
-        requires_grad=True,
-    )
-
-    y = model(x)
-
-    loss = y.mean()
-
-    loss.backward()
-
-    assert x.grad is not None
-
-    for p in model.parameters():
-        assert p.grad is not None
-
-
-def test_image_conv_block_parameterisation():
-
-    model = ImageConvBlock(
-        in_channels=3,
-        filters=16,
-        depth=4,
-        kernel_size=5,
-        rank=2,
-    )
-
-    # 4 convolution layers
-    assert len(model.convs) == 4
-
-    params = sum(p.numel() for p in model.parameters())
-
-    assert params > 0
-
-
-# ---------------------------------------------------------
-# Residual Block
-# ---------------------------------------------------------
-
-
-def test_res_block_shape():
-
-    model = ImageConvResBlock(
-        in_channels=3,
-        filters=16,
-        rank=2,
-    )
-
-    x = torch.randn(
-        2,
-        3,
-        64,
-        64,
-    )
-
-    y = model(x)
-
-    assert y.shape == (
-        2,
-        16,
-        64,
-        64,
-    )
-
-
-def test_res_block_gradient():
-
-    model = ImageConvResBlock(
-        in_channels=3,
-        filters=8,
-        rank=2,
-    )
-
-    x = torch.randn(
-        1,
-        3,
-        32,
-        32,
-        requires_grad=True,
-    )
-
-    y = model(x)
-
-    y.mean().backward()
-
-    assert x.grad is not None
-
-
-def test_res_block_depth_parameter():
-
-    model = ImageConvResBlock(
-        in_channels=3,
-        filters=8,
-        depth=5,
-    )
-
-    # main block receives depth-2 layers
-    assert len(model.main_conv.convs) == 3
-
-
-# ---------------------------------------------------------
-# Encoder
-# ---------------------------------------------------------
-
-
-@pytest.mark.parametrize(
-    "rank",
-    [2, 3],
-)
-def test_image_encoder_shapes(rank, small_filters):
-
-    model = ImageEncoder(
-        in_channels=3,
-        filters=small_filters,
-        rank=rank,
-    )
-
-    if rank == 2:
-        x = torch.randn(1, 3, 64, 64)
-
-        expected = [
-            (1, 8, 64, 64),
-            (1, 16, 32, 32),
-            (1, 32, 16, 16),
-        ]
-
-    else:
-        x = torch.randn(
-            1,
-            3,
-            32,
-            32,
-            32,
+    def test_to_single_conv(self):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            activation="ReLU",
+            out_activation="Sigmoid",
         )
 
-        expected = [
-            (1, 8, 32, 32, 32),
-            (1, 16, 16, 16, 16),
-            (1, 32, 8, 8, 8),
-        ]
-
-    outputs = model(x)
-
-    assert len(outputs) == len(expected)
-
-    for out, shape in zip(outputs, expected):
-        assert out.shape == shape
-
-
-def test_encoder_parameters():
-
-    model = ImageEncoder(
-        in_channels=3,
-        filters=(8, 16),
-        rank=2,
-        conv_blocks_per_level=2,
-    )
-
-    assert len(model.conv_blocks) == 2
-
-    params = sum(p.numel() for p in model.parameters())
-
-    assert params > 0
-
-
-# ---------------------------------------------------------
-# Residual Encoder
-# ---------------------------------------------------------
-
-
-def test_res_encoder_outputs():
-
-    model = ImageResEncoder(
-        in_channels=3,
-        filters=(8, 16, 32),
-        rank=2,
-        res_blocks_per_level=2,
-    )
-
-    x = torch.randn(
-        1,
-        3,
-        64,
-        64,
-    )
-
-    outputs = model(x)
-
-    assert len(outputs) == 3
-
-    assert outputs[0].shape == (1, 8, 64, 64)
-
-    assert outputs[-1].shape == (1, 32, 16, 16)
-
-
-# ---------------------------------------------------------
-# Decoder
-# ---------------------------------------------------------
-
-
-def test_decoder_reconstructs_resolution():
-
-    encoder = ImageEncoder(
-        in_channels=3,
-        filters=(8, 16, 32),
-        rank=2,
-    )
-
-    decoder = ImageDecoder(
-        filters=(8, 16, 32),
-        rank=2,
-    )
-
-    x = torch.randn(
-        1,
-        3,
-        64,
-        64,
-    )
-
-    enc_features = encoder(x)
-
-    out = decoder(enc_features)
-
-    assert out.shape == (
-        1,
-        8,
-        64,
-        64,
-    )
-
-
-@pytest.mark.parametrize(
-    "skip",
-    [
-        True,
-        False,
-    ],
-)
-def test_decoder_skip_parameter(skip):
-
-    decoder = ImageDecoder(
-        filters=(8, 16, 32),
-        rank=2,
-        skip=skip,
-    )
-
-    assert decoder.skip == skip
-
-
-@pytest.mark.parametrize(
-    "upsample_type",
-    [
-        "Upsample",
-        "ConvTranspose",
-    ],
-)
-def test_decoder_upsampling_modes(upsample_type):
-
-    encoder = ImageEncoder(
-        in_channels=3,
-        filters=(8, 16, 32),
-        rank=2,
-    )
-
-    decoder = ImageDecoder(
-        filters=(8, 16, 32),
-        rank=2,
-        upsample_type=upsample_type,
-    )
-
-    x = torch.randn(
-        1,
-        3,
-        64,
-        64,
-    )
-
-    features = encoder(x)
-
-    out = decoder(features)
-
-    assert out.shape == (
-        1,
-        8,
-        64,
-        64,
-    )
-
-
-# ---------------------------------------------------------
-# End-to-end gradient test
-# ---------------------------------------------------------
-
-
-def test_encoder_decoder_end_to_end_gradient():
-
-    encoder = ImageEncoder(
-        in_channels=3,
-        filters=(8, 16),
-        rank=2,
-    )
-
-    decoder = ImageDecoder(
-        filters=(8, 16),
-        rank=2,
-    )
-
-    x = torch.randn(
-        2,
-        3,
-        32,
-        32,
-        requires_grad=True,
-    )
-
-    output = decoder(encoder(x))
-
-    loss = output.mean()
-
-    loss.backward()
-
-    assert x.grad is not None
-
-    encoder_grads = [p.grad for p in encoder.parameters() if p.requires_grad]
-
-    decoder_grads = [p.grad for p in decoder.parameters() if p.requires_grad]
-
-    assert all(g is not None for g in encoder_grads)
-
-    assert all(g is not None for g in decoder_grads)
-
-
-# ---------------------------------------------------------
-# Decoder crop logic
-# ---------------------------------------------------------
-
-
-def test_decoder_match_size_crops_skip_connection():
-
-    decoder = ImageDecoder(
-        filters=(8, 16),
-        rank=2,
-        skip=True,
-    )
-
-    # decoder feature map
-    x = torch.randn(
-        1,
-        16,
-        30,
-        30,
-    )
-
-    # encoder skip feature map is larger
-    skip = torch.randn(
-        1,
-        8,
-        32,
-        32,
-    )
-
-    cropped = decoder._match_size(x, skip)
-
-    assert cropped.shape == (
-        1,
-        8,
-        30,
-        30,
-    )
-
-
-def test_decoder_match_size_center_crop():
-
-    decoder = ImageDecoder(
-        filters=(8, 16),
-        rank=2,
-    )
-
-    # Put a known pattern in the skip tensor
-    skip = (
-        torch.arange(32 * 32)
-        .reshape(
-            1,
-            1,
-            32,
-            32,
+        result = cfg.to_single_conv()
+
+        assert result is cfg
+        assert cfg.depth == 1
+        assert cfg.activation is None
+        assert cfg.norm_cfg.name is None
+        assert cfg.dropout_cfg.name is None
+        assert cfg.attn_cfg.name is None
+
+    def test_to_single_block(self):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            activation="ReLU",
+            residual_connections={2: [0]},
         )
-        .float()
+
+        result = cfg.to_single_block()
+
+        assert result is cfg
+        assert cfg.depth == 1
+        assert cfg.activation == "ReLU"
+        assert cfg.norm_cfg.name == "InstanceNorm"
+        assert cfg.dropout_cfg.name is None
+        assert cfg.residual_connections is None
+
+    def test_add_input_residual(self):
+        cfg = ImageConvBlockConfig(depth=3)
+
+        result = cfg.add_input_residual()
+
+        assert result is cfg
+        assert cfg.residual_connections == {2: [0]}
+        assert cfg.residual_type == "add"
+
+    def test_add_conv1_residual(self):
+        cfg = ImageConvBlockConfig(depth=3)
+
+        result = cfg.add_conv1_residual()
+
+        assert result is cfg
+        assert cfg.residual_connections == {2: [1]}
+        assert cfg.residual_type == "add"
+
+    def test_add_conv1_residual_requires_depth_greater_than_one(self):
+        cfg = ImageConvBlockConfig(depth=1)
+
+        with pytest.raises(AssertionError, match="Depth must be greater than 1"):
+            cfg.add_conv1_residual()
+
+    def test_add_input_concat_residual(self):
+        cfg = ImageConvBlockConfig(depth=3)
+
+        result = cfg.add_input_concat_residual()
+
+        assert result is cfg
+        assert cfg.residual_connections == {2: [0]}
+        assert cfg.residual_type == "concat"
+
+    def test_reconstruction_mode(self):
+        cfg = ImageConvBlockConfig()
+
+        result = cfg.reconstruction_mode()
+
+        assert result is cfg
+        assert cfg.norm_cfg.name is None
+        assert cfg.dropout_cfg.name is None
+
+    def test_segmentation_mode(self):
+        cfg = ImageConvBlockConfig()
+
+        result = cfg.segmentation_mode()
+
+        assert result is cfg
+        assert cfg.norm_cfg.name == "InstanceNorm"
+        assert cfg.norm_cfg.kwargs == {"affine": True}
+
+    def test_dilate_convs(self):
+        cfg = ImageConvBlockConfig()
+
+        result = cfg.dilate_convs()
+
+        assert result is cfg
+        assert cfg.conv_cfg.kwargs["dilation"] == 2
+
+    def test_dilate_convs_custom_dilation(self):
+        cfg = ImageConvBlockConfig()
+
+        cfg.dilate_convs(dilation=4)
+
+        assert cfg.conv_cfg.kwargs["dilation"] == 4
+
+    def test_add_eca(self):
+        cfg = ImageConvBlockConfig()
+
+        result = cfg.add_eca()
+
+        assert result is cfg
+        assert cfg.attn_cfg.name == "EfficientChannelAttn"
+        assert cfg.attn_cfg.kwargs == {}
+
+    def test_add_se(self):
+        cfg = ImageConvBlockConfig()
+
+        result = cfg.add_se()
+
+        assert result is cfg
+        assert cfg.attn_cfg.name == "SqueezeExcite"
+        assert cfg.attn_cfg.kwargs == {}
+
+    def test_nullify(self):
+        cfg = ImageConvBlockConfig()
+
+        result = cfg.nullify()
+
+        assert result is cfg
+        assert cfg.conv_cfg.name is None
+        assert cfg.norm_cfg.name is None
+        assert cfg.dropout_cfg.name is None
+        assert cfg.attn_cfg.name is None
+
+
+# ---------------------------------------------------------------------------
+# ImageConvBlock construction
+# ---------------------------------------------------------------------------
+
+
+class TestImageConvBlock:
+    @pytest.fixture
+    def input_tensor(self):
+        return torch.randn(2, 8, 32, 32)
+
+    def test_default_block(self):
+        cfg = ImageConvBlockConfig()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert model.in_channels == 8
+        assert model.out_channels == 16
+        assert model.rank == 2
+        assert model.depth == 1
+        assert len(model.layers) == 1
+
+    def test_forward_shape(self, input_tensor):
+        cfg = ImageConvBlockConfig(depth=3)
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        output = model(input_tensor)
+
+        assert output.shape == (2, 16, 32, 32)
+
+    def test_single_conv_shape(self, input_tensor):
+        cfg = ImageConvBlockConfig().to_single_conv()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        output = model(input_tensor)
+
+        assert output.shape == (2, 16, 32, 32)
+
+    def test_different_spatial_dimensions(self):
+        cfg = ImageConvBlockConfig(depth=2)
+
+        model = ImageConvBlock(
+            in_channels=4,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        x = torch.randn(3, 4, 64, 48)
+        y = model(x)
+
+        assert y.shape == (3, 8, 64, 48)
+
+    def test_depth_creates_correct_number_of_layers(self):
+        for depth in [1, 2, 3, 5]:
+            cfg = ImageConvBlockConfig(depth=depth)
+
+            model = ImageConvBlock(
+                in_channels=8,
+                out_channels=8,
+                rank=2,
+                cfg=cfg,
+            )
+
+            assert len(model.layers) == depth
+
+    def test_activation_is_applied_between_layers(self):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            activation="ReLU",
+        )
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        # The activation should be present on all but the final layer.
+        assert isinstance(model.layers[0][-1], torch.nn.ReLU)
+        assert isinstance(model.layers[1][-1], torch.nn.ReLU)
+        assert isinstance(model.layers[2][-1], torch.nn.Identity)
+
+    def test_no_activation(self, input_tensor):
+        cfg = ImageConvBlockConfig(
+            activation=None,
+            out_activation=None,
+        )
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.activation, torch.nn.Identity)
+        assert isinstance(model.out_activation, torch.nn.Identity)
+
+        output = model(input_tensor)
+
+        assert output.shape == input_tensor.shape
+
+    def test_output_activation(self, input_tensor):
+        cfg = ImageConvBlockConfig().nullify()
+        cfg.out_activation = "Sigmoid"
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        output = model(input_tensor)
+
+        assert torch.all(output >= 0)
+        assert torch.all(output <= 1)
+
+    # -----------------------------------------------------------------------
+    # Normalisation
+    # -----------------------------------------------------------------------
+
+    def test_instance_norm(self):
+        cfg = ImageConvBlockConfig(
+            norm_cfg=LayerConfig(
+                name="InstanceNorm",
+                kwargs={"affine": True},
+            )
+        )
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.layers[0][1], torch.nn.InstanceNorm2d)
+
+    def test_batch_norm(self):
+        cfg = ImageConvBlockConfig(
+            norm_cfg=LayerConfig(
+                name="BatchNorm",
+                kwargs={},
+            )
+        )
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.layers[0][1], torch.nn.BatchNorm2d)
+
+    def test_no_normalisation(self):
+        cfg = ImageConvBlockConfig().nullify()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.layers[0][1], torch.nn.Identity)
+
+    # -----------------------------------------------------------------------
+    # Dropout
+    # -----------------------------------------------------------------------
+
+    def test_dropout_position(self):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            dropout_cfg=LayerConfig(
+                name="Dropout",
+                kwargs={"p": 0.5},
+            ),
+            dropout_position=1,
+        )
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.layers[0][2], torch.nn.Dropout2d)
+        assert isinstance(model.layers[1][2], torch.nn.Identity)
+        assert isinstance(model.layers[2][2], torch.nn.Identity)
+
+    def test_multiple_dropout_positions(self):
+        cfg = ImageConvBlockConfig(
+            depth=4,
+            dropout_cfg=LayerConfig(
+                name="Dropout",
+                kwargs={"p": 0.5},
+            ),
+            dropout_position=[1, 3],
+        )
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.layers[0][2], torch.nn.Dropout2d)
+        assert isinstance(model.layers[1][2], torch.nn.Identity)
+        assert isinstance(model.layers[2][2], torch.nn.Dropout2d)
+        assert isinstance(model.layers[3][2], torch.nn.Identity)
+
+    # -----------------------------------------------------------------------
+    # Residual connections
+    # -----------------------------------------------------------------------
+
+    def test_input_residual(self, input_tensor):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            norm_cfg=LayerConfig(name=None, kwargs={}),
+        ).add_input_residual()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        output = model(input_tensor)
+
+        assert output.shape == input_tensor.shape
+
+    def test_conv1_residual(self, input_tensor):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            norm_cfg=LayerConfig(name=None, kwargs={}),
+        ).add_conv1_residual()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        output = model(input_tensor)
+
+        assert output.shape == input_tensor.shape
+
+    def test_concat_residual(self, input_tensor):
+        cfg = ImageConvBlockConfig(
+            depth=3,
+            norm_cfg=LayerConfig(name=None, kwargs={}),
+        ).add_input_concat_residual()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
+
+        output = model(input_tensor)
+
+        # Concatenatiion should not modify the final channel dim 
+        assert output.shape == (2, 8, 32, 32)
+
+    # -----------------------------------------------------------------------
+    # Attention
+    # -----------------------------------------------------------------------
+
+    def test_eca_attention(self):
+        cfg = ImageConvBlockConfig(depth=2).add_eca()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        # With no residual connections, attention is placed on the final
+        # layer.
+        assert isinstance(model.layers[0][3], torch.nn.Identity)
+        assert not isinstance(model.layers[1][3], torch.nn.Identity)
+
+    def test_se_attention(self):
+        cfg = ImageConvBlockConfig(depth=2).add_se()
+
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
+
+        assert isinstance(model.layers[0][3], torch.nn.Identity)
+        assert not isinstance(model.layers[1][3], torch.nn.Identity)
+
+    # -----------------------------------------------------------------------
+    # Validation
+    # -----------------------------------------------------------------------
+
+    def test_invalid_norm_cfg(self):
+        cfg = ImageConvBlockConfig(
+            norm_cfg=LayerConfig(
+                name="InvalidNorm",
+                kwargs={},
+            )
+        )
+
+        with pytest.raises(AssertionError, match="Unsupported norm type"):
+            ImageConvBlock(
+                in_channels=8,
+                out_channels=8,
+                rank=2,
+                cfg=cfg,
+            )
+
+    def test_invalid_attention_config(self):
+        cfg = ImageConvBlockConfig(
+            attn_cfg=LayerConfig(
+                name="InvalidAttention",
+                kwargs={},
+            )
+        )
+
+        with pytest.raises(AssertionError, match="Unsupported attention type"):
+            ImageConvBlock(
+                in_channels=8,
+                out_channels=8,
+                rank=2,
+                cfg=cfg,
+            )
+
+    def test_dropout_position_must_be_less_than_depth(self):
+        cfg = ImageConvBlockConfig(
+            depth=2,
+            dropout_cfg=LayerConfig(
+                name="Dropout",
+                kwargs={"p": 0.5},
+            ),
+            dropout_position=2,
+        )
+
+        with pytest.raises(
+            AssertionError,
+            match="Dropout position must be less than depth",
+        ):
+            ImageConvBlock(
+                in_channels=8,
+                out_channels=8,
+                rank=2,
+                cfg=cfg,
+            )
+
+    # -----------------------------------------------------------------------
+    # Default config handling
+    # -----------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "attribute",
+        [
+            "conv_cfg",
+            "norm_cfg",
+            "dropout_cfg",
+            "attn_cfg",
+        ],
     )
+    def test_none_config_gets_default(self, attribute):
+        cfg = ImageConvBlockConfig()
+        setattr(cfg, attribute, None)
 
-    x = torch.zeros(
-        1,
-        16,
-        28,
-        28,
-    )
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
 
-    cropped = decoder._match_size(
-        x,
-        skip,
-    )
+        assert getattr(model, attribute) is not None
 
-    # difference is 4 pixels -> crop 2 from each side
-    expected = skip[
-        ...,
-        2:30,
-        2:30,
-    ]
+    # -----------------------------------------------------------------------
+    # Gradients
+    # -----------------------------------------------------------------------
 
-    assert torch.equal(
-        cropped,
-        expected,
-    )
+    def test_backward(self, input_tensor):
+        cfg = ImageConvBlockConfig(depth=2)
 
+        model = ImageConvBlock(
+            in_channels=8,
+            out_channels=16,
+            rank=2,
+            cfg=cfg,
+        )
 
-def test_decoder_match_size_no_crop():
+        output = model(input_tensor)
+        loss = output.mean()
+        loss.backward()
 
-    decoder = ImageDecoder(
-        filters=(8, 16),
-        rank=2,
-    )
+        for parameter in model.parameters():
+            assert parameter.grad is not None
 
-    x = torch.randn(
-        1,
-        16,
-        32,
-        32,
-    )
+    # -----------------------------------------------------------------------
+    # Different ranks
+    # -----------------------------------------------------------------------
 
-    skip = torch.randn(
-        1,
-        8,
-        32,
-        32,
-    )
+    def test_1d(self):
+        cfg = ImageConvBlockConfig(depth=2)
 
-    output = decoder._match_size(
-        x,
-        skip,
-    )
+        model = ImageConvBlock(
+            in_channels=4,
+            out_channels=8,
+            rank=1,
+            cfg=cfg,
+        )
 
-    # should return same tensor
-    assert output.shape == skip.shape
-    assert torch.equal(output, skip)
+        x = torch.randn(2, 4, 32)
+        y = model(x)
 
+        assert y.shape == (2, 8, 32)
 
-# ---------------------------------------------------------
-# Full decoder with odd image dimensions
-# ---------------------------------------------------------
+    def test_2d(self):
+        cfg = ImageConvBlockConfig(depth=2)
 
+        model = ImageConvBlock(
+            in_channels=4,
+            out_channels=8,
+            rank=2,
+            cfg=cfg,
+        )
 
-def test_decoder_handles_odd_spatial_dimensions():
+        x = torch.randn(2, 4, 32, 32)
+        y = model(x)
 
-    encoder = ImageEncoder(
-        in_channels=3,
-        filters=(8, 16, 32),
-        rank=2,
-    )
+        assert y.shape == (2, 8, 32, 32)
 
-    decoder = ImageDecoder(
-        filters=(8, 16, 32),
-        rank=2,
-        skip=True,
-    )
+    def test_3d(self):
+        cfg = ImageConvBlockConfig(depth=2)
 
-    # Odd dimensions trigger possible mismatch
-    x = torch.randn(
-        1,
-        3,
-        65,
-        65,
-    )
+        model = ImageConvBlock(
+            in_channels=4,
+            out_channels=8,
+            rank=3,
+            cfg=cfg,
+        )
 
-    features = encoder(x)
+        x = torch.randn(2, 4, 8, 16, 16)
+        y = model(x)
 
-    output = decoder(features)
-
-    assert output.shape[2:] == (
-        64,
-        64,
-    )
+        assert y.shape == (2, 8, 8, 16, 16)

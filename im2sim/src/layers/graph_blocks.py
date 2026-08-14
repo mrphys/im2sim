@@ -9,6 +9,7 @@ from im2sim.src.utils import api_util
 
 logger = logging.getLogger(__name__)
 
+
 @api_util.export("layers.DefaultGraphNorm")
 @register_graph_layer(name="defaultnorm")
 class DefaultGraphNorm(torch.nn.Module):
@@ -30,7 +31,7 @@ class DefaultGraphNorm(torch.nn.Module):
         Args:
             x (`torch.Tensor`): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
             batch (`torch.Tensor`): The batch tensor of shape (N,) indicating the batch index for each node.
-        
+
         Returns:
             `torch.Tensor`: The normalized tensor of shape (N, C).
         """
@@ -44,6 +45,7 @@ class DefaultGraphNorm(torch.nn.Module):
         for b in torch.unique(batch):
             x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(shape)
         return x
+
 
 @api_util.export("layers.GraphConvBlock")
 class GraphConvBlock(nn.Module):
@@ -104,6 +106,7 @@ class GraphConvBlock(nn.Module):
             graph = norm(graph)
             graph.x = self.act(graph.x)
         return graph
+
 
 @api_util.export("layers.GraphConvResBlock")
 class GraphConvResBlock(nn.Module):
@@ -170,6 +173,7 @@ class GraphConvResBlock(nn.Module):
         graph.x = self.act((graph.x + x1) / 2)
 
         return graph
+
 
 @api_util.export("layers.GraphResDecoderBlock")
 class GraphResDecoderBlock(nn.Module):

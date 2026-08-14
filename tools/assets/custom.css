@@ -1,0 +1,11 @@
+/* Override Shibuya logo size */
+.sy-head-brand img {
+    height: 100px !important;
+    width: auto;
+}
+.sy-head-inner {
+    min-height: 110px;
+}
+.sy-head {
+    min-height: 110px;
+}

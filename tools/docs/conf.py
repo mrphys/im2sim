@@ -217,7 +217,7 @@ def linkcode_resolve(domain, info):
   # Base URL.
   url = 'https://github.com/mrphys/im2sim'
   # Add version blob.
-  url += '/blob/v' + release
+  # url += '/blob/v' + release
   # Add file.
   url += '/' + file
 
@@ -364,30 +364,30 @@ def process_docstring(
   """Process autodoc docstrings."""
   text = process_docstring_text('\n'.join(lines))
   lines[:] = text.splitlines()
+  return
+  # if what != 'class':
+  #   return
 
-  if what != 'class':
-    return
+  # presets = getattr(obj, '_presets', None)
+  # if not presets:
+  #   return
 
-  presets = getattr(obj, '_presets', None)
-  if not presets:
-    return
+  # lines.append('')
+  # lines.append('.. rubric:: Preset Library')
+  # lines.append('')
 
-  lines.append('')
-  lines.append('.. rubric:: Preset Library')
-  lines.append('')
+  # for preset_name, fn in presets.items():
+  #   doc = inspect.getdoc(fn) or 'No description provided.'
 
-  for preset_name, fn in presets.items():
-    doc = inspect.getdoc(fn) or 'No description provided.'
+  #   lines.append(f'**{preset_name}**')
+  #   lines.append('')
 
-    lines.append(f'**{preset_name}**')
-    lines.append('')
+  #   # Process preset documentation using exactly the same rules
+  #   # as the class documentation.
+  #   preset_text = process_docstring_text(doc)
 
-    # Process preset documentation using exactly the same rules
-    # as the class documentation.
-    preset_text = process_docstring_text(doc)
-
-    lines.extend(preset_text.splitlines())
-    lines.append('')
+  #   lines.extend(preset_text.splitlines())
+  #   lines.append('')
 
 
 def get_doc_url(name):
@@ -398,4 +398,5 @@ def get_doc_url(name):
 
 
 def setup(app):
+  app.add_css_file('custom.css')
   app.connect('autodoc-process-docstring', process_docstring)

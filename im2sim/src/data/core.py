@@ -7,9 +7,8 @@ from typing import Any
 import torch
 from torch_geometric.data import Batch, Data
 
-from im2sim.src.utils import api_util
-
 logger = logging.getLogger(__name__)
+
 
 class Operation(ABC):
     """

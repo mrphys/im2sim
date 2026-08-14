@@ -1,8 +1,10 @@
 import math
 
 import torch
-from im2sim.src.layers.layer_util import get_activation, get_image_layer, register_with_ranks
+
+from im2sim.src.layers.layer_util import get_image_layer, register_with_ranks
 from im2sim.src.utils import api_util
+
 
 @api_util.export("layers.DepthwiseConv")
 @register_with_ranks("DepthwiseConv", ranks=(1, 2, 3))
@@ -15,18 +17,19 @@ class DepthwiseConv(torch.nn.Module):
     Args:
         in_channels (int): Number of input channels.
         out_channels (int): Number of output channels (should be equal to in_channels for depthwise convolution).
-        rank (int): The rank of the convolution (1 for 1D, 2 for 2D, 3 for 3D).
-        kernel_size (int | tuple): Size of the convolving kernel. Default is 3.
-        stride (int | tuple): Stride of the convolution. Default is 1.
-        padding (str or int | tuple): Padding added to all four sides of the input. Default is "same".
-        dilation (int | tuple): Spacing between kernel elements. Default is 1.
-        bias (bool): If True, adds a learnable bias to the output. Default is True.
-    
+        rank (int): The rank of the convolution (`1` for 1D, `2` for 2D, `3` for 3D).
+        kernel_size (int | tuple): Size of the convolving kernel. Default is `3`.
+        stride (int | tuple): Stride of the convolution. Default is `1`.
+        padding (str or int | tuple): Padding added to all four sides of the input. Default is `"same"`.
+        dilation (int | tuple): Spacing between kernel elements. Default is `1`.
+        bias (bool): If `True`, adds a learnable bias to the output. Default is `True`.
+
     References:
-        .. [1]	A. G. Howard et al., MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications, 
+        .. [1]	A. G. Howard et al., MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications,
             Apr. 17, 2017, arXiv: arXiv:1704.04861. doi: 10.48550/arXiv.1704.04861.
 
-    """ 
+    """
+
     def __init__(
         self,
         in_channels,
@@ -39,9 +42,12 @@ class DepthwiseConv(torch.nn.Module):
         bias=True,
     ):
         super().__init__()
+        assert out_channels % in_channels == 0, (
+            "For depthwise convolution, out_channels should be a multiple of in_channels."
+        )
         self.conv = get_image_layer("Conv", rank)(
             in_channels=in_channels,
-            out_channels=in_channels,
+            out_channels=out_channels,
             kernel_size=kernel_size,
             stride=stride,
             padding=padding,
@@ -55,12 +61,13 @@ class DepthwiseConv(torch.nn.Module):
         Forward pass of the depthwise convolution layer.
 
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, in_channels, *spatial_dims).
+            x (torch.Tensor): Input tensor of shape `(batch_size, in_channels, *spatial_dims)`.
 
         Returns:
-            torch.Tensor: Output tensor of shape (batch_size, out_channels, *spatial_dims).
+            torch.Tensor: Output tensor of shape `(batch_size, out_channels, *spatial_dims)`.
         """
         return self.conv(x)
+
 
 @api_util.export("layers.DepthwiseSeparableConv")
 @register_with_ranks("DepthwiseSeparableConv", ranks=(1, 2, 3))
@@ -68,25 +75,25 @@ class DepthwiseSeparableConv(torch.nn.Module):
     """
     Depthwise separable convolution layer that consists of a depthwise convolution followed by a pointwise convolution.
 
-    This operation is useful for reducing the number of parameters and computational cost in convolutional neural networks, 
+    This operation is useful for reducing the number of parameters and computational cost in convolutional neural networks,
     while retaining more representational power compared to standard depthwise convolution[1].
 
     Args:
         in_channels (int): Number of input channels.
         out_channels (int): Number of output channels.
-        rank (int): The rank of the convolution (1 for 1D, 2 for 2D, 3 for 3D).
-        kernel_size (int | tuple): Size of the convolving kernel. Default is 3.
-        stride (int | tuple): Stride of the convolution. Default is 1.
-        padding (str or int | tuple): Padding added to all four sides of the input. Default is "same".
-        dilation (int | tuple): Spacing between kernel elements. Default is 1.
-        bias (bool): If True, adds a learnable bias to the output. Default is True.
-        activation (str or None): Activation function to apply after the pointwise convolution. Default is None.
-    
+        rank (int): The rank of the convolution (`1` for 1D, `2`for 2D, `3` for 3D).
+        kernel_size (int | tuple): Size of the convolving kernel. Default is `3`.
+        stride (int | tuple): Stride of the convolution. Default is `1`.
+        padding (str or int | tuple): Padding added to all four sides of the input. Default is `"same"`.
+        dilation (int | tuple): Spacing between kernel elements. Default is `1`.
+        bias (bool): If `True`, adds a learnable bias to the output. Default is `True`.
+
     References:
         .. [1] F. Chollet, Xception: Deep Learning with Depthwise Separable Convolutions,
             Apr. 04, 2017, arXiv: arXiv:1610.02357. doi: 10.48550/arXiv.1610.02357.
-        
+
     """
+
     def __init__(
         self,
         in_channels,
@@ -97,10 +104,9 @@ class DepthwiseSeparableConv(torch.nn.Module):
         padding="same",
         dilation=1,
         bias=True,
-        activation=None,
     ):
         super().__init__()
-        print("IN DWS:", in_channels)
+
         self.depthwise = get_image_layer("Conv", rank)(
             in_channels=in_channels,
             out_channels=in_channels,
@@ -119,22 +125,21 @@ class DepthwiseSeparableConv(torch.nn.Module):
             padding=0,
             bias=bias,
         )
-        self.activation = get_activation(activation)
 
     def forward(self, x):
         """
         Forward pass of the depthwise separable convolution layer.
 
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, in_channels, *spatial_dims).
-        
+            x (torch.Tensor): Input tensor of shape `(batch_size, in_channels, *spatial_dims)`.
+
         Returns:
-            torch.Tensor: Output tensor of shape (batch_size, out_channels, *spatial_dims).
+            torch.Tensor: Output tensor of shape `(batch_size, out_channels, *spatial_dims)`.
         """
         x = self.depthwise(x)
         x = self.pointwise(x)
-        x = self.activation(x)
         return x
+
 
 @api_util.export("layers.GhostConv")
 @register_with_ranks("GhostConv", ranks=(1, 2, 3))
@@ -144,25 +149,26 @@ class GhostConv(torch.nn.Module):
 
     This operation is useful for reducing the number of parameters and computational cost in convolutional neural networks.
     The cheap operation can either be a depthwise convolution as per the original GhostNet paper[1] or a depthwise separable convolution as in the HalfUNet paper[2
-    
+
     Args:
         in_channels (int): Number of input channels.
         out_channels (int): Number of output channels.
-        rank (int): The rank of the convolution (1 for 1D, 2 for 2D, 3 for 3D).
-        kernel_size (int | tuple): Size of the convolving kernel for the primary convolution. Default is 3.
-        ratio (int): Ratio of the number of output channels to the number of primary convolution channels. Default is 2.
-        dw_kernel_size (int | tuple): Size of the convolving kernel for the cheap operation. Default is 3.
-        stride (int | tuple): Stride of the primary convolution. Default is 1.
-        padding (str or int | tuple): Padding added to all four sides of the input for the primary convolution. Default is "same".
-        separable (bool): If True, uses depthwise separable convolution for the cheap operation. Default is False.
-        bias (bool): If True, adds a learnable bias to the output. Default is True.
-    
+        rank (int): The rank of the convolution (`1` for 1D, `2` for 2D, `3` for 3D).
+        kernel_size (int | tuple): Size of the convolving kernel for the primary convolution. Default is `3`.
+        ratio (int): Ratio of the number of output channels to the number of primary convolution channels. Default is `2`.
+        dw_kernel_size (int | tuple): Size of the convolving kernel for the cheap operation. Default is `3`.
+        stride (int | tuple): Stride of the primary convolution. Default is `1`.
+        padding (str or int | tuple): Padding added to all four sides of the input for the primary convolution. Default is `"same"`.
+        separable (bool): If `True`, uses depthwise separable convolution for the cheap operation. Default is `False`.
+        bias (bool): If `True`, adds a learnable bias to the output. Default is `True`.
+
     References:
-        .. [1] K. Han, Y. Wang, Q. Tian, J. Guo, C. Xu, and C. Xu, GhostNet: More Features from Cheap Operations, 
+        .. [1] K. Han, Y. Wang, Q. Tian, J. Guo, C. Xu, and C. Xu, GhostNet: More Features from Cheap Operations,
             Mar. 13, 2020, arXiv: arXiv:1911.11907. doi: 10.48550/arXiv.1911.11907.
-        .. [2] H. Lu, Y. She, J. Tie, and S. Xu, Half-UNet: A Simplified U-Net Architecture for Medical Image Segmentation, 
+        .. [2] H. Lu, Y. She, J. Tie, and S. Xu, Half-UNet: A Simplified U-Net Architecture for Medical Image Segmentation,
             Front. Neuroinformatics, vol. 16, Jun. 2022, doi: 10.3389/fninf.2022.911679.
     """
+
     def __init__(
         self,
         in_channels,
@@ -192,7 +198,6 @@ class GhostConv(torch.nn.Module):
         )
 
         cheap_conv_type = "DepthwiseSeparableConv" if separable else "DepthwiseConv"
-        print("IN GHOST:", self.init_channels)
         self.cheap_operation = get_image_layer(cheap_conv_type, rank)(
             in_channels=self.init_channels,
             out_channels=self.new_channels,
@@ -207,14 +212,15 @@ class GhostConv(torch.nn.Module):
         Forward pass of the Ghost convolution layer.
 
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, in_channels, *spatial_dims).
+            x (torch.Tensor): Input tensor of shape `(batch_size, in_channels, *spatial_dims)`.
 
         Returns:
-            torch.Tensor: Output tensor of shape (batch_size, out_channels, *spatial_dims).
+            torch.Tensor: Output tensor of shape `(batch_size, out_channels, *spatial_dims)`.
         """
         x1 = self.primary_conv(x)
         x2 = self.cheap_operation(x1)
         return torch.cat([x1, x2], dim=1)
+
 
 @api_util.export("layers.EfficientChannelAttn")
 @register_with_ranks("EfficientChannelAttn", ranks=(1, 2, 3))
@@ -226,12 +232,13 @@ class EfficientChannelAttn(torch.nn.Module):
 
     Args:
         channels (int): Number of input channels.
-        rank (int): The rank of the input tensor (1 for 1D, 2 for 2D, 3 for 3D).
-    
+        rank (int): The rank of the input tensor (`1` for 1D, `2` for 2D, `3` for 3D).
+
     References:
-        .. [1] Q. Wang, B. Wu, P. Zhu, P. Li, W. Zuo, and Q. Hu, ECA-Net: Efficient Channel Attention for Deep Convolutional Neural Networks, 
+        .. [1] Q. Wang, B. Wu, P. Zhu, P. Li, W. Zuo, and Q. Hu, ECA-Net: Efficient Channel Attention for Deep Convolutional Neural Networks,
             Mar. 04, 2020, arXiv: arXiv:1910.03151. doi: 10.48550/arXiv.1910.03151.
     """
+
     def __init__(self, channels: int, rank: int):
         super().__init__()
         self.rank = rank
@@ -246,10 +253,10 @@ class EfficientChannelAttn(torch.nn.Module):
         Forward pass of the Efficient Channel Attention layer.
 
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, channels, *spatial_dims).
-        
+            x (torch.Tensor): Input tensor of shape `(batch_size, channels, *spatial_dims).`
+
         Returns:
-           torch.Tensor: Output tensor of shape (batch_size, channels, *spatial_dims) with channel-wise attention applied.
+           torch.Tensor: Output tensor of shape `(batch_size, channels, *spatial_dims)` with channel-wise attention applied.
         """
         B, C = x.shape[:2]
         w = self.avg_pool(x).view(B, 1, C)  # [B, 1, C]
@@ -257,6 +264,7 @@ class EfficientChannelAttn(torch.nn.Module):
         out_shape = [B, C] + [1] * self.rank
         w = self.sigmoid(w).view(*out_shape)
         return x * w
+
 
 @api_util.export("layers.SqueezeExcite")
 @register_with_ranks("SqueezeExcite", ranks=(1, 2, 3))
@@ -268,13 +276,14 @@ class SqueezeExcite(torch.nn.Module):
 
     Args:
         channels (int): Number of input channels.
-        rank (int): The rank of the input tensor (1 for 1D, 2 for 2D, 3 for 3D).
-        reduction (int): Reduction ratio for the hidden layer in the SE block. Default is 8.
-    
+        rank (int): The rank of the input tensor (`1` for 1D, `2` for 2D, `3` for 3D).
+        reduction (int): Reduction ratio for the hidden layer in the SE block. Default is `8`.
+
     References:
-        .. [1] J. Hu, L. Shen, and G. Sun, Squeeze-and-Excitation Networks, 
+        .. [1] J. Hu, L. Shen, and G. Sun, Squeeze-and-Excitation Networks,
             Mar. 27, 2018, arXiv: arXiv:1709.01507. doi: 10.48550/arXiv.1709.01507.
     """
+
     def __init__(self, channels: int, rank: int, reduction: int = 8):
         super().__init__()
         self.rank = rank
@@ -292,10 +301,10 @@ class SqueezeExcite(torch.nn.Module):
         Forward pass of the Efficient Channel Attention layer.
 
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, channels, *spatial_dims).
-        
+            x (torch.Tensor): Input tensor of shape `(batch_size, channels, *spatial_dims)`.
+
         Returns:
-           torch.Tensor: Output tensor of shape (batch_size, channels, *spatial_dims) with channel-wise attention applied.
+           torch.Tensor: Output tensor of shape `(batch_size, channels, *spatial_dims)` with channel-wise attention applied.
         """
         B, C = x.shape[:2]
         z = self.avg_pool(x).view(B, C)
@@ -303,34 +312,31 @@ class SqueezeExcite(torch.nn.Module):
         s = self.sigmoid(self.fc(z)).view(*out_shape)
         return x * s
 
+
 @api_util.export("layers.ConditionedSqueezeExcite")
 @register_with_ranks("ConditionedSqueezeExcite", ranks=(1, 2, 3))
 class ConditionedSqueezeExcite(torch.nn.Module):
     """
     Conditioned Squeeze-and-Excitation [1] (SE) layer that adaptively recalibrates channel-wise feature responses based on an additional conditioning input.
 
-    This operation is useful for improving the representational power of convolutional neural networks by explicitly modeling interdependencies between channels, 
+    This operation is useful for improving the representational power of convolutional neural networks by explicitly modeling interdependencies between channels,
     while also allowing for external conditioning information to influence the recalibration process.
 
     Args:
         channels (int): Number of input channels.
-        rank (int): The rank of the input tensor (1 for 1D, 2 for 2D, 3 for 3D).
-        n_cond (int): Number of conditioning channels. Default is 6.
-        reduction (int): Reduction ratio for the hidden layer in the SE block. Default is 8.
-        mode (str): Mode of combining the feature and conditioning information. Can be "concat" or "add". Default is "add".
+        rank (int): The rank of the input tensor (`1` for 1D, `2` for 2D, `3` for 3D).
+        n_cond (int): Number of conditioning channels. Default is `6`.
+        reduction (int): Reduction ratio for the hidden layer in the SE block. Default is `8`.
+        mode (str): Mode of combining the feature and conditioning information. Can be `"concat"` or `"add"`. Default is `"add"`.
 
     References:
-        .. [1] J. Hu, L. Shen, and G. Sun, Squeeze-and-Excitation Networks, 
+        .. [1] J. Hu, L. Shen, and G. Sun, Squeeze-and-Excitation Networks,
             Mar. 27, 2018, arXiv: arXiv:1709.01507. doi: 10.48550/arXiv.1709.01507.
-    
+
     """
+
     def __init__(
-        self, 
-        channels: int, 
-        rank: int,
-        n_cond: int = 6, 
-        reduction: int = 8, 
-        mode: str = "add"
+        self, channels: int, rank: int, n_cond: int = 6, reduction: int = 8, mode: str = "add"
     ):
         super().__init__()
         self.rank = rank
@@ -355,13 +361,13 @@ class ConditionedSqueezeExcite(torch.nn.Module):
     def forward(self, x: torch.Tensor, cond: torch.Tensor) -> torch.Tensor:
         """
         Forward pass of the Conditioned Squeeze-and-Excitation layer.
-        
+
         Args:
-            x (torch.Tensor): Input tensor of shape (batch_size, channels, *spatial_dims).
-            cond (torch.Tensor): Conditioning tensor of shape (batch_size, n_cond).
-        
+            x (torch.Tensor): Input tensor of shape `(batch_size, channels, *spatial_dims)`.
+            cond (torch.Tensor): Conditioning tensor of shape `(batch_size, n_cond)`.
+
         Returns:
-            torch.Tensor: Output tensor of shape (batch_size, channels, *spatial_dims) with channel-wise attention applied based on the conditioning input.
+            torch.Tensor: Output tensor of shape `(batch_size, channels, *spatial_dims)` with channel-wise attention applied based on the conditioning input.
         """
         B, C = x.shape[:2]
         z = self.avg_pool(x).view(B, C)
@@ -373,3 +379,54 @@ class ConditionedSqueezeExcite(torch.nn.Module):
         out_shape = [B, C] + [1] * self.rank
         s = self.sigmoid(s).view(*out_shape)
         return x * s
+
+
+@register_with_ranks("Upsample", ranks=(1, 2, 3))
+class Upsample(torch.nn.Module):
+    """
+    Upsample layer that increases the spatial resolution of the input tensor using interpolation.
+
+    Wrapper of `torch.nn.functional.interpolate` to provide a consistent interface for upsampling across different spatial ranks (1D, 2D, 3D).
+
+    This operation is useful for tasks such as image super-resolution, semantic segmentation, and generative modeling.
+
+    Args:
+        rank (int): The rank of the input tensor (`1` for 1D, `2` for 2D, `3` for 3D).
+        scale_factor (int | tuple): The multiplier for the spatial size. Default is `2`.
+        mode (str): The algorithm used for upsampling. Options are `"nearest"`, `"linear"`, `"bilinear"`, `"bicubic"`, `"trilinear"`. Default for 1D is `"linear"`, for 2D is `"bilinear"`, and for 3D is `"trilinear"`.
+        align_corners (bool | None): If `True`, the corner pixels of the input and output tensors are aligned, and thus preserving the values at those pixels. Default is `None`.
+    """
+
+    def __init__(self, rank, scale_factor=2, mode="nearest", align_corners=None):
+        super().__init__()
+        self.rank = rank
+        self.scale_factor = scale_factor
+        self.mode = mode
+        self.align_corners = align_corners
+
+    def forward(self, x):
+        """
+        Forward pass of the Upsample layer.
+
+        Args:
+            x (torch.Tensor): Input tensor of shape `(batch_size, channels, *spatial_dims)`.
+
+        Returns:
+            torch.Tensor: Output tensor of shape `(batch_size, channels, *upsampled_spatial_dims)`.
+        """
+
+        accepted_modes = {
+            1: ["linear", "nearest"],
+            2: ["bilinear", "nearest"],
+            3: ["trilinear", "nearest"],
+        }
+
+        if self.mode not in accepted_modes[self.rank]:
+            self.mode = accepted_modes[self.rank][0]
+
+        return torch.nn.functional.interpolate(
+            x,
+            scale_factor=self.scale_factor,
+            mode=self.mode,
+            align_corners=self.align_corners,
+        )

@@ -53,6 +53,8 @@ jobs:
 
       - name: Build API
         run: |
+          rm -rf im2sim/_api
+          rm im2sim/__init__.py
           python tools/build/create_api.py
 
       - name: Build Docs

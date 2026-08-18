@@ -68,102 +68,121 @@ class UNetConfig(Config):
 
         To create a customised configuration for a UNet, you can create a preferred ImageConvBlockConfig and use it for the encoder and decoder blocks:
 
-        >>> block_cfg = ImageConvBlockConfig(
-        >>>                         depth=4,
-        >>>                         activation="LeakyReLU",
-        >>>                         out_activation="sigmoid",
-        >>>                         conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
-        >>>                         norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
-        >>>                         dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
-        >>>                         attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
-        >>>                         dropout_position=[1, 3],
-        >>>                         residual_connections={3: [0, 1]},
-        >>>                         residual_type="concat"
-        >>>                         )
-        >>> cfg = UNetConfig(
-        >>>     filters=[32, 64, 128, 256],
-        >>>     pool_cfg=LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
-        >>>     upsample_cfg=LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
-        >>>     block_cfg=block_cfg)
+        ..  code-block:: python
+
+            block_cfg = ImageConvBlockConfig(
+                                    depth=4,
+                                    activation="LeakyReLU",
+                                    out_activation="sigmoid",
+                                    conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
+                                    norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
+                                    dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
+                                    attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
+                                    dropout_position=[1, 3],
+                                    residual_connections={3: [0, 1]},
+                                    residual_type="concat"
+                                    )
+            cfg = UNetConfig(
+                filters=[32, 64, 128, 256],
+                pool_cfg=LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
+                upsample_cfg=LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
+                block_cfg=block_cfg)
 
         If you want more flexibility you can also specify different configurations for the encoder and decoder blocks:
 
-        >>> encoder_block_cfg = [
-        >>>     ImageConvBlockConfig(depth=2, activation="ReLU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=3, activation="LeakyReLU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=4, activation="ELU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=5, activation="GELU", out_activation="sigmoid")
-        >>> ]
-        >>> decoder_block_cfg = [
-        >>>     ImageConvBlockConfig(depth=5, activation="GELU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=4, activation="ELU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=3, activation="LeakyReLU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=2, activation="ReLU", out_activation="sigmoid")
-        >>> ]
-        >>> cfg = UNetConfig(
-        >>>    filters=[32, 64, 128, 256],
-        >>>    encoder_block_cfg=encoder_block_cfg,
-        >>>    decoder_block_cfg=decoder_block_cfg
-        >>> )
+        ..  code-block:: python
+
+            encoder_block_cfg = [
+                ImageConvBlockConfig(depth=2, activation="ReLU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=3, activation="LeakyReLU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=4, activation="ELU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=5, activation="GELU", out_activation="sigmoid")
+            ]
+            decoder_block_cfg = [
+                ImageConvBlockConfig(depth=5, activation="GELU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=4, activation="ELU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=3, activation="LeakyReLU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=2, activation="ReLU", out_activation="sigmoid")
+            ]
+            cfg = UNetConfig(
+               filters=[32, 64, 128, 256],
+               encoder_block_cfg=encoder_block_cfg,
+               decoder_block_cfg=decoder_block_cfg
+            )
 
         Similarly, if you want to specify different configurations for the skip connection blocks and the output block, you can do so:
 
-        >>> skip_connection_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
-        >>> out_block_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
-        >>> cfg = UNetConfig(
-        >>>    filters=[32, 64, 128, 256],
-        >>>    skip_connection_cfg=skip_connection_cfg,
-        >>>    out_block_cfg=out_block_cfg
-        >>> )
+        ..  code-block:: python
+
+            skip_connection_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
+            out_block_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
+            cfg = UNetConfig(
+               filters=[32, 64, 128, 256],
+               skip_connection_cfg=skip_connection_cfg,
+               out_block_cfg=out_block_cfg
+            )
 
 
         The `mod()` method can be especially useful for making simple modifications to the block configurations for different types of blocks.
 
-        >>> block_cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="sigmoid")
-        >>> encoder_block_cfg = [block_cfg.mod(depth=2) for _ in range(4)]
-        >>> decoder_block_cfg = [block_cfg.mod(depth=4) for _ in range(4)]
-        >>> cfg = UNetConfig(
-        >>>    filters=[32, 64, 128, 256],
-        >>>    encoder_block_cfg=encoder_block_cfg,
-        >>>    decoder_block_cfg=decoder_block_cfg
-        >>> )
+        ..  code-block:: python
+
+            block_cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="sigmoid")
+            encoder_block_cfg = [block_cfg.mod(depth=2) for _ in range(4)]
+            decoder_block_cfg = [block_cfg.mod(depth=4) for _ in range(4)]
+            cfg = UNetConfig(
+               filters=[32, 64, 128, 256],
+               encoder_block_cfg=encoder_block_cfg,
+               decoder_block_cfg=decoder_block_cfg
+            )
 
         You can also use the `mod()` method to modify a UNetConfig object directly, which will apply the modification to all blocks of that type:
-        >>> cfg = UNetConfig(filters=[32, 64, 128, 256])
-        >>> cfg = cfg.mod(encoder_block_cfg=ImageConvBlockConfig(depth=2), decoder_block_cfg=ImageConvBlockConfig(depth=4))
+
+        ..  code-block:: python
+
+            cfg = UNetConfig(filters=[32, 64, 128, 256])
+            cfg = cfg.mod(encoder_block_cfg=ImageConvBlockConfig(depth=2), decoder_block_cfg=ImageConvBlockConfig(depth=4))
 
         For heterogeneous pooling and upsampling layers, you can specify a list of LayerConfig objects for each level:
 
-        >>> pool_cfg = [
-        >>>    LayerConfig(name="MaxPool", kwargs={"kernel_size": (1,2)}),
-        >>>    LayerConfig(name="AvgPool", kwargs={"kernel_size": 2}),
-        >>>    LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
-        >>> ]
-        >>> upsample_cfg = [
-        >>>    LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
-        >>>    LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
-        >>>    LayerConfig(name="Upsample", kwargs={"scale_factor": (1,2), "mode": "bilinear"}),
-        >>> ]
-        >>> cfg = UNetConfig(
-        >>>    filters=[32, 64, 128, 256],
-        >>>    pool_cfg=pool_cfg,
-        >>>    upsample_cfg=upsample_cfg
-        >>> )
+        ..  code-block:: python
+
+            pool_cfg = [
+               LayerConfig(name="MaxPool", kwargs={"kernel_size": (1,2)}),
+               LayerConfig(name="AvgPool", kwargs={"kernel_size": 2}),
+               LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
+            ]
+            upsample_cfg = [
+               LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
+               LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
+               LayerConfig(name="Upsample", kwargs={"scale_factor": (1,2), "mode": "bilinear"}),
+            ]
+            cfg = UNetConfig(
+               filters=[32, 64, 128, 256],
+               pool_cfg=pool_cfg,
+               upsample_cfg=upsample_cfg
+            )
 
         To make simple modifications to the default configuration, you can modify a subset of attributes:
 
-        >>> cfg = UNetConfig(filters=[32, 64, 128], fusion_type='add', out_activation='sigmoid')
+        ..  code-block:: python
+
+            cfg = UNetConfig(filters=[32, 64, 128], fusion_type='add', out_activation='sigmoid')
 
 
         Different presets exist to perform common transformations on the configuration.
         For example, to convert the convolutional blocks to use depthwise separable convolutions and add residual connections to the input of each block, you can do:
 
-        >>> cfg = UNetConfig(filters=[32, 32, 32]).to_depthwise_separable().add_input_residual()
+        ..  code-block:: python
+
+            cfg = UNetConfig(filters=[32, 32, 32]).to_depthwise_separable().add_input_residual()
 
         To save the configuration to a YAML file and load it back, you can use:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = UNetConfig.load("my_config.yaml")
+        ..  code-block:: python
+
+            cfg.save("my_config.yaml")
+            loaded_cfg = UNetConfig.load("my_config.yaml")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
 
@@ -446,77 +465,89 @@ class UNet(torch.nn.Module):
         To create a UNet model with a specific configuration, you can first create a UNetConfig object and then pass it to the UNet constructor.
         For example, to create a UNet with 3 levels of depth, ReLU activation, and softmax output activation:
 
-        >>> cfg = UNetConfig(filters=[32, 64, 128],
-        >>>            encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
-        >>>            decoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
-        >>>            out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax"))
+        ..  code-block:: python
+
+            cfg = UNetConfig(filters=[32, 64, 128],
+                       encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
+                       decoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
+                       out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax"))
 
         Since the configs are rankless, you could use the same config for a 1D, 2D, or 3D convolutional block by changing the rank parameter when creating the UNet instance.
 
-        >>> model1D = UNet(
-        >>>        rank=1,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model2D = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model3D = UNet(
-        >>>        rank=3,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
+        ..  code-block:: python
+
+            model1D = UNet(
+                   rank=1,
+                   in_channels=32,
+                   out_channels=32,
+                   cfg=cfg,
+               )
+            model2D = UNet(
+                   rank=2,
+                   in_channels=32,
+                   out_channels=32,
+                   cfg=cfg,
+               )
+            model3D = UNet(
+                   rank=3,
+                   in_channels=32,
+                   out_channels=32,
+                   cfg=cfg,
+               )
 
         The UNet model can be used for both segmentation and reconstruction tasks.
         For segmentation, you can use the `single_class_segmentation_mode()` or `multiclass_segmentation_mode()` methods of the UNetConfig to set the appropriate output activation function (sigmoid for single-class, softmax for multi-class).
         For reconstruction tasks, you can use the `reconstruction_mode()` method to set the output activation to None.
 
-        >>> cfg_segmentation = UNetConfig(filters=[32, 64, 128]).single_class_segmentation_mode()
-        >>> model_segmentation = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=1,
-        >>>        cfg=cfg_segmentation,
-        >>>    )
+        ..  code-block:: python
 
-        >>> cfg_reconstruction = UNetConfig(filters=[32, 64, 128]).reconstruction_mode()
-        >>> model_reconstruction = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=1,
-        >>>        cfg=cfg_reconstruction,
-        >>>    )
+            cfg_segmentation = UNetConfig(filters=[32, 64, 128]).single_class_segmentation_mode()
+            model_segmentation = UNet(
+                   rank=2,
+                   in_channels=32,
+                   out_channels=1,
+                   cfg=cfg_segmentation,
+               )
+
+            cfg_reconstruction = UNetConfig(filters=[32, 64, 128]).reconstruction_mode()
+            model_reconstruction = UNet(
+                   rank=2,
+                   in_channels=32,
+                   out_channels=1,
+                   cfg=cfg_reconstruction,
+               )
 
         If deep supervision is desired, you can specify the levels at which to apply it using the `supervision_levels` argument.
 
-        >>> model_deep_supervision = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>        supervision_levels=[0, 1],  # Apply deep supervision at top 2 levels
-        >>>    )
+        ..  code-block:: python
+
+            model_deep_supervision = UNet(
+                   rank=2,
+                   in_channels=32,
+                   out_channels=32,
+                   cfg=cfg,
+                   supervision_levels=[0, 1],  # Apply deep supervision at top 2 levels
+               )
 
         Models can be saved and loaded using the standard PyTorch methods:
 
-        >>> torch.save(model.state_dict(), "model.pth")
-        >>> model.load_state_dict(torch.load("model.pth"))
+        ..  code-block:: python
+
+            torch.save(model.state_dict(), "model.pth")
+            model.load_state_dict(torch.load("model.pth"))
 
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.UNetConfig` class:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = UNetConfig.load("my_config.yaml")
-        >>> model = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=loaded_cfg,
-        >>>    )
+        ..  code-block:: python
+
+            cfg.save("my_config.yaml")
+            loaded_cfg = UNetConfig.load("my_config.yaml")
+            model = UNet(
+                   rank=2,
+                   in_channels=32,
+                   out_channels=32,
+                   cfg=loaded_cfg,
+               )
 
 
     References:

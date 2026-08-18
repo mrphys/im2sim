@@ -39,11 +39,13 @@ docs = [
     "sphinx_rtd_theme",
     "myst-nb",
     "myst-parser",
-    "shibuya",
+    "sphinx-book-theme",
+    "sphinx-copybutton"
 ]
 
 [tool.setuptools.packages.find]
-where = ["im2sim"]
+where = ["."]
+include = ["im2sim*"]
 
 
 # -------------------------

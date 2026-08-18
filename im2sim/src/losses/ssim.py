@@ -75,31 +75,35 @@ class SSIMLoss(nn.Module):
             `None`, it defaults to `2`.
 
     Examples:
-        Standard 2D SSIM::
+        Standard 2D SSIM:
 
-        >>> loss = SSIMLoss()
+        ..  code-block:: python
 
-        >>> y_true.shape == (B, C, H, W)
-        >>> y_pred.shape == (B, C, H, W)
+            loss = SSIMLoss()
+            y_true.shape == (B, C, H, W)
+            y_pred.shape == (B, C, H, W)
 
-        3D SSIM::
+        3D SSIM:
 
-        >>> loss = SSIMLoss(rank=3)
+        ..  code-block:: python
 
-        >>> y_true.shape == (B, C, D, H, W)
-        >>> y_pred.shape == (B, C, D, H, W)
+            loss = SSIMLoss(rank=3)
+            y_true.shape == (B, C, D, H, W)
+            y_pred.shape == (B, C, D, H, W)
 
-        2D SSIM applied independently to every slice of a 3D image::
+        2D SSIM applied independently to every slice of a 3D image:
 
-        >>> loss = SSIMLoss(
-        >>>     rank=2,
-        >>>     batch_dims=2,
-        >>> )
+        ..  code-block:: python
 
-        >>> y_true.shape == (B, C, D, H, W)
+            loss = SSIMLoss(
+                rank=2,
+                batch_dims=2,
+            )
 
-        >>> # B and D are treated as batch dimensions.
-        >>> # H and W are used as the SSIM image dimensions.
+            y_true.shape == (B, C, D, H, W)
+
+            # B and D are treated as batch dimensions.
+            # H and W are used as the SSIM image dimensions.
 
     References:
         .. [1] Zhao, H., Gallo, O., Frosio, I., & Kautz, J. (2016). Loss functions

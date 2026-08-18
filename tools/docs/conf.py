@@ -69,6 +69,7 @@ extensions = [
   "sphinx.ext.intersphinx",
   'sphinx.ext.linkcode',
   'sphinx.ext.autosectionlabel',
+  'sphinx_copybutton',
   'myst_nb',
   'sphinx_sitemap'
 ]
@@ -113,7 +114,7 @@ html_favicon = '../assets/im2sim_logo.png'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'shibuya'
+html_theme = 'sphinx_book_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -132,7 +133,8 @@ html_theme_options = {
 }
 
 html_css_files = [
-    'https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono',
+    "https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono",
+    "custom.css"
 ]
 
 # Additional files to copy to output directory.
@@ -217,7 +219,7 @@ def linkcode_resolve(domain, info):
   # Base URL.
   url = 'https://github.com/mrphys/im2sim'
   # Add version blob.
-  # url += '/blob/v' + release
+  url += '/blob/main' 
   # Add file.
   url += '/' + file
 

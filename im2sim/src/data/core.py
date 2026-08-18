@@ -593,7 +593,9 @@ class Dataset(torch.utils.data.Dataset):
         transforms (list[Transform] | Pipeline):
             Transforms or pipeline applied to each sample.
 
-    Example:
+    Examples:
+
+    
         >>> import torch
         >>>
         >>> cases = ['case1', 'case2', 'case3', 'case4']

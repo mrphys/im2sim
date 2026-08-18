@@ -8,6 +8,7 @@ from im2sim.src.layers.custom_image_layers import GhostConv as GhostConv
 from im2sim.src.layers.custom_image_layers import EfficientChannelAttn as EfficientChannelAttn
 from im2sim.src.layers.custom_image_layers import SqueezeExcite as SqueezeExcite
 from im2sim.src.layers.custom_image_layers import ConditionedSqueezeExcite as ConditionedSqueezeExcite
+from im2sim.src.layers.image_conv_blocks import ImageConvBlock as ImageConvBlock
 from im2sim.src.layers.graph_blocks import DefaultGraphNorm as DefaultGraphNorm
 from im2sim.src.layers.graph_blocks import GraphConvBlock as GraphConvBlock
 from im2sim.src.layers.graph_blocks import GraphConvResBlock as GraphConvResBlock

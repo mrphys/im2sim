@@ -595,7 +595,7 @@ class Dataset(torch.utils.data.Dataset):
 
     Examples:
 
-    
+
         >>> import torch
         >>>
         >>> cases = ['case1', 'case2', 'case3', 'case4']

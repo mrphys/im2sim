@@ -1,14 +1,14 @@
+from itertools import combinations
+
 import torch
 import torch.nn.functional as F
-
-from itertools import combinations
 
 from im2sim.data.mesh_utils import compute_edge_lengths
 
 
 def edge_length_deviation_loss(gr1, gr2):
     """
-    Computes the edge length deviation loss between two graphs. 
+    Computes the edge length deviation loss between two graphs.
     The loss is calculated as the squared difference between the edge length deviations of the two graphs, with a ReLU activation to ensure non-negativity.
 
     Args:
@@ -37,14 +37,15 @@ def _aspect_ratio(x, cells):
 
 class AspectRatioLoss(torch.nn.Module):
     """
-    Computes the aspect ratio difference between two graphs. 
+    Computes the aspect ratio difference between two graphs.
     Higher aspect ratios indicate more elongated tetrahedra, which can be undesirable in mesh generation.
     This loss can therefore be used as a regularizer to avoid generating meshes with poor quality tetrahedra.
 
     Args:
-        cell_key (str): The key in the graph data object that corresponds to the tetrahedral cells. 
+        cell_key (str): The key in the graph data object that corresponds to the tetrahedral cells.
                         This is used to select the appropriate cells for computing the aspect ratio.
     """
+
     def __init__(self, cell_key):
         super().__init__()
         if isinstance(cell_key, str):
@@ -97,13 +98,14 @@ def face_norm_loss(x1, x2, b1, b2, f1, f2):
 class FaceNormalLoss(torch.nn.Module):
     """
     Computes the face normal consistency loss between two graphs.
-    This loss encourages the predicted graph to have face normals that are consistent with those of the ground truth graph. 
+    This loss encourages the predicted graph to have face normals that are consistent with those of the ground truth graph.
     This is useful for structures like inlet and outlet caps.
 
     Args:
-        face_key (str): The key in the graph data object that corresponds to the face indices. 
+        face_key (str): The key in the graph data object that corresponds to the face indices.
                         This is used to select the appropriate faces for computing the face normals.
     """
+
     def __init__(self, face_key=None):
         super().__init__()
         if isinstance(face_key, str):
@@ -164,10 +166,11 @@ class InversionLoss(torch.nn.Module):
     A tetrahedron is considered inverted if its volume is less than a specified minimum volume threshold.
 
     Args:
-        cell_key (str): The key in the graph data object that corresponds to the tetrahedral cells. 
+        cell_key (str): The key in the graph data object that corresponds to the tetrahedral cells.
                         This is used to select the appropriate cells for computing the inversion loss.
         min_vol (float): The minimum volume threshold below which a tetrahedron is considered inverted. Default is 1e-3.
     """
+
     def __init__(self, cell_key, min_vol=1e-3):
         super().__init__()
         if isinstance(cell_key, str):
@@ -181,10 +184,10 @@ class InversionLoss(torch.nn.Module):
         Computes the inversion loss between two graphs.
 
         Args:
-            gr1 (torch_geometric.data.Data): 
-            The ground truth graph, containing node features and cell indices. 
+            gr1 (torch_geometric.data.Data):
+            The ground truth graph, containing node features and cell indices.
             This is not used in the computation but is included for consistency with other loss functions.
-            
+
             gr2 (torch_geometric.data.Data): The predicted graph, containing node features and cell indices.
         """
         cells = self.select(gr2)

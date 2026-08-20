@@ -3,7 +3,6 @@ import math
 import torch
 
 from im2sim.utils.layer_util import get_image_layer, register_with_ranks
-from im2sim.utils import api_util
 
 
 @register_with_ranks("DepthwiseConv", ranks=(1, 2, 3))
@@ -66,6 +65,7 @@ class DepthwiseConv(torch.nn.Module):
             torch.Tensor: Output tensor of shape `(batch_size, out_channels, *spatial_dims)`.
         """
         return self.conv(x)
+
 
 @register_with_ranks("DepthwiseSeparableConv", ranks=(1, 2, 3))
 class DepthwiseSeparableConv(torch.nn.Module):

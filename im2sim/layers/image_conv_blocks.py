@@ -1,12 +1,12 @@
 import torch
 
+from im2sim.configs.core import LayerConfig
+from im2sim.configs.imageconv import ImageConvBlockConfig
 from im2sim.utils.layer_util import (
     apply_residual_connection,
     get_activation,
     get_image_layer,
 )
-from im2sim.configs.core import LayerConfig
-from im2sim.configs.imageconv import ImageConvBlockConfig
 
 
 class ImageConvBlock(torch.nn.Module):

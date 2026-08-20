@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass, field
 
 from im2sim.configs.core import Config, LayerConfig, register_config

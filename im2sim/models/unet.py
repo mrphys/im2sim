@@ -1,15 +1,15 @@
-import torch
-
 from dataclasses import fields
 
+import torch
+
+from im2sim.configs.core import LayerConfig
+from im2sim.configs.unet import UNetConfig
 from im2sim.layers.image_conv_blocks import ImageConvBlock
 from im2sim.utils.layer_util import (
     apply_residual_connection,
     call_with_supported_kwargs,
     get_image_layer,
 )
-from im2sim.configs.core import  LayerConfig
-from im2sim.configs.unet import UNetConfig
 
 
 class UNet(torch.nn.Module):

@@ -1,9 +1,8 @@
-
-from dataclasses import dataclass, field
 from copy import deepcopy
+from dataclasses import dataclass, field
 
-from im2sim.configs.imageconv import ImageConvBlockConfig
 from im2sim.configs.core import Config, LayerConfig, register_config
+from im2sim.configs.imageconv import ImageConvBlockConfig
 
 
 @register_config

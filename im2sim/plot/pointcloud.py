@@ -20,6 +20,7 @@ class PointCloudPlot:
         elev (float, optional): Elevation angle for the 3D view. Default is 20.
         azim (float, optional): Azimuth angle for the 3D view. Default is 90.
     """
+
     def __init__(
         self,
         nrows,

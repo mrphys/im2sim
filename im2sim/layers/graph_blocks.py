@@ -4,8 +4,8 @@ from copy import copy
 import torch
 from torch import nn
 
-from im2sim.utils.layer_util import get_activation, get_graph_layer, register_graph_layer
 from im2sim.utils import api_util
+from im2sim.utils.layer_util import get_activation, get_graph_layer, register_graph_layer
 
 logger = logging.getLogger(__name__)
 

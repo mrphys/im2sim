@@ -9,14 +9,15 @@ def mse(x1, x2):
 class KnnMSE(torch.nn.Module):
     """
     KNN-based Mean Squared Error loss for graph data.
-    Allows comparison between node features of two graphs without requiring point-to-point correspondence. 
-    The features of the true graph are interpolated to the coordinates of the predicted graph using K-Nearest Neighbors (KNN) interpolation, 
+    Allows comparison between node features of two graphs without requiring point-to-point correspondence.
+    The features of the true graph are interpolated to the coordinates of the predicted graph using K-Nearest Neighbors (KNN) interpolation,
     and then the MSE is computed between the interpolated features and the predicted features.
 
     Args:
         k (int): Number of nearest neighbors to consider for interpolation. Default is 3.
 
     """
+
     def __init__(self, k=3):
         """"""
         super().__init__()
@@ -51,8 +52,8 @@ def mae(x1, x2):
 class KnnMAE(torch.nn.Module):
     """
     KNN-based Mean Absolute Error loss for graph data.
-    Allows comparison between node features of two graphs without requiring point-to-point correspondence. 
-    The features of the true graph are interpolated to the coordinates of the predicted graph using K-Nearest Neighbors (KNN) interpolation, 
+    Allows comparison between node features of two graphs without requiring point-to-point correspondence.
+    The features of the true graph are interpolated to the coordinates of the predicted graph using K-Nearest Neighbors (KNN) interpolation,
     and then the MAE is computed between the interpolated features and the predicted features.
 
     Args:

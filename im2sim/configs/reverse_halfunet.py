@@ -1,8 +1,8 @@
-from dataclasses import dataclass, field
 from copy import deepcopy
+from dataclasses import dataclass, field
 
-from im2sim.configs.imageconv import ImageConvBlockConfig
 from im2sim.configs.core import Config, LayerConfig, register_config
+from im2sim.configs.imageconv import ImageConvBlockConfig
 
 
 @register_config
@@ -278,7 +278,7 @@ class ReverseHalfUNetConfig(Config):
         for d in self.decoder_block_cfg:
             d = d.segmentation_mode()
         return self
-    
+
     def single_class_segmentation_mode(self):
         """
         Apply a single-class segmentation preset to all blocks in the ReverseHalfUNet configuration.

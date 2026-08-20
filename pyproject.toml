@@ -28,6 +28,7 @@ dependencies = [
 dev = [
     "pytest",
     "pytest-cov",
+    "hypothesis",
     "ruff",
     "pre-commit",
 ]

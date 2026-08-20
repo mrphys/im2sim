@@ -69,7 +69,6 @@ extensions = [
   "sphinx.ext.intersphinx",
   'sphinx.ext.linkcode',
   'sphinx.ext.autosectionlabel',
-  'sphinx_copybutton',
   'myst_nb',
   'sphinx_sitemap'
 ]
@@ -132,8 +131,7 @@ html_theme_options = {
 }
 
 html_css_files = [
-    "https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono",
-    "custom.css"
+    'https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono',
 ]
 
 # Additional files to copy to output directory.
@@ -218,11 +216,7 @@ def linkcode_resolve(domain, info):
   # Base URL.
   url = 'https://github.com/mrphys/im2sim'
   # Add version blob.
-<<<<<<< HEAD
-  url += '/blob/main' 
-=======
   url += '/blob/main'
->>>>>>> origin/restructure
   # Add file.
   url += '/' + file
 

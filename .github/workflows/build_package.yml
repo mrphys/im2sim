@@ -51,15 +51,6 @@ jobs:
           pip install -r requirements.txt
           pip install -e ".[docs]"
 
-<<<<<<< HEAD
-      - name: Build API
-        run: |
-          rm -rf im2sim/_api
-          rm im2sim/__init__.py
-          python tools/build/create_api.py
-
-=======
->>>>>>> origin/restructure
       - name: Build Docs
         run: |
           cd tools/docs

@@ -1,0 +1,776 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>im2sim.configs.UNetConfig &#8212; IM2SIM Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=95b1da57" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/configs/UNetConfig';</script>
+    <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/configs/UNetConfig.html" />
+    <link rel="icon" href="../../../_static/im2sim_logo.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="im2sim.data" href="../data.html" />
+    <link rel="prev" title="im2sim.configs.ReverseHalfUNetConfig" href="ReverseHalfUNetConfig.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/im2sim_logo.png" class="logo__image only-light" alt="IM2SIM Documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/im2sim_logo.png" class="logo__image only-dark" alt="IM2SIM Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../im2sim.html">im2sim</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../configs.html">im2sim.configs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">im2sim.configs.UNetConfig</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../data.html">im2sim.data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data/Dataset.html">im2sim.data.Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/FittableOperation.html">im2sim.data.FittableOperation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/InvertibleOperation.html">im2sim.data.InvertibleOperation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/Operation.html">im2sim.data.Operation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/Pipeline.html">im2sim.data.Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/Transform.html">im2sim.data.Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/DataLoader.html">im2sim.data.DataLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/collate.html">im2sim.data.collate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/register_op.html">im2sim.data.register_op</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/OGProjection.html">im2sim.layers.OGProjection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/UNet.html">im2sim.models.UNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">im2sim.utils</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/mrphys/im2sim" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../../_sources/api_docs/im2sim/configs/UNetConfig.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>im2sim.configs.UNetConfig</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig"><code class="docutils literal notranslate"><span class="pre">UNetConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_conv1_residual"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_conv1_residual()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_eca"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_eca()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_input_residual"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_input_residual()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_se"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_se()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_skip_eca"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_skip_eca()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_skip_se"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_skip_se()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.dilate_bottleneck"><code class="docutils literal notranslate"><span class="pre">UNetConfig.dilate_bottleneck()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.double_bottleneck"><code class="docutils literal notranslate"><span class="pre">UNetConfig.double_bottleneck()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode"><code class="docutils literal notranslate"><span class="pre">UNetConfig.multiclass_segmentation_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.reconstruction_mode"><code class="docutils literal notranslate"><span class="pre">UNetConfig.reconstruction_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode"><code class="docutils literal notranslate"><span class="pre">UNetConfig.single_class_segmentation_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.to_depthwise_separable"><code class="docutils literal notranslate"><span class="pre">UNetConfig.to_depthwise_separable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.to_ghost_depthwise"><code class="docutils literal notranslate"><span class="pre">UNetConfig.to_ghost_depthwise()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable"><code class="docutils literal notranslate"><span class="pre">UNetConfig.to_ghost_depthwise_separable()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="im2sim-configs-unetconfig">
+<h1>im2sim.configs.UNetConfig<a class="headerlink" href="#im2sim-configs-unetconfig" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UNetConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_connection_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fusion_type='concat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L9-L411"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></p>
+<p>Configuration class for the UNet model (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/models/UNet">im2sim.models.UNet</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – Number of filters at each level of the UNet. If None, defaults to <code class="docutils literal notranslate"><span class="pre">[64,</span> <span class="pre">128,</span> <span class="pre">256]</span></code>.</p></li>
+<li><p><strong>pool_cfg</strong> (<em>LayerConfig</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>LayerConfig</em><em>]</em>) – Configuration for pooling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the highest resolution.
+Default is <code class="docutils literal notranslate"><span class="pre">MaxPool</span></code> with kernel size <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+<li><p><strong>upsample_cfg</strong> (<em>LayerConfig</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>LayerConfig</em><em>]</em>) – Configuration for upsampling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the lowest resolution.
+Default is <code class="docutils literal notranslate"><span class="pre">Upsample</span></code> with scale factor <code class="docutils literal notranslate"><span class="pre">2</span></code> and mode is adjusted based on rank (<code class="docutils literal notranslate"><span class="pre">bilinear</span></code> for 2D, <code class="docutils literal notranslate"><span class="pre">trilinear</span></code> for 3D).</p></li>
+<li><p><strong>block_cfg</strong> (<a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a>) – Configuration for convolutional blocks. Used as a default for encoder and decoder blocks.
+Default is a standard convolutional block with <code class="docutils literal notranslate"><span class="pre">3x3</span></code> kernels, stride <code class="docutils literal notranslate"><span class="pre">1</span></code>, padding <code class="docutils literal notranslate"><span class="pre">1</span></code>, and <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> activation.</p></li>
+<li><p><strong>encoder_block_cfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a><em>] </em><em>| </em><a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a><em> | </em><em>None</em>) – Configuration for encoder blocks. Can be a single ImageConvBlockConfig or a list of ImageConvBlockConfigs for each level starting with the highest resolution.
+If None, uses block_cfg for all levels.</p></li>
+<li><p><strong>decoder_block_cfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a><em>] </em><em>| </em><a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a><em> | </em><em>None</em>) – Configuration for decoder blocks. Can be a single ImageConvBlockConfig or a list of ImageConvBlockConfigs for each level starting with the lowest resolution.
+If None, uses block_cfg for all levels.</p></li>
+<li><p><strong>skip_connection_cfg</strong> (<a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a><em> | </em><em>None</em>) – Configuration for skip connection blocks. Can only be a single ImageConvBlockConfig.
+If None, is set to <code class="docutils literal notranslate"><span class="pre">torch.nn.Identity()</span></code> (no operation).</p></li>
+<li><p><strong>out_block_cfg</strong> (<a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a><em> | </em><em>None</em>) – Configuration for the output block. Can only be a single ImageConvBlockConfig.
+If None, uses a single convolution operation taken from block_cfg.</p></li>
+<li><p><strong>encoder_blocks_per_level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of convolutional blocks per level in the encoder. Default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>decoder_blocks_per_level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of convolutional blocks per level in the decoder. Default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+<li><p><strong>fusion_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Type of residual connection for skip connections. Options are <code class="docutils literal notranslate"><span class="pre">'add'</span></code> or <code class="docutils literal notranslate"><span class="pre">'concat'</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">'concat'</span></code>.</p></li>
+<li><p><strong>out_activation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Activation function for the output block. If None, no activation is applied.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>To create a customised configuration for a UNet, you can create a preferred ImageConvBlockConfig and use it for the encoder and decoder blocks:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">conv_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">norm_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;BatchNorm&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;affine&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">dropout_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dropout&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">attn_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;SqueezeExcite&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{}),</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">dropout_position</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">residual_connections</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]},</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="n">residual_type</span><span class="o">=</span><span class="s2">&quot;concat&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span>                        <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">pool_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MaxPool&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">upsample_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Upsample&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;scale_factor&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">block_cfg</span><span class="o">=</span><span class="n">block_cfg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you want more flexibility you can also specify different configurations for the encoder and decoder blocks:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">encoder_block_cfg</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ELU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;GELU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decoder_block_cfg</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;GELU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ELU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">encoder_block_cfg</span><span class="o">=</span><span class="n">encoder_block_cfg</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">decoder_block_cfg</span><span class="o">=</span><span class="n">decoder_block_cfg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, if you want to specify different configurations for the skip connection blocks and the output block, you can do so:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">skip_connection_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out_block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">skip_connection_cfg</span><span class="o">=</span><span class="n">skip_connection_cfg</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">out_block_cfg</span><span class="o">=</span><span class="n">out_block_cfg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">mod()</span></code> method can be especially useful for making simple modifications to the block configurations for different types of blocks.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoder_block_cfg</span> <span class="o">=</span> <span class="p">[</span><span class="n">block_cfg</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decoder_block_cfg</span> <span class="o">=</span> <span class="p">[</span><span class="n">block_cfg</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">encoder_block_cfg</span><span class="o">=</span><span class="n">encoder_block_cfg</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">decoder_block_cfg</span><span class="o">=</span><span class="n">decoder_block_cfg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also use the <code class="docutils literal notranslate"><span class="pre">mod()</span></code> method to modify a UNetConfig object directly, which will apply the modification to all blocks of that type:
+&gt;&gt;&gt; cfg = UNetConfig(filters=[32, 64, 128, 256])
+&gt;&gt;&gt; cfg = cfg.mod(encoder_block_cfg=ImageConvBlockConfig(depth=2), decoder_block_cfg=ImageConvBlockConfig(depth=4))</p>
+<p>For heterogeneous pooling and upsampling layers, you can specify a list of LayerConfig objects for each level:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pool_cfg</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MaxPool&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)}),</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;AvgPool&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MaxPool&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upsample_cfg</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Upsample&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;scale_factor&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Upsample&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;scale_factor&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">LayerConfig</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Upsample&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;scale_factor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">}),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">pool_cfg</span><span class="o">=</span><span class="n">pool_cfg</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">upsample_cfg</span><span class="o">=</span><span class="n">upsample_cfg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To make simple modifications to the default configuration, you can modify a subset of attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span> <span class="n">fusion_type</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Different presets exist to perform common transformations on the configuration.
+For example, to convert the convolutional blocks to use depthwise separable convolutions and add residual connections to the input of each block, you can do:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span><span class="o">.</span><span class="n">to_depthwise_separable</span><span class="p">()</span><span class="o">.</span><span class="n">add_input_residual</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To save the configuration to a YAML file and load it back, you can use:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded_cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Refer to the methods below to see all available transformations that can be applied to the configuration.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_conv1_residual">
+<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L263-L282"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
+<dd><p>Apply a residual connection to the first convolutional layer in all encoder blocks in the UNet configuration.</p>
+<p>The residual connection type is set to “add” for all encoder blocks,
+which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
+This can help with gradient flow and improve training stability.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method requires all conv blocks to have at least 2 convolutional layers. If any block has less than 2 layers, it will be set to 2.
+This is because a residual connection requires at least one layer to add to the output of another layer.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_eca">
+<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L381-L388"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_eca" title="Link to this definition">#</a></dt>
+<dd><p>Apply an Efficient Channel Attention (ECA) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/EfficientChannelAttn">im2sim.layers.EfficientChannelAttn</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_input_residual">
+<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L240-L261"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_input_residual" title="Link to this definition">#</a></dt>
+<dd><p>Apply a residual connection to all encoder blocks in the UNet configuration.</p>
+<p>The residual connection type is set to “add” for all encoder blocks,
+which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
+This can help with gradient flow and improve training stability.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method assumes that all encoder blocks have the same number of filters. If they do not, an assertion error will be raised.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_se">
+<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L390-L397"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_se" title="Link to this definition">#</a></dt>
+<dd><p>Apply a Squeeze-and-Excitation (SE) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/SqueezeExcite">im2sim.layers.SqueezeExcite</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_skip_eca">
+<span class="sig-name descname"><span class="pre">add_skip_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L399-L404"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_eca" title="Link to this definition">#</a></dt>
+<dd><p>Apply an Efficient Channel Attention (ECA) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/EfficientChannelAttn">im2sim.layers.EfficientChannelAttn</a>) preset to all skips in the UNet configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_skip_se">
+<span class="sig-name descname"><span class="pre">add_skip_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L406-L411"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_se" title="Link to this definition">#</a></dt>
+<dd><p>Apply a Squeeze-and-Excitation (SE) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/SqueezeExcite">im2sim.layers.SqueezeExcite</a>) preset to all skips in the UNet configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.dilate_bottleneck">
+<span class="sig-name descname"><span class="pre">dilate_bottleneck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L284-L295"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.dilate_bottleneck" title="Link to this definition">#</a></dt>
+<dd><p>Apply dilated convolutions to the bottleneck (lowest resolution) block in the UNet configuration.</p>
+<p>This change modifies the last encoder block to use dilated convolutions, which can help increase the receptive field without increasing the number of parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dilation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Dilation rate for the convolutions in the bottleneck block. Default is <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.double_bottleneck">
+<span class="sig-name descname"><span class="pre">double_bottleneck</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L297-L304"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.double_bottleneck" title="Link to this definition">#</a></dt>
+<dd><p>Apply a double bottleneck configuration to the UNet.</p>
+<p>This change modifies the last encoder block to have two convolutional layers instead of one, which can help increase the capacity of the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.multiclass_segmentation_mode">
+<span class="sig-name descname"><span class="pre">multiclass_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L341-L350"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode" title="Link to this definition">#</a></dt>
+<dd><p>Apply a multi-class segmentation preset to all blocks in the UNet configuration.</p>
+<p>Use this preset for multi-class segmentation tasks, where the output is expected to be a probability map for multiple classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.reconstruction_mode">
+<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L306-L320"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
+<dd><p>Apply a reconstruction preset to all blocks in the UNet configuration.</p>
+<p>This preset is typically used for image reconstruction or superresolution tasks,
+where the output is expected to be a continuous value (e.g., pixel intensity).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.single_class_segmentation_mode">
+<span class="sig-name descname"><span class="pre">single_class_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L330-L339"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode" title="Link to this definition">#</a></dt>
+<dd><p>Apply a single-class segmentation preset to all blocks in the UNet configuration.</p>
+<p>Use this preset for binary segmentation tasks, where the output is expected to be a probability map for a single class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_depthwise_separable">
+<span class="sig-name descname"><span class="pre">to_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L352-L359"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_depthwise_separable" title="Link to this definition">#</a></dt>
+<dd><p>Apply a depthwise separable convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/DepthwiseSeparableConv">im2sim.layers.DepthwiseSeparableConv</a>) preset to all encoder blocks in the UNet configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_ghost_depthwise">
+<span class="sig-name descname"><span class="pre">to_ghost_depthwise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L361-L368"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise" title="Link to this definition">#</a></dt>
+<dd><p>Apply a ghost depthwise convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/GhostConv">im2sim.layers.GhostConv</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_ghost_depthwise_separable">
+<span class="sig-name descname"><span class="pre">to_ghost_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L370-L379"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable" title="Link to this definition">#</a></dt>
+<dd><p>Apply a ghost depthwise separable convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/GhostConv">im2sim.layers.GhostConv</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ReverseHalfUNetConfig.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">im2sim.configs.ReverseHalfUNetConfig</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../data.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">im2sim.data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig"><code class="docutils literal notranslate"><span class="pre">UNetConfig</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_conv1_residual"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_conv1_residual()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_eca"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_eca()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_input_residual"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_input_residual()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_se"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_se()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_skip_eca"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_skip_eca()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.add_skip_se"><code class="docutils literal notranslate"><span class="pre">UNetConfig.add_skip_se()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.dilate_bottleneck"><code class="docutils literal notranslate"><span class="pre">UNetConfig.dilate_bottleneck()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.double_bottleneck"><code class="docutils literal notranslate"><span class="pre">UNetConfig.double_bottleneck()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode"><code class="docutils literal notranslate"><span class="pre">UNetConfig.multiclass_segmentation_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.reconstruction_mode"><code class="docutils literal notranslate"><span class="pre">UNetConfig.reconstruction_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode"><code class="docutils literal notranslate"><span class="pre">UNetConfig.single_class_segmentation_mode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.to_depthwise_separable"><code class="docutils literal notranslate"><span class="pre">UNetConfig.to_depthwise_separable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.to_ghost_depthwise"><code class="docutils literal notranslate"><span class="pre">UNetConfig.to_ghost_depthwise()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable"><code class="docutils literal notranslate"><span class="pre">UNetConfig.to_ghost_depthwise_separable()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Anirudh Raman, Vivek Muthurangu, Javier Montalt-Tordera
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026 University College London.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

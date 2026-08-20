@@ -95,7 +95,6 @@ def test_get_edges_surf():
     mesh = build_triangle_mesh()
 
     edges = get_edges_surf(mesh).numpy().T
-    print(edges.shape)
     edge_set = to_set(edges)
 
     expected = np.array(

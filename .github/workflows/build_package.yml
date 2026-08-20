@@ -27,7 +27,7 @@ jobs:
         pip install -e ".[dev]"
 
     - name: Lint
-      run: ruff check im2sim/src
+      run: ruff check im2sim
 
     - name: Run tests
       run: pytest

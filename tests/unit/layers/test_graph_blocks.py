@@ -57,7 +57,6 @@ def test_forward_shape(graph, conv_type, graph_block_type):
         conv_kwargs={},
     )
 
-    print(type(model), type(graph))
     out = model(graph)
 
     assert out.x.shape == (graph.num_nodes, filters)

@@ -523,7 +523,6 @@ def test_single_deep_supervision_output(
         cfg=cfg,
         supervision_levels=supervision_level,
     )
-    print(model)
     x = torch.randn(1, 3, 64, 64)
 
     y = model(x)

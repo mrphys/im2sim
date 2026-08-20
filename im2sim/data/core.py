@@ -297,8 +297,7 @@ class Transform:
     # -----------------------------
 
     def fit(self, dataloader):
-        print("in fit")
-        print(self.op)
+
         if not self.is_fittable:
             return
 

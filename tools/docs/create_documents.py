@@ -154,10 +154,6 @@ modules = {}
 for namespace in namespaces:
     classes, functions =  get_public_symbols_from_init("im2sim."+namespace)
     modules[namespace] = Module(classes=classes, functions=functions)
-    print(f"Namespace: {os.path.basename(namespace)}")
-    print(f"  Classes: {classes}")
-    print(f"  Functions: {functions}")
-    
 
 # modules = {namespace: Module() for namespace in api_util.get_submodule_names()}
 

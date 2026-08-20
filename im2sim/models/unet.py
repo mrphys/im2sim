@@ -250,7 +250,6 @@ class UNet(torch.nn.Module):
         decoder_outputs = []
         ctr = 0
         for i, (up, dec) in enumerate(zip(self.ups, self.decoders, strict=True)):
-            print(x.shape)
             x = up(x)
             skip = skips[-(i + 1)]
 

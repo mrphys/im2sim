@@ -62,7 +62,6 @@ for namespace in NAMESPACES:
 
   # module.
   module = f'im2sim.{namespace}'
-  print(module)
   # Substitute the templates for this module.
   class_template = CLASS_TEMPLATE.substitute(
       module=module, underline='=' * (len(module) + 1))

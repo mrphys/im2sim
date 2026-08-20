@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=95b1da57" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -48,7 +48,7 @@
     <link rel="icon" href="../../_static/im2sim_logo.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="im2sim.layers.GraphConvBlock" href="layers/GraphConvBlock.html" />
+    <link rel="next" title="im2sim.layers.ConditionedSqueezeExcite" href="layers/ConditionedSqueezeExcite.html" />
     <link rel="prev" title="im2sim.data.register_op" href="data/register_op.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -162,6 +162,13 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../im2sim.html">im2sim</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="data.html">im2sim.data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="data/Dataset.html">im2sim.data.Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data/FittableOperation.html">im2sim.data.FittableOperation</a></li>
@@ -175,20 +182,41 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">im2sim.layers</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/OGProjection.html">im2sim.layers.OGProjection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/get_activation.html">im2sim.layers.get_activation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/get_image_layer.html">im2sim.layers.get_image_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/register_activation.html">im2sim.layers.register_activation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/register_graph_layer.html">im2sim.layers.register_graph_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/register_image_layer.html">im2sim.layers.register_image_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/standardize_spatial_factors.html">im2sim.layers.standardize_spatial_factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="losses.html">im2sim.losses</a></li>
-<li class="toctree-l1"><a class="reference internal" href="models.html">im2sim.models</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/UNet.html">im2sim.models.UNet</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
@@ -376,17 +404,38 @@ document.write(`
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="layers/ConditionedSqueezeExcite.html#im2sim.layers.ConditionedSqueezeExcite" title="im2sim.layers.ConditionedSqueezeExcite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConditionedSqueezeExcite</span></code></a></p></td>
+<td><p>Conditioned Squeeze-and-Excitation [1] (SE) layer that adaptively recalibrates channel-wise feature responses based on an additional conditioning input.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="layers/DepthwiseConv.html#im2sim.layers.DepthwiseConv" title="im2sim.layers.DepthwiseConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthwiseConv</span></code></a></p></td>
+<td><p>Depthwise convolution layer that applies a separate convolutional filter to each input channel.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="layers/DepthwiseSeparableConv.html#im2sim.layers.DepthwiseSeparableConv" title="im2sim.layers.DepthwiseSeparableConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthwiseSeparableConv</span></code></a></p></td>
+<td><p>Depthwise separable convolution layer that consists of a depthwise convolution followed by a pointwise convolution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="layers/EfficientChannelAttn.html#im2sim.layers.EfficientChannelAttn" title="im2sim.layers.EfficientChannelAttn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EfficientChannelAttn</span></code></a></p></td>
+<td><p>Efficient Channel Attention (ECA) layer that adaptively selects important channels based on global context.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="layers/GhostConv.html#im2sim.layers.GhostConv" title="im2sim.layers.GhostConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GhostConv</span></code></a></p></td>
+<td><p>Ghost convolution layer that generates more feature maps from cheap operations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></p></td>
 <td><p>A convolutional block for graph data</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphConvResBlock.html#im2sim.layers.GraphConvResBlock" title="im2sim.layers.GraphConvResBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvResBlock</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphConvResBlock.html#im2sim.layers.GraphConvResBlock" title="im2sim.layers.GraphConvResBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvResBlock</span></code></a></p></td>
 <td><p>A convolutional block for graph data</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphResDecoderBlock.html#im2sim.layers.GraphResDecoderBlock" title="im2sim.layers.GraphResDecoderBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphResDecoderBlock</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphResDecoderBlock.html#im2sim.layers.GraphResDecoderBlock" title="im2sim.layers.GraphResDecoderBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphResDecoderBlock</span></code></a></p></td>
 <td><p>A graph convolutional decoder block with the same structure as MeshDeformNet and Image2Flow</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="layers/ImageConvBlock.html#im2sim.layers.ImageConvBlock" title="im2sim.layers.ImageConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageConvBlock</span></code></a></p></td>
+<td><p>A configurable image convolutional block that consists of a sequence of convolutional layers, normalization layers, dropout layers, and attention layers.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="layers/OGProjection.html#im2sim.layers.OGProjection" title="im2sim.layers.OGProjection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OGProjection</span></code></a></p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="layers/SqueezeExcite.html#im2sim.layers.SqueezeExcite" title="im2sim.layers.SqueezeExcite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SqueezeExcite</span></code></a></p></td>
+<td><p>Squeeze-and-Excitation (SE) layer that adaptively recalibrates channel-wise feature responses.</p></td>
 </tr>
 </tbody>
 </table>
@@ -396,24 +445,6 @@ document.write(`
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/get_activation.html#im2sim.layers.get_activation" title="im2sim.layers.get_activation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_activation</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/get_image_layer.html#im2sim.layers.get_image_layer" title="im2sim.layers.get_image_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_image_layer</span></code></a></p></td>
-<td><p>Get a PyTorch layer by name, with optional arguments.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/register_activation.html#im2sim.layers.register_activation" title="im2sim.layers.register_activation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_activation</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/register_graph_layer.html#im2sim.layers.register_graph_layer" title="im2sim.layers.register_graph_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_graph_layer</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/register_image_layer.html#im2sim.layers.register_image_layer" title="im2sim.layers.register_image_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_image_layer</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/standardize_spatial_factors.html#im2sim.layers.standardize_spatial_factors" title="im2sim.layers.standardize_spatial_factors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standardize_spatial_factors</span></code></a></p></td>
-<td><p>Convert a sequence of spatial factors into a standardized list of tuples.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -441,11 +472,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="layers/GraphConvBlock.html"
+       href="layers/ConditionedSqueezeExcite.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">im2sim.layers.GraphConvBlock</p>
+        <p class="prev-next-title">im2sim.layers.ConditionedSqueezeExcite</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

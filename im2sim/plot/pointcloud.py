@@ -4,6 +4,22 @@ from matplotlib import animation
 
 
 class PointCloudPlot:
+    """
+    A class to create a grid of 3D scatter plots for visualizing point clouds.
+
+    Args:
+        nrows (int): Number of rows in the grid.
+        ncols (int): Number of columns in the grid.
+        point_sets (list of np.ndarray): List of point clouds to plot, each as an (N, 3) array of 3D coordinates.
+        color_sets (list of np.ndarray, optional): List of color values for each point cloud. If None, all points will be colored uniformly.
+        figsize (tuple, optional): Size of the figure. If None, it will be set based on nrows and ncols.
+        cmap (str, optional): Colormap to use for coloring the points. Default is "Blues_r".
+        norm_mode (str, optional): Normalization mode for color values. Options are 'all', 'row', 'col', or 'none'. Default is 'none'.
+        bound_mode (str, optional): Mode for setting axis bounds. Default is 'all'.
+        titles (list of str, optional): List of titles for each subplot. If None, no titles will be set.
+        elev (float, optional): Elevation angle for the 3D view. Default is 20.
+        azim (float, optional): Azimuth angle for the 3D view. Default is 90.
+    """
     def __init__(
         self,
         nrows,

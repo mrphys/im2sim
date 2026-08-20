@@ -35,6 +35,17 @@ def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
 
 
 class ChamferLoss(torch.nn.Module):
+    """
+    Chamfer loss for point clouds.
+    This loss computes the Chamfer distance between two point clouds represented as graphs. 
+    It allows for optional masking of points in each graph, 
+    which can be specified either as a string corresponding to a graph attribute or as a function that takes a graph and returns a boolean mask.
+
+    Args:
+        mask (str or callable, optional): A string representing a graph attribute to use as a mask, 
+            or a callable that takes a graph and returns a boolean mask. 
+            If None, no masking is applied. Default is None.
+    """
     def __init__(self, mask=None):
         super().__init__()
         if isinstance(mask, str):
@@ -45,6 +56,13 @@ class ChamferLoss(torch.nn.Module):
             raise ValueError("mask must be either a graph attribute or a function")
 
     def forward(self, gr1, gr2):
+        """
+        Computes the Chamfer loss between two graphs.
+
+        Args:
+            gr1 (torch_geometric.data.Data): The first graph, containing node features and coordinates.
+            gr2 (torch_geometric.data.Data): The second graph, containing node features and coordinates.
+        """
         mask1 = self.mask(gr1)
         mask2 = self.mask(gr2)
         logger.debug("mask_type - %s", type(mask1))

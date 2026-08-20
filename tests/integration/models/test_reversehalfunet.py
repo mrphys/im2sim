@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from im2sim.layers.module_config import LayerConfig
-from im2sim.layers.reverse_halfunet import (
+from im2sim.configs.core import LayerConfig
+from im2sim.models.reverse_halfunet import (
     ReverseHalfUNet,
     ReverseHalfUNetConfig,
 )

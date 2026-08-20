@@ -11,7 +11,9 @@ Classes
     :template: models/class.rst
     :nosignatures:
 
-    
+    HalfUNet
+    ReverseHalfUNet
+    UNet
 
 Functions
 ---------

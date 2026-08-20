@@ -10,6 +10,7 @@ Modules
 .. autosummary::
     :nosignatures:
 
+    configs
     data
     layers
     losses

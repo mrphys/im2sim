@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-from ..layers.layer_util import get_image_layer, get_activation, standardize_spatial_factors, _same_padding_time
-from ..layers.layer_util import MaxPoolTime, UpsampleTime, ConvTime, BatchNormTime, ConvTransTime
+from ..utils.layer_util import get_image_layer, get_activation, standardize_spatial_factors, _same_padding_time
+from ..utils.layer_util import MaxPoolTime, UpsampleTime, ConvTime, BatchNormTime, ConvTransTime
 
 class ImageConvBlockTime(nn.Module):
     """

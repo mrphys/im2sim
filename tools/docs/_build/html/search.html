@@ -163,6 +163,13 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim.html">im2sim</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/data.html">im2sim.data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/data/Dataset.html">im2sim.data.Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/data/FittableOperation.html">im2sim.data.FittableOperation</a></li>
@@ -176,20 +183,41 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/OGProjection.html">im2sim.layers.OGProjection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/get_activation.html">im2sim.layers.get_activation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/get_image_layer.html">im2sim.layers.get_image_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/register_activation.html">im2sim.layers.register_activation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/register_graph_layer.html">im2sim.layers.register_graph_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/register_image_layer.html">im2sim.layers.register_image_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/standardize_spatial_factors.html">im2sim.layers.standardize_spatial_factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim/losses.html">im2sim.losses</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim/models.html">im2sim.models</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/models/UNet.html">im2sim.models.UNet</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>

@@ -11,10 +11,17 @@ Classes
     :template: layers/class.rst
     :nosignatures:
 
+    ConditionedSqueezeExcite
+    DepthwiseConv
+    DepthwiseSeparableConv
+    EfficientChannelAttn
+    GhostConv
     GraphConvBlock
     GraphConvResBlock
     GraphResDecoderBlock
+    ImageConvBlock
     OGProjection
+    SqueezeExcite
 
 Functions
 ---------
@@ -24,9 +31,4 @@ Functions
     :template: layers/function.rst
     :nosignatures:
 
-    get_activation
-    get_image_layer
-    register_activation
-    register_graph_layer
-    register_image_layer
-    standardize_spatial_factors
+    

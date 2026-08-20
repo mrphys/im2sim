@@ -5,7 +5,7 @@ from im2sim.layers.image_conv_blocks import (
     ImageConvBlock,
     ImageConvBlockConfig,
 )
-from im2sim.layers.module_config import LayerConfig
+from im2sim.configs.core import LayerConfig
 
 
 # ---------------------------------------------------------------------------

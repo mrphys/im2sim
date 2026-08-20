@@ -161,6 +161,13 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim.html">im2sim</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/data.html">im2sim.data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/data/Dataset.html">im2sim.data.Dataset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/data/FittableOperation.html">im2sim.data.FittableOperation</a></li>
@@ -174,20 +181,41 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/OGProjection.html">im2sim.layers.OGProjection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/get_activation.html">im2sim.layers.get_activation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/get_image_layer.html">im2sim.layers.get_image_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/register_activation.html">im2sim.layers.register_activation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/register_graph_layer.html">im2sim.layers.register_graph_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/register_image_layer.html">im2sim.layers.register_image_layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/standardize_spatial_factors.html">im2sim.layers.standardize_spatial_factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim/losses.html">im2sim.losses</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim/models.html">im2sim.models</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/models/UNet.html">im2sim.models.UNet</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
@@ -314,24 +342,92 @@ document.write(`
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#C"><strong>C</strong></a>
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  
 </div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.add_conv1_residual">add_conv1_residual() (ImageConvBlockConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.add_conv1_residual">(UNetConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.add_eca">add_eca() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.add_eca">(ImageConvBlockConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.add_eca">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.add_eca">(UNetConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.add_input_concat_residual">add_input_concat_residual() (ImageConvBlockConfig method)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.add_input_residual">add_input_residual() (ImageConvBlockConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.add_input_residual">(UNetConfig method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.add_residual">add_residual() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.add_residual">(ReverseHalfUNetConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.add_se">add_se() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.add_se">(ImageConvBlockConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.add_se">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.add_se">(UNetConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.add_skip_eca">add_skip_eca() (UNetConfig method)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.add_skip_se">add_skip_se() (UNetConfig method)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/AspectRatioLoss.html#im2sim.losses.AspectRatioLoss">AspectRatioLoss (class in im2sim.losses)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/losses/ChamferLoss.html#im2sim.losses.ChamferLoss">ChamferLoss (class in im2sim.losses)</a>
+</li>
       <li><a href="api_docs/im2sim/data/collate.html#im2sim.data.collate">collate() (in module im2sim.data)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/layers/ConditionedSqueezeExcite.html#im2sim.layers.ConditionedSqueezeExcite">ConditionedSqueezeExcite (class in im2sim.layers)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/ConfusionLoss.html#im2sim.losses.ConfusionLoss">ConfusionLoss (class in im2sim.losses)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -341,9 +437,45 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_docs/im2sim/data/DataLoader.html#im2sim.data.DataLoader">DataLoader() (in module im2sim.data)</a>
 </li>
+      <li><a href="api_docs/im2sim/data/Dataset.html#im2sim.data.Dataset">Dataset (class in im2sim.data)</a>
+</li>
+      <li><a href="api_docs/im2sim/layers/DepthwiseConv.html#im2sim.layers.DepthwiseConv">DepthwiseConv (class in im2sim.layers)</a>
+</li>
+      <li><a href="api_docs/im2sim/layers/DepthwiseSeparableConv.html#im2sim.layers.DepthwiseSeparableConv">DepthwiseSeparableConv (class in im2sim.layers)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/DiceLoss.html#im2sim.losses.DiceLoss">DiceLoss (class in im2sim.losses)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.dilate_bottleneck">dilate_bottleneck() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.dilate_bottleneck">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.dilate_bottleneck">(UNetConfig method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_docs/im2sim/data/Dataset.html#im2sim.data.Dataset">Dataset (class in im2sim.data)</a>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.dilate_convs">dilate_convs() (ImageConvBlockConfig method)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.double_bottleneck">double_bottleneck() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.double_bottleneck">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.double_bottleneck">(UNetConfig method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/losses/edge_length_deviation_loss.html#im2sim.losses.edge_length_deviation_loss">edge_length_deviation_loss() (in module im2sim.losses)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/layers/EfficientChannelAttn.html#im2sim.layers.EfficientChannelAttn">EfficientChannelAttn (class in im2sim.layers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -351,16 +483,54 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/losses/FaceNormalLoss.html#im2sim.losses.FaceNormalLoss">FaceNormalLoss (class in im2sim.losses)</a>
+</li>
       <li><a href="api_docs/im2sim/data/FittableOperation.html#im2sim.data.FittableOperation">FittableOperation (class in im2sim.data)</a>
 </li>
-      <li><a href="api_docs/im2sim/layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock.forward">forward() (GraphConvBlock method)</a>
+      <li><a href="api_docs/im2sim/losses/FocalTverskyLoss.html#im2sim.losses.FocalTverskyLoss">FocalTverskyLoss (class in im2sim.losses)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/AspectRatioLoss.html#im2sim.losses.AspectRatioLoss.forward">forward() (AspectRatioLoss method)</a>
 
       <ul>
+        <li><a href="api_docs/im2sim/losses/ChamferLoss.html#im2sim.losses.ChamferLoss.forward">(ChamferLoss method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/ConditionedSqueezeExcite.html#im2sim.layers.ConditionedSqueezeExcite.forward">(ConditionedSqueezeExcite method)</a>
+</li>
+        <li><a href="api_docs/im2sim/losses/ConfusionLoss.html#im2sim.losses.ConfusionLoss.forward">(ConfusionLoss method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/DepthwiseConv.html#im2sim.layers.DepthwiseConv.forward">(DepthwiseConv method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/DepthwiseSeparableConv.html#im2sim.layers.DepthwiseSeparableConv.forward">(DepthwiseSeparableConv method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/EfficientChannelAttn.html#im2sim.layers.EfficientChannelAttn.forward">(EfficientChannelAttn method)</a>
+</li>
+        <li><a href="api_docs/im2sim/losses/FaceNormalLoss.html#im2sim.losses.FaceNormalLoss.forward">(FaceNormalLoss method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/GhostConv.html#im2sim.layers.GhostConv.forward">(GhostConv method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock.forward">(GraphConvBlock method)</a>
+</li>
         <li><a href="api_docs/im2sim/layers/GraphConvResBlock.html#im2sim.layers.GraphConvResBlock.forward">(GraphConvResBlock method)</a>
 </li>
         <li><a href="api_docs/im2sim/layers/GraphResDecoderBlock.html#im2sim.layers.GraphResDecoderBlock.forward">(GraphResDecoderBlock method)</a>
 </li>
+        <li><a href="api_docs/im2sim/models/HalfUNet.html#im2sim.models.HalfUNet.forward">(HalfUNet method)</a>
+</li>
+        <li><a href="api_docs/im2sim/losses/InversionLoss.html#im2sim.losses.InversionLoss.forward">(InversionLoss method)</a>
+</li>
+        <li><a href="api_docs/im2sim/losses/KnnMAE.html#im2sim.losses.KnnMAE.forward">(KnnMAE method)</a>
+</li>
+        <li><a href="api_docs/im2sim/losses/KnnMSE.html#im2sim.losses.KnnMSE.forward">(KnnMSE method)</a>
+</li>
         <li><a href="api_docs/im2sim/layers/OGProjection.html#im2sim.layers.OGProjection.forward">(OGProjection method)</a>
+</li>
+        <li><a href="api_docs/im2sim/models/ReverseHalfUNet.html#im2sim.models.ReverseHalfUNet.forward">(ReverseHalfUNet method)</a>
+</li>
+        <li><a href="api_docs/im2sim/layers/SqueezeExcite.html#im2sim.layers.SqueezeExcite.forward">(SqueezeExcite method)</a>
+</li>
+        <li><a href="api_docs/im2sim/losses/SSIMLoss.html#im2sim.losses.SSIMLoss.forward">(SSIMLoss method)</a>
+</li>
+        <li><a href="api_docs/im2sim/models/UNet.html#im2sim.models.UNet.forward">(UNet method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -369,17 +539,27 @@ document.write(`
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_docs/im2sim/layers/get_activation.html#im2sim.layers.get_activation">get_activation() (in module im2sim.layers)</a>
+      <li><a href="api_docs/im2sim/layers/GhostConv.html#im2sim.layers.GhostConv">GhostConv (class in im2sim.layers)</a>
 </li>
-      <li><a href="api_docs/im2sim/layers/get_image_layer.html#im2sim.layers.get_image_layer">get_image_layer() (in module im2sim.layers)</a>
+      <li><a href="api_docs/im2sim/layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock">GraphConvBlock (class in im2sim.layers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_docs/im2sim/layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock">GraphConvBlock (class in im2sim.layers)</a>
-</li>
       <li><a href="api_docs/im2sim/layers/GraphConvResBlock.html#im2sim.layers.GraphConvResBlock">GraphConvResBlock (class in im2sim.layers)</a>
 </li>
       <li><a href="api_docs/im2sim/layers/GraphResDecoderBlock.html#im2sim.layers.GraphResDecoderBlock">GraphResDecoderBlock (class in im2sim.layers)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/models/HalfUNet.html#im2sim.models.HalfUNet">HalfUNet (class in im2sim.models)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig">HalfUNetConfig (class in im2sim.configs)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -392,6 +572,13 @@ document.write(`
 
       <ul>
         <li><a href="api_docs/im2sim.html#module-im2sim">module</a>
+</li>
+      </ul></li>
+      <li>
+    im2sim.configs
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs.html#module-im2sim.configs">module</a>
 </li>
       </ul></li>
       <li>
@@ -438,7 +625,27 @@ document.write(`
         <li><a href="api_docs/im2sim/utils.html#module-im2sim.utils">module</a>
 </li>
       </ul></li>
+      <li><a href="api_docs/im2sim/layers/ImageConvBlock.html#im2sim.layers.ImageConvBlock">ImageConvBlock (class in im2sim.layers)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig">ImageConvBlockConfig (class in im2sim.configs)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/InversionLoss.html#im2sim.losses.InversionLoss">InversionLoss (class in im2sim.losses)</a>
+</li>
       <li><a href="api_docs/im2sim/data/InvertibleOperation.html#im2sim.data.InvertibleOperation">InvertibleOperation (class in im2sim.data)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/IoULoss.html#im2sim.losses.IoULoss">IoULoss (class in im2sim.losses)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/losses/KnnMAE.html#im2sim.losses.KnnMAE">KnnMAE (class in im2sim.losses)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/losses/KnnMSE.html#im2sim.losses.KnnMSE">KnnMSE (class in im2sim.losses)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -460,6 +667,8 @@ document.write(`
       <ul>
         <li><a href="api_docs/im2sim.html#module-im2sim">im2sim</a>
 </li>
+        <li><a href="api_docs/im2sim/configs.html#module-im2sim.configs">im2sim.configs</a>
+</li>
         <li><a href="api_docs/im2sim/data.html#module-im2sim.data">im2sim.data</a>
 </li>
         <li><a href="api_docs/im2sim/layers.html#module-im2sim.layers">im2sim.layers</a>
@@ -473,6 +682,24 @@ document.write(`
         <li><a href="api_docs/im2sim/utils.html#module-im2sim.utils">im2sim.utils</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.multiclass_segmentation_mode">multiclass_segmentation_mode() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.multiclass_segmentation_mode">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.multiclass_segmentation_mode">(UNetConfig method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.nullify">nullify() (ImageConvBlockConfig method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -503,15 +730,23 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_docs/im2sim/layers/register_activation.html#im2sim.layers.register_activation">register_activation() (in module im2sim.layers)</a>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.reconstruction_mode">reconstruction_mode() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.reconstruction_mode">(ImageConvBlockConfig method)</a>
 </li>
-      <li><a href="api_docs/im2sim/layers/register_graph_layer.html#im2sim.layers.register_graph_layer">register_graph_layer() (in module im2sim.layers)</a>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.reconstruction_mode">(ReverseHalfUNetConfig method)</a>
 </li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.reconstruction_mode">(UNetConfig method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_docs/im2sim/layers/register_image_layer.html#im2sim.layers.register_image_layer">register_image_layer() (in module im2sim.layers)</a>
-</li>
       <li><a href="api_docs/im2sim/data/register_op.html#im2sim.data.register_op">register_op() (in module im2sim.data)</a>
+</li>
+      <li><a href="api_docs/im2sim/models/ReverseHalfUNet.html#im2sim.models.ReverseHalfUNet">ReverseHalfUNet (class in im2sim.models)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig">ReverseHalfUNetConfig (class in im2sim.configs)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -519,10 +754,22 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_docs/im2sim/layers/standardize_spatial_factors.html#im2sim.layers.standardize_spatial_factors">standardize_spatial_factors() (in module im2sim.layers)</a>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.segmentation_mode">segmentation_mode() (ImageConvBlockConfig method)</a>
 </li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.single_class_segmentation_mode">single_class_segmentation_mode() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.single_class_segmentation_mode">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.single_class_segmentation_mode">(UNetConfig method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/layers/SqueezeExcite.html#im2sim.layers.SqueezeExcite">SqueezeExcite (class in im2sim.layers)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/SSIMLoss.html#im2sim.losses.SSIMLoss">SSIMLoss (class in im2sim.losses)</a>
+</li>
       <li><a href="api_docs/im2sim/data/Operation.html#im2sim.data.Operation.state_dict">state_dict() (Operation method)</a>
 </li>
   </ul></td>
@@ -533,9 +780,51 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_docs/im2sim/data/Operation.html#im2sim.data.Operation.to">to() (Operation method)</a>
 </li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.to_depthwise_separable">to_depthwise_separable() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.to_depthwise_separable">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.to_depthwise_separable">(UNetConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.to_ghost_depthwise">to_ghost_depthwise() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.to_ghost_depthwise">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.to_ghost_depthwise">(UNetConfig method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig.to_ghost_depthwise_separable">to_ghost_depthwise_separable() (HalfUNetConfig method)</a>
+
+      <ul>
+        <li><a href="api_docs/im2sim/configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig.to_ghost_depthwise_separable">(ReverseHalfUNetConfig method)</a>
+</li>
+        <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig.to_ghost_depthwise_separable">(UNetConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.to_single_block">to_single_block() (ImageConvBlockConfig method)</a>
+</li>
+      <li><a href="api_docs/im2sim/configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig.to_single_conv">to_single_conv() (ImageConvBlockConfig method)</a>
+</li>
       <li><a href="api_docs/im2sim/data/Transform.html#im2sim.data.Transform">Transform (class in im2sim.data)</a>
+</li>
+      <li><a href="api_docs/im2sim/losses/TverskyLoss.html#im2sim.losses.TverskyLoss">TverskyLoss (class in im2sim.losses)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/models/UNet.html#im2sim.models.UNet">UNet (class in im2sim.models)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_docs/im2sim/configs/UNetConfig.html#im2sim.configs.UNetConfig">UNetConfig (class in im2sim.configs)</a>
 </li>
   </ul></td>
 </tr></table>

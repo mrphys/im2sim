@@ -2,11 +2,10 @@ import math
 
 import torch
 
-from im2sim.layers.layer_util import get_image_layer, register_with_ranks
+from im2sim.utils.layer_util import get_image_layer, register_with_ranks
 from im2sim.utils import api_util
 
 
-@api_util.export("layers.DepthwiseConv")
 @register_with_ranks("DepthwiseConv", ranks=(1, 2, 3))
 class DepthwiseConv(torch.nn.Module):
     """
@@ -68,8 +67,6 @@ class DepthwiseConv(torch.nn.Module):
         """
         return self.conv(x)
 
-
-@api_util.export("layers.DepthwiseSeparableConv")
 @register_with_ranks("DepthwiseSeparableConv", ranks=(1, 2, 3))
 class DepthwiseSeparableConv(torch.nn.Module):
     """
@@ -141,7 +138,6 @@ class DepthwiseSeparableConv(torch.nn.Module):
         return x
 
 
-@api_util.export("layers.GhostConv")
 @register_with_ranks("GhostConv", ranks=(1, 2, 3))
 class GhostConv(torch.nn.Module):
     """
@@ -222,7 +218,6 @@ class GhostConv(torch.nn.Module):
         return torch.cat([x1, x2], dim=1)
 
 
-@api_util.export("layers.EfficientChannelAttn")
 @register_with_ranks("EfficientChannelAttn", ranks=(1, 2, 3))
 class EfficientChannelAttn(torch.nn.Module):
     """
@@ -266,7 +261,6 @@ class EfficientChannelAttn(torch.nn.Module):
         return x * w
 
 
-@api_util.export("layers.SqueezeExcite")
 @register_with_ranks("SqueezeExcite", ranks=(1, 2, 3))
 class SqueezeExcite(torch.nn.Module):
     """
@@ -313,7 +307,6 @@ class SqueezeExcite(torch.nn.Module):
         return x * s
 
 
-@api_util.export("layers.ConditionedSqueezeExcite")
 @register_with_ranks("ConditionedSqueezeExcite", ranks=(1, 2, 3))
 class ConditionedSqueezeExcite(torch.nn.Module):
     """

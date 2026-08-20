@@ -51,20 +51,18 @@ jobs:
           pip install -r requirements.txt
           pip install -e ".[docs]"
 
-      - name: Build API
-        run: |
-          python tools/build/create_api.py
-
       - name: Build Docs
         run: |
           cd tools/docs
           make clean
+          rm -rf _templates 
+          rm -rf api_docs
           python create_templates.py
           python create_documents.py
           make dirhtml
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: tools/docs/_build/dirhtml
 
@@ -83,4 +81,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

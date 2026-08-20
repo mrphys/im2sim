@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from im2sim.layers.module_config import LayerConfig
-from im2sim.layers.halfunet import HalfUNet, HalfUNetConfig
+from im2sim.configs.core import LayerConfig
+from im2sim.models.halfunet import HalfUNet, HalfUNetConfig
 
 
 # ---------------------------------------------------------------------------

@@ -12,6 +12,7 @@ IM2SIM |release|
 
    API documentation <api_docs>
    api_docs/im2sim
+   api_docs/im2sim/configs
    api_docs/im2sim/data
    api_docs/im2sim/layers
    api_docs/im2sim/losses

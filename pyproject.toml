@@ -43,7 +43,8 @@ docs = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["im2sim"]
+where = ["."]
+include = ["im2sim*"]
 
 
 # -------------------------

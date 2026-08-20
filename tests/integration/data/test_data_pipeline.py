@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch_geometric.data import Data
 
-from im2sim.src.data import Dataset, Pipeline, transforms
+from im2sim.data import Dataset, Pipeline, transforms
 
 
 def make_toy_dataset():

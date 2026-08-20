@@ -4,7 +4,7 @@ import pyvista as pv
 from hypothesis import given
 from torch_geometric.data import Data
 
-from im2sim.src.data.mesh_utils import *
+from im2sim.data.mesh_utils import *
 
 
 def build_tetra_mesh():

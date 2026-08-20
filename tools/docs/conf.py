@@ -95,7 +95,7 @@ intersphinx_mapping = {
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', "templates"]
 
 # Do not add full qualification to objects' signatures.
 add_module_names = False
@@ -113,7 +113,7 @@ html_favicon = '../assets/im2sim_logo.png'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'shibuya'
+html_theme = 'sphinx_book_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -124,7 +124,6 @@ html_static_path = ['../assets']
 html_theme_options = {
     'repository_url': 'https://github.com/mrphys/im2sim',
     'use_repository_button': True,
-    'logo_only': True,
     'launch_buttons': {
         'colab_url': "https://colab.research.google.com/"
     },
@@ -211,13 +210,13 @@ def linkcode_resolve(domain, info):
     return None
   # Crop anything before `im2sim\src`. This path is system
   # dependent and we don't care about it.
-  index = file.index('im2sim/src')
+  index = file.index('im2sim')
   file = file[index:]
 
   # Base URL.
   url = 'https://github.com/mrphys/im2sim'
   # Add version blob.
-  # url += '/blob/v' + release
+  url += '/blob/main'
   # Add file.
   url += '/' + file
 

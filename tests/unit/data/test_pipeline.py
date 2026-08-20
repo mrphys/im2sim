@@ -3,7 +3,7 @@ import copy
 import pytest
 import torch
 
-from im2sim.src.data import (
+from im2sim.data import (
     FittableOperation,
     InvertibleOperation,
     Operation,

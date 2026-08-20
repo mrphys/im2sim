@@ -1,5 +1,5 @@
 im2sim.plot
-==========
+===========
 
 .. automodule:: im2sim.plot
 
@@ -11,7 +11,7 @@ Classes
     :template: plot/class.rst
     :nosignatures:
 
-    
+    PointCloudPlot
 
 Functions
 ---------

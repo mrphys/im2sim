@@ -23,7 +23,7 @@ ROOT_PATH = os.path.join(DOCS_PATH, '..', '..')
 
 sys.path.insert(0, ROOT_PATH)
 
-from im2sim.src.utils import api_util
+from im2sim.utils import api_util
 
 
 CLASS_TEMPLATE = string.Template(
@@ -44,7 +44,14 @@ FUNCTION_TEMPLATE = string.Template(
 .. auto{{ objtype }}:: {{ objname }}
 """)
 
-NAMESPACES = api_util.get_submodule_names()
+# NAMESPACES = api_util.get_submodule_names()
+code_path = os.path.join(ROOT_PATH, "im2sim")
+
+NAMESPACES = [
+    name
+    for name in os.listdir(code_path)
+    if os.path.isdir(os.path.join(code_path, name))
+]
 
 TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), '_templates')
@@ -53,10 +60,9 @@ for namespace in NAMESPACES:
   # Create directory for this namespace.
   os.makedirs(os.path.join(TEMPLATE_PATH, namespace), exist_ok=True)
 
-  # Special treatment for namespace `ops`, which maps to the `im2sim` parent
   # module.
   module = f'im2sim.{namespace}'
-
+  print(module)
   # Substitute the templates for this module.
   class_template = CLASS_TEMPLATE.substitute(
       module=module, underline='=' * (len(module) + 1))

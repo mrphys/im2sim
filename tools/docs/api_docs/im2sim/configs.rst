@@ -1,5 +1,5 @@
 im2sim.configs
-=============
+==============
 
 .. automodule:: im2sim.configs
 
@@ -12,7 +12,7 @@ Classes
     :nosignatures:
 
     HalfUNetConfig
-    LayerConfig
+    ImageConvBlockConfig
     ReverseHalfUNetConfig
     UNetConfig
 

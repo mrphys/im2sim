@@ -1,10 +1,6 @@
 IM2SIM |release|
 ========================
 
-.. image:: https://img.shields.io/badge/-View%20on%20GitHub-128091?logo=github&labelColor=grey
-   :target: https://github.com/mrphys/im2sim
-   :alt: View on GitHub
-
 .. include:: ../../README.rst
    :start-after: start-intro
    :end-before: end-intro

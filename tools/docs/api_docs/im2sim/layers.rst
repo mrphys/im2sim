@@ -1,5 +1,5 @@
 im2sim.layers
-============
+=============
 
 .. automodule:: im2sim.layers
 
@@ -12,7 +12,6 @@ Classes
     :nosignatures:
 
     ConditionedSqueezeExcite
-    DefaultGraphNorm
     DepthwiseConv
     DepthwiseSeparableConv
     EfficientChannelAttn
@@ -20,6 +19,8 @@ Classes
     GraphConvBlock
     GraphConvResBlock
     GraphResDecoderBlock
+    ImageConvBlock
+    OGProjection
     SqueezeExcite
 
 Functions

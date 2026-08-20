@@ -1,5 +1,5 @@
 im2sim.losses
-============
+=============
 
 .. automodule:: im2sim.losses
 
@@ -11,9 +11,16 @@ Classes
     :template: losses/class.rst
     :nosignatures:
 
+    AspectRatioLoss
+    ChamferLoss
+    ConfusionLoss
     DiceLoss
+    FaceNormalLoss
     FocalTverskyLoss
+    InversionLoss
     IoULoss
+    KnnMAE
+    KnnMSE
     SSIMLoss
     TverskyLoss
 
@@ -25,4 +32,4 @@ Functions
     :template: losses/function.rst
     :nosignatures:
 
-    
+    edge_length_deviation_loss

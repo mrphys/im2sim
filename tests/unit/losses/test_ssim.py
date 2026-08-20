@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from im2sim.src.losses.ssim import SSIMLoss
+from im2sim.losses.ssim import SSIMLoss
 
 
 # ---------------------------------------------------------------------------

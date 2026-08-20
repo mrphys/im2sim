@@ -1,5 +1,5 @@
 im2sim.models
-============
+=============
 
 .. automodule:: im2sim.models
 

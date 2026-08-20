@@ -1,6 +1,7 @@
 im2sim
 ======
 
+.. start-intro
 ``im2sim`` is a library designed to simplify the development of ML-accelerated
 digital twins based on medical images.
 
@@ -39,3 +40,5 @@ Installation
 .. code-block:: bash
 
    pip install git+https://github.com/mrphys/im2sim.git
+
+.. end-intro

@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import torch
 
-from im2sim.src.losses.confusion_losses import (
+from im2sim.losses.confusion_losses import (
     DiceLoss,
     FocalTverskyLoss,
     IoULoss,

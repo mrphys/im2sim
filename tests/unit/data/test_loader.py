@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch_geometric.data import Batch, Data
 
-from im2sim.src.data import DataLoader, Dataset, collate
+from im2sim.data import DataLoader, Dataset, collate
 
 # -------------------------
 # Fixtures

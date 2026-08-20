@@ -1,5 +1,5 @@
 im2sim.data
-==========
+===========
 
 .. automodule:: im2sim.data
 
@@ -11,7 +11,12 @@ Classes
     :template: data/class.rst
     :nosignatures:
 
-    
+    Dataset
+    FittableOperation
+    InvertibleOperation
+    Operation
+    Pipeline
+    Transform
 
 Functions
 ---------
@@ -21,4 +26,6 @@ Functions
     :template: data/function.rst
     :nosignatures:
 
-    
+    DataLoader
+    collate
+    register_op

@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch_geometric.data import Data
 
-from im2sim.src.layers import GraphConvBlock, GraphConvResBlock
+from im2sim.layers import GraphConvBlock, GraphConvResBlock
 
 
 @pytest.fixture

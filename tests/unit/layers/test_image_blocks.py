@@ -1,11 +1,11 @@
 import pytest
 import torch
 
-from im2sim.src.layers.image_conv_blocks import (
+from im2sim.layers.image_conv_blocks import (
     ImageConvBlock,
     ImageConvBlockConfig,
 )
-from im2sim.src.layers.module_config import LayerConfig
+from im2sim.configs.core import LayerConfig
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
--f https://data.pyg.org/whl/torch-2.3.1+cu121.html
+-f https://pytorch-geometric.com/whl/torch-2.3.1%2Bcu121.html
 
 torch==2.3.1
 torch-cluster==1.6.3

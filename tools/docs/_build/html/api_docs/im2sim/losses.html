@@ -51,7 +51,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="im2sim.losses.AspectRatioLoss" href="losses/AspectRatioLoss.html" />
-    <link rel="prev" title="im2sim.layers.SqueezeExcite" href="layers/SqueezeExcite.html" />
+    <link rel="prev" title="im2sim.layers.TrilinearProjection" href="layers/TrilinearProjection.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -161,13 +161,29 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../im2sim.html">im2sim</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="configs/GraphConvBlockConfig.html">im2sim.configs.GraphConvBlockConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs/LayerConfig.html">im2sim.configs.LayerConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configs/SimpleGraphDecoderConfig.html">im2sim.configs.SimpleGraphDecoderConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
 </ul>
 </details></li>
@@ -184,17 +200,25 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="layers/ChannelDropout.html">im2sim.layers.ChannelDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/DefaultGraphNorm.html">im2sim.layers.DefaultGraphNorm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/EdgeDropout.html">im2sim.layers.EdgeDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/FeatureRasterizer.html">im2sim.layers.FeatureRasterizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/GraphActivation.html">im2sim.layers.GraphActivation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/GraphDropout.html">im2sim.layers.GraphDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/GraphECA.html">im2sim.layers.GraphECA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/GraphSE.html">im2sim.layers.GraphSE</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="layers/OGProjection.html">im2sim.layers.OGProjection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/MaskRasterizer.html">im2sim.layers.MaskRasterizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/NodeDropout.html">im2sim.layers.NodeDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layers/TrilinearProjection.html">im2sim.layers.TrilinearProjection</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">im2sim.losses</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -206,21 +230,58 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/compute_edge_lengths.html">im2sim.mesh_ops.compute_edge_lengths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_edges.html">im2sim.mesh_ops.get_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_edges_surf.html">im2sim.mesh_ops.get_edges_surf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_edges_tet.html">im2sim.mesh_ops.get_edges_tet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_node_features.html">im2sim.mesh_ops.get_node_features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_structure_cells.html">im2sim.mesh_ops.get_structure_cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_structure_edges.html">im2sim.mesh_ops.get_structure_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/get_structure_ids.html">im2sim.mesh_ops.get_structure_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/hard_threshold.html">im2sim.mesh_ops.hard_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/make_padded_batch.html">im2sim.mesh_ops.make_padded_batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/rasterize.html">im2sim.mesh_ops.rasterize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/set_attrs.html">im2sim.mesh_ops.set_attrs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mesh_ops/soft_threshold.html">im2sim.mesh_ops.soft_threshold</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/Im2SimBase.html">im2sim.models.Im2SimBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/Im2SimGen2.html">im2sim.models.Im2SimGen2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/SimpleGraphDecoder.html">im2sim.models.SimpleGraphDecoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="models/UNet.html">im2sim.models.UNet</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/FitRangeNormOp.html">im2sim.transforms.FitRangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/FitZScoreOp.html">im2sim.transforms.FitZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/NormOp.html">im2sim.transforms.NormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/PowerScaleOp.html">im2sim.transforms.PowerScaleOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/RangeNormOp.html">im2sim.transforms.RangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/ZScoreOp.html">im2sim.transforms.ZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/FitNorm.html">im2sim.transforms.FitNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/FitRangeNorm.html">im2sim.transforms.FitRangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/FitZScore.html">im2sim.transforms.FitZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/Norm.html">im2sim.transforms.Norm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/PowerScaling.html">im2sim.transforms.PowerScaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/RangeNorm.html">im2sim.transforms.RangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/ZScore.html">im2sim.transforms.ZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms/transform_from_fn.html">im2sim.transforms.transform_from_fn</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">im2sim.utils</a></li>
@@ -407,10 +468,10 @@ document.write(`
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="losses/AspectRatioLoss.html#im2sim.losses.AspectRatioLoss" title="im2sim.losses.AspectRatioLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AspectRatioLoss</span></code></a></p></td>
-<td><p>Computes the aspect ratio difference between two graphs.</p></td>
+<td><p>Computes the aspect ratio loss for tetrahedral meshes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="losses/ChamferLoss.html#im2sim.losses.ChamferLoss" title="im2sim.losses.ChamferLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChamferLoss</span></code></a></p></td>
-<td><p>Chamfer loss for point clouds.</p></td>
+<td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="losses/ConfusionLoss.html#im2sim.losses.ConfusionLoss" title="im2sim.losses.ConfusionLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfusionLoss</span></code></a></p></td>
 <td><p>Base class for losses derived from a soft confusion matrix.</p></td>
@@ -419,7 +480,7 @@ document.write(`
 <td><p>Dice loss, also known as F1 loss.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="losses/FaceNormalLoss.html#im2sim.losses.FaceNormalLoss" title="im2sim.losses.FaceNormalLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FaceNormalLoss</span></code></a></p></td>
-<td><p>Computes the face normal consistency loss between two graphs.</p></td>
+<td><p>Computes the face normal loss for triangular meshes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="losses/FocalTverskyLoss.html#im2sim.losses.FocalTverskyLoss" title="im2sim.losses.FocalTverskyLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FocalTverskyLoss</span></code></a></p></td>
 <td><p>Focal Tversky loss.</p></td>
@@ -430,16 +491,13 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="losses/IoULoss.html#im2sim.losses.IoULoss" title="im2sim.losses.IoULoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IoULoss</span></code></a></p></td>
 <td><p>Intersection over Union (IoU) or Jaccard loss.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="losses/KnnMAE.html#im2sim.losses.KnnMAE" title="im2sim.losses.KnnMAE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KnnMAE</span></code></a></p></td>
-<td><p>KNN-based Mean Absolute Error loss for graph data.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="losses/KnnFeatureLoss.html#im2sim.losses.KnnFeatureLoss" title="im2sim.losses.KnnFeatureLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KnnFeatureLoss</span></code></a></p></td>
+<td><p>Computes the loss between features of two graphs using k-nearest neighbors interpolation based on their coordinates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="losses/KnnMSE.html#im2sim.losses.KnnMSE" title="im2sim.losses.KnnMSE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KnnMSE</span></code></a></p></td>
-<td><p>KNN-based Mean Squared Error loss for graph data.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="losses/SSIMLoss.html#im2sim.losses.SSIMLoss" title="im2sim.losses.SSIMLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSIMLoss</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="losses/SSIMLoss.html#im2sim.losses.SSIMLoss" title="im2sim.losses.SSIMLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SSIMLoss</span></code></a></p></td>
 <td><p>Structural Similarity Index Measure (SSIM) loss.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="losses/TverskyLoss.html#im2sim.losses.TverskyLoss" title="im2sim.losses.TverskyLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TverskyLoss</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="losses/TverskyLoss.html#im2sim.losses.TverskyLoss" title="im2sim.losses.TverskyLoss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TverskyLoss</span></code></a></p></td>
 <td><p>Tversky loss.</p></td>
 </tr>
 </tbody>
@@ -471,12 +529,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="layers/SqueezeExcite.html"
+       href="layers/TrilinearProjection.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">im2sim.layers.SqueezeExcite</p>
+        <p class="prev-next-title">im2sim.layers.TrilinearProjection</p>
       </div>
     </a>
     <a class="right-next"

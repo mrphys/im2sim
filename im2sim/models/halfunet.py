@@ -4,7 +4,7 @@ import torch
 
 from im2sim.configs.core import LayerConfig
 from im2sim.configs.halfunet import HalfUNetConfig
-from im2sim.layers.image_conv_blocks import ImageConvBlock
+from im2sim.layers.image_blocks import ImageConvBlock
 from im2sim.utils.layer_util import (
     apply_residual_connection,
     call_with_supported_kwargs,
@@ -115,6 +115,9 @@ class HalfUNet(torch.nn.Module):
         """ """
         super().__init__()
 
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.rank=rank
         self.n_levels = cfg.n_levels
         self.hidden_channels = cfg.hidden_channels
 

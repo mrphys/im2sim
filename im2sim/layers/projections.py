@@ -4,54 +4,76 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
+from im2sim.utils.layer_util import register_image_layer
 logger = logging.getLogger(__name__)
 
 
+# class TrilinearProjection(nn.Module):
+#     def __init__(self, domain_size):
+#         super().__init__()
+#         self.domain_size = domain_size
+
+#     def forward(self, encoder_outputs, graph_coords, batch):
+#         projections = []
+
+#         n_dims = graph_coords.shape[1]
+#         for i in torch.unique(batch).to(torch.int16):
+#             coords = graph_coords[batch == i]
+#             n_nodes = coords.shape[0]
+
+#             grid = torch.stack(
+#                 [(2 * coords[:, j] / (d - 1)) - 1 for j, d in enumerate(self.domain_size)],
+#                 axis=-1,
+#             )  # normalise coords [-1,1] and divide by scale
+
+#             grid = grid.reshape(1, n_nodes, 1, 1, n_dims)  # [N,3]->[1,N,1,1,3]
+
+#             grid = grid.type_as(encoder_outputs)
+
+#             projections.append(
+#                 F.grid_sample(
+#                     encoder_outputs[i].unsqueeze(0),
+#                     grid,
+#                     align_corners=True,
+#                     padding_mode="border",
+#                 )
+#                 .reshape(encoder_outputs.shape[1], -1)
+#                 .permute(1, 0)
+#             )  # [1,C,N,1,1] -> [1,C,N] -> [N,C]
+
+#             projections = torch.cat(projections, dim=0)
+
+#         return projections
+
+
 class TrilinearProjection(nn.Module):
-    def __init__(self, domain_size):
-        super().__init__()
-        self.domain_size = domain_size
+    """
+    TrilinearProjection layer projects image features onto graph coordinates using trilinear interpolation.
 
-    def forward(self, encoder_outputs, graph_coords, batch):
-        projections = []
-
-        n_dims = graph_coords.shape[1]
-        for i in torch.unique(batch).to(torch.int16):
-            coords = graph_coords[batch == i]
-            n_nodes = coords.shape[0]
-
-            grid = torch.stack(
-                [(2 * coords[:, j] / (d - 1)) - 1 for j, d in enumerate(self.domain_size)],
-                axis=-1,
-            )  # normalise coords [-1,1] and divide by scale
-
-            grid = grid.reshape(1, n_nodes, 1, 1, n_dims)  # [N,3]->[1,N,1,1,3]
-
-            grid = grid.type_as(encoder_outputs)
-
-            projections.append(
-                F.grid_sample(
-                    encoder_outputs[i].unsqueeze(0),
-                    grid,
-                    align_corners=True,
-                    padding_mode="border",
-                )
-                .reshape(encoder_outputs.shape[1], -1)
-                .permute(1, 0)
-            )  # [1,C,N,1,1] -> [1,C,N] -> [N,C]
-
-            projections = torch.cat(projections, dim=0)
-
-        return projections
-
-
-class OGProjection(nn.Module):
+    Args:
+        image_dim (int): 
+            The dimension of the first image input feature map (height, width, depth). 
+            This is used to scale the graph coordinates to the image feature space.
+    """
     def __init__(self, image_dim):
         super().__init__()
         self.image_dim = image_dim
 
-    def forward(self, image_features, graph_features, batch):
+    def forward(self, image_features, graph):
+        """
+        Projects image features onto graph coordinates using trilinear interpolation.
+
+        Args:
+            image_features (torch.Tensor): 
+                A tensor of shape [batch_size, channels, height, width, depth] representing the image features.
+
+            graph (pyg.data.Data): 
+                A PyTorch Geometric Data object containing the graph data. 
+                It must have 'coords' and 'batch' attributes.
+        """
         projections = []
+        coords = graph.coords
+        batch = graph.batch
         for i in torch.unique(batch).to(torch.int16):
             # TensorFlow tf.shape equivalents
             h = image_features[i].shape[-3]
@@ -59,9 +81,9 @@ class OGProjection(nn.Module):
             d = image_features[i].shape[-1]
 
             # Last 3 coords
-            x = graph_features[batch == i, -3]
-            y = graph_features[batch == i, -2]
-            z = graph_features[batch == i, -1]
+            x = coords[batch == i, 0]
+            y = coords[batch == i, 1]
+            z = coords[batch == i, 2]
 
             factor = torch.tensor(self.image_dim / h, dtype=x.dtype, device=x.device)
 

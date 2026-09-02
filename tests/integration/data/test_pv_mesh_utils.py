@@ -1,10 +1,12 @@
+import torch
 import hypothesis.strategies as st
 import numpy as np
 import pyvista as pv
 from hypothesis import given
 from torch_geometric.data import Data
 
-from im2sim.data.mesh_utils import *
+
+from im2sim.mesh_ops import *
 
 
 def build_tetra_mesh():

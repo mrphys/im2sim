@@ -1,6 +1,6 @@
 import numpy as np
 
-from im2sim.data.ops import *
+from im2sim.transforms.ops import *
 
 eps = 1e-8
 

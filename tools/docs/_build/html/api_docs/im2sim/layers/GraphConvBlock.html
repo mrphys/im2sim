@@ -48,8 +48,8 @@
     <link rel="icon" href="../../../_static/im2sim_logo.png"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="im2sim.layers.GraphConvResBlock" href="GraphConvResBlock.html" />
-    <link rel="prev" title="im2sim.layers.GhostConv" href="GhostConv.html" />
+    <link rel="next" title="im2sim.layers.GraphDropout" href="GraphDropout.html" />
+    <link rel="prev" title="im2sim.layers.GraphActivation" href="GraphActivation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,13 +159,29 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../im2sim.html">im2sim</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../configs/GraphConvBlockConfig.html">im2sim.configs.GraphConvBlockConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../configs/LayerConfig.html">im2sim.configs.LayerConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../configs/SimpleGraphDecoderConfig.html">im2sim.configs.SimpleGraphDecoderConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
 </ul>
 </details></li>
@@ -182,17 +198,25 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../layers.html">im2sim.layers</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ChannelDropout.html">im2sim.layers.ChannelDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="DefaultGraphNorm.html">im2sim.layers.DefaultGraphNorm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EdgeDropout.html">im2sim.layers.EdgeDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FeatureRasterizer.html">im2sim.layers.FeatureRasterizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GhostConv.html">im2sim.layers.GhostConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphActivation.html">im2sim.layers.GraphActivation</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">im2sim.layers.GraphConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphDropout.html">im2sim.layers.GraphDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphECA.html">im2sim.layers.GraphECA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GraphSE.html">im2sim.layers.GraphSE</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OGProjection.html">im2sim.layers.OGProjection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MaskRasterizer.html">im2sim.layers.MaskRasterizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NodeDropout.html">im2sim.layers.NodeDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TrilinearProjection.html">im2sim.layers.TrilinearProjection</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -204,21 +228,58 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/compute_edge_lengths.html">im2sim.mesh_ops.compute_edge_lengths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_edges.html">im2sim.mesh_ops.get_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_edges_surf.html">im2sim.mesh_ops.get_edges_surf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_edges_tet.html">im2sim.mesh_ops.get_edges_tet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_node_features.html">im2sim.mesh_ops.get_node_features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_structure_cells.html">im2sim.mesh_ops.get_structure_cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_structure_edges.html">im2sim.mesh_ops.get_structure_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_structure_ids.html">im2sim.mesh_ops.get_structure_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/hard_threshold.html">im2sim.mesh_ops.hard_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/make_padded_batch.html">im2sim.mesh_ops.make_padded_batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/rasterize.html">im2sim.mesh_ops.rasterize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/set_attrs.html">im2sim.mesh_ops.set_attrs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/soft_threshold.html">im2sim.mesh_ops.soft_threshold</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/Im2SimBase.html">im2sim.models.Im2SimBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/Im2SimGen2.html">im2sim.models.Im2SimGen2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/SimpleGraphDecoder.html">im2sim.models.SimpleGraphDecoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../models/UNet.html">im2sim.models.UNet</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitRangeNormOp.html">im2sim.transforms.FitRangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitZScoreOp.html">im2sim.transforms.FitZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/NormOp.html">im2sim.transforms.NormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/PowerScaleOp.html">im2sim.transforms.PowerScaleOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/RangeNormOp.html">im2sim.transforms.RangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/ZScoreOp.html">im2sim.transforms.ZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitNorm.html">im2sim.transforms.FitNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitRangeNorm.html">im2sim.transforms.FitRangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitZScore.html">im2sim.transforms.FitZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/Norm.html">im2sim.transforms.Norm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/PowerScaling.html">im2sim.transforms.PowerScaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/RangeNorm.html">im2sim.transforms.RangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/ZScore.html">im2sim.transforms.ZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/transform_from_fn.html">im2sim.transforms.transform_from_fn</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">im2sim.utils</a></li>
@@ -385,10 +446,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock.forward"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock.forward()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -404,40 +462,39 @@ document.write(`
 <h1>im2sim.layers.GraphConvBlock<a class="headerlink" href="#im2sim-layers-graphconvblock" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.layers.GraphConvBlock">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphConvBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GATConv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ReLU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'defaultnorm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/layers/graph_blocks.py#L50-L108"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphConvBlock" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
-<p>A convolutional block for graph data</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphConvBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/layers/graph_blocks.py#L14-L174"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphConvBlock" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<p>A configurable image convolutional block that consists of a sequence of
+convolutional layers, normalization layers, dropout layers, and attention
+layers. The block supports residual connections and allows for flexible
+configuration of its components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>in_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The number of channels in the input to the layer.</p></li>
-<li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – The number of filters in each convolutional layer (default: 32)</p></li>
-<li><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – The number of successive convolutional layers (default: 2)</p></li>
-<li><p><strong>conv_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – The type of graph convolution to apply (default: “GATConv”, options: All PyG Convs)</p></li>
-<li><p><strong>conv_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) – Dictionary of keyword arguments for the chosen conv_type</p></li>
-<li><p><strong>activation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – The activation function applied after each convolution (default: “relu”, options: All torch activations)</p></li>
-<li><p><strong>norm_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – The normalization method to apply between convolutions (default:”defaultnorm”, options: All PyG Norms)</p></li>
+<li><p><strong>in_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of output channels.</p></li>
+<li><p><strong>cfg</strong> (<a class="reference internal" href="../configs/GraphConvBlockConfig.html#im2sim.configs.GraphConvBlockConfig" title="im2sim.configs.GraphConvBlockConfig"><em>GraphConvBlockConfig</em></a>) – Configuration object that defines the parameters of the block.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code> object.</p>
-</dd>
 </dl>
-<p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="im2sim.layers.GraphConvBlock.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/layers/graph_blocks.py#L102-L108"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphConvBlock.forward" title="Link to this definition">#</a></dt>
-<dd><p>Define the computation performed at every call.</p>
-<p>Should be overridden by all subclasses.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Although the recipe for forward pass needs to be defined within
-this function, one should call the :class:<code class="docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
-instead of this since the former takes care of running the
-registered hooks while the latter silently ignores them.</p>
+<p class="rubric">Examples</p>
+<p>To create an GraphConvBlock with a depth of 3, ReLU activation, and softmax output activation, you can use the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">GraphConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;softmax&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">GraphConvBlock</span><span class="p">(</span>
+       <span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+       <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+       <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+       <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+   <span class="p">)</span>
+</pre></div>
 </div>
-</dd></dl>
-
+<p>Models can be saved and loaded using the standard PyTorch methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;model.pth&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.pth&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Configs can also be saved and loaded using the methods provided in the <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/configs/GraphConvBlockConfig">im2sim.configs.GraphConvBlockConfig</a> class:</p>
+<p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 </section>
@@ -454,20 +511,20 @@ registered hooks while the latter silently ignores them.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="GhostConv.html"
+       href="GraphActivation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">im2sim.layers.GhostConv</p>
+        <p class="prev-next-title">im2sim.layers.GraphActivation</p>
       </div>
     </a>
     <a class="right-next"
-       href="GraphConvResBlock.html"
+       href="GraphDropout.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">im2sim.layers.GraphConvResBlock</p>
+        <p class="prev-next-title">im2sim.layers.GraphDropout</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -487,10 +544,7 @@ registered hooks while the latter silently ignores them.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock.forward"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock.forward()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -14,7 +14,9 @@ Modules
     data
     layers
     losses
+    mesh_ops
     models
     plot
+    transforms
     utils
 

@@ -19,8 +19,7 @@ Classes
     FocalTverskyLoss
     InversionLoss
     IoULoss
-    KnnMAE
-    KnnMSE
+    KnnFeatureLoss
     SSIMLoss
     TverskyLoss
 

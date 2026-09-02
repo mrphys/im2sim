@@ -1,4 +1,3 @@
-from im2sim.data import mesh_utils, ops, transforms
 from im2sim.data.core import (
     DataLoader,
     Dataset,
@@ -12,9 +11,6 @@ from im2sim.data.core import (
 )
 
 __all__ = [
-    "mesh_utils",
-    "ops",
-    "transforms",
     "Operation",
     "InvertibleOperation",
     "FittableOperation",

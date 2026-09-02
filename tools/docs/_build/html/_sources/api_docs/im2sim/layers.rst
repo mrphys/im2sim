@@ -11,17 +11,25 @@ Classes
     :template: layers/class.rst
     :nosignatures:
 
+    ChannelDropout
     ConditionedSqueezeExcite
+    DefaultGraphNorm
     DepthwiseConv
     DepthwiseSeparableConv
+    EdgeDropout
     EfficientChannelAttn
+    FeatureRasterizer
     GhostConv
+    GraphActivation
     GraphConvBlock
-    GraphConvResBlock
-    GraphResDecoderBlock
+    GraphDropout
+    GraphECA
+    GraphSE
     ImageConvBlock
-    OGProjection
+    MaskRasterizer
+    NodeDropout
     SqueezeExcite
+    TrilinearProjection
 
 Functions
 ---------

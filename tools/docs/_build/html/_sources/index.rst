@@ -5,6 +5,12 @@ IM2SIM |release|
    :start-after: start-intro
    :end-before: end-intro
 
+.. toctree::
+   :caption: Tutorials
+   :hidden:
+
+   Tutorials <tutorials>
+   Segmentation <tutorials/segment>
 
 .. toctree::
    :caption: API Documentation
@@ -16,8 +22,10 @@ IM2SIM |release|
    api_docs/im2sim/data
    api_docs/im2sim/layers
    api_docs/im2sim/losses
+   api_docs/im2sim/mesh_ops
    api_docs/im2sim/models
    api_docs/im2sim/plot
+   api_docs/im2sim/transforms
    api_docs/im2sim/utils
 
 

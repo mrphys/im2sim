@@ -12,7 +12,10 @@ Classes
     :nosignatures:
 
     HalfUNet
+    Im2SimBase
+    Im2SimGen2
     ReverseHalfUNet
+    SimpleGraphDecoder
     UNet
 
 Functions

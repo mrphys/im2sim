@@ -49,7 +49,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="im2sim.data" href="../data.html" />
-    <link rel="prev" title="im2sim.configs.ReverseHalfUNetConfig" href="ReverseHalfUNetConfig.html" />
+    <link rel="prev" title="im2sim.configs.SimpleGraphDecoderConfig" href="SimpleGraphDecoderConfig.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,13 +159,29 @@
  </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
+
+
+
+
+
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../im2sim.html">im2sim</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../configs.html">im2sim.configs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="GraphConvBlockConfig.html">im2sim.configs.GraphConvBlockConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LayerConfig.html">im2sim.configs.LayerConfig</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SimpleGraphDecoderConfig.html">im2sim.configs.SimpleGraphDecoderConfig</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">im2sim.configs.UNetConfig</a></li>
 </ul>
 </details></li>
@@ -182,17 +198,25 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../layers/ChannelDropout.html">im2sim.layers.ChannelDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/DefaultGraphNorm.html">im2sim.layers.DefaultGraphNorm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/EdgeDropout.html">im2sim.layers.EdgeDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/FeatureRasterizer.html">im2sim.layers.FeatureRasterizer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphActivation.html">im2sim.layers.GraphActivation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../layers/GraphConvResBlock.html">im2sim.layers.GraphConvResBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../layers/GraphResDecoderBlock.html">im2sim.layers.GraphResDecoderBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphDropout.html">im2sim.layers.GraphDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphECA.html">im2sim.layers.GraphECA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/GraphSE.html">im2sim.layers.GraphSE</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../layers/OGProjection.html">im2sim.layers.OGProjection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/MaskRasterizer.html">im2sim.layers.MaskRasterizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/NodeDropout.html">im2sim.layers.NodeDropout</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layers/TrilinearProjection.html">im2sim.layers.TrilinearProjection</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -204,21 +228,58 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/KnnMAE.html">im2sim.losses.KnnMAE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/KnnMSE.html">im2sim.losses.KnnMSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/compute_edge_lengths.html">im2sim.mesh_ops.compute_edge_lengths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_edges.html">im2sim.mesh_ops.get_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_edges_surf.html">im2sim.mesh_ops.get_edges_surf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_edges_tet.html">im2sim.mesh_ops.get_edges_tet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_node_features.html">im2sim.mesh_ops.get_node_features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_structure_cells.html">im2sim.mesh_ops.get_structure_cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_structure_edges.html">im2sim.mesh_ops.get_structure_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/get_structure_ids.html">im2sim.mesh_ops.get_structure_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/hard_threshold.html">im2sim.mesh_ops.hard_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/make_padded_batch.html">im2sim.mesh_ops.make_padded_batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/rasterize.html">im2sim.mesh_ops.rasterize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/set_attrs.html">im2sim.mesh_ops.set_attrs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mesh_ops/soft_threshold.html">im2sim.mesh_ops.soft_threshold</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/Im2SimBase.html">im2sim.models.Im2SimBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/Im2SimGen2.html">im2sim.models.Im2SimGen2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../models/SimpleGraphDecoder.html">im2sim.models.SimpleGraphDecoder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../models/UNet.html">im2sim.models.UNet</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitRangeNormOp.html">im2sim.transforms.FitRangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitZScoreOp.html">im2sim.transforms.FitZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/NormOp.html">im2sim.transforms.NormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/PowerScaleOp.html">im2sim.transforms.PowerScaleOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/RangeNormOp.html">im2sim.transforms.RangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/ZScoreOp.html">im2sim.transforms.ZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitNorm.html">im2sim.transforms.FitNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitRangeNorm.html">im2sim.transforms.FitRangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/FitZScore.html">im2sim.transforms.FitZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/Norm.html">im2sim.transforms.Norm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/PowerScaling.html">im2sim.transforms.PowerScaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/RangeNorm.html">im2sim.transforms.RangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/ZScore.html">im2sim.transforms.ZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../transforms/transform_from_fn.html">im2sim.transforms.transform_from_fn</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">im2sim.utils</a></li>
@@ -417,16 +478,16 @@ document.write(`
 <h1>im2sim.configs.UNetConfig<a class="headerlink" href="#im2sim-configs-unetconfig" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UNetConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_connection_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fusion_type='concat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L9-L411"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UNetConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_connection_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fusion_type='concat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L8-L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></p>
 <p>Configuration class for the UNet model (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/models/UNet">im2sim.models.UNet</a>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – Number of filters at each level of the UNet. If None, defaults to <code class="docutils literal notranslate"><span class="pre">[64,</span> <span class="pre">128,</span> <span class="pre">256]</span></code>.</p></li>
-<li><p><strong>pool_cfg</strong> (<em>LayerConfig</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>LayerConfig</em><em>]</em>) – Configuration for pooling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the highest resolution.
+<li><p><strong>pool_cfg</strong> (<a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a><em>]</em>) – Configuration for pooling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the highest resolution.
 Default is <code class="docutils literal notranslate"><span class="pre">MaxPool</span></code> with kernel size <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
-<li><p><strong>upsample_cfg</strong> (<em>LayerConfig</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>LayerConfig</em><em>]</em>) – Configuration for upsampling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the lowest resolution.
+<li><p><strong>upsample_cfg</strong> (<a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a><em>]</em>) – Configuration for upsampling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the lowest resolution.
 Default is <code class="docutils literal notranslate"><span class="pre">Upsample</span></code> with scale factor <code class="docutils literal notranslate"><span class="pre">2</span></code> and mode is adjusted based on rank (<code class="docutils literal notranslate"><span class="pre">bilinear</span></code> for 2D, <code class="docutils literal notranslate"><span class="pre">trilinear</span></code> for 3D).</p></li>
 <li><p><strong>block_cfg</strong> (<a class="reference internal" href="ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><em>ImageConvBlockConfig</em></a>) – Configuration for convolutional blocks. Used as a default for encoder and decoder blocks.
 Default is a standard convolutional block with <code class="docutils literal notranslate"><span class="pre">3x3</span></code> kernels, stride <code class="docutils literal notranslate"><span class="pre">1</span></code>, padding <code class="docutils literal notranslate"><span class="pre">1</span></code>, and <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> activation.</p></li>
@@ -545,7 +606,7 @@ For example, to convert the convolutional blocks to use depthwise separable conv
 <p>Refer to the methods below to see all available transformations that can be applied to the configuration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_conv1_residual">
-<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L263-L282"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L262-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
 <dd><p>Apply a residual connection to the first convolutional layer in all encoder blocks in the UNet configuration.</p>
 <p>The residual connection type is set to “add” for all encoder blocks,
 which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
@@ -559,13 +620,13 @@ This is because a residual connection requires at least one layer to add to the 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_eca">
-<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L381-L388"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_eca" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L380-L387"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_eca" title="Link to this definition">#</a></dt>
 <dd><p>Apply an Efficient Channel Attention (ECA) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/EfficientChannelAttn">im2sim.layers.EfficientChannelAttn</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_input_residual">
-<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L240-L261"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_input_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L239-L260"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_input_residual" title="Link to this definition">#</a></dt>
 <dd><p>Apply a residual connection to all encoder blocks in the UNet configuration.</p>
 <p>The residual connection type is set to “add” for all encoder blocks,
 which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
@@ -578,25 +639,25 @@ This can help with gradient flow and improve training stability.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_se">
-<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L390-L397"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_se" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L389-L396"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_se" title="Link to this definition">#</a></dt>
 <dd><p>Apply a Squeeze-and-Excitation (SE) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/SqueezeExcite">im2sim.layers.SqueezeExcite</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_skip_eca">
-<span class="sig-name descname"><span class="pre">add_skip_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L399-L404"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_eca" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_skip_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L398-L403"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_eca" title="Link to this definition">#</a></dt>
 <dd><p>Apply an Efficient Channel Attention (ECA) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/EfficientChannelAttn">im2sim.layers.EfficientChannelAttn</a>) preset to all skips in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_skip_se">
-<span class="sig-name descname"><span class="pre">add_skip_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L406-L411"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_se" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_skip_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L405-L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_se" title="Link to this definition">#</a></dt>
 <dd><p>Apply a Squeeze-and-Excitation (SE) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/SqueezeExcite">im2sim.layers.SqueezeExcite</a>) preset to all skips in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.dilate_bottleneck">
-<span class="sig-name descname"><span class="pre">dilate_bottleneck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L284-L295"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.dilate_bottleneck" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dilate_bottleneck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L283-L294"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.dilate_bottleneck" title="Link to this definition">#</a></dt>
 <dd><p>Apply dilated convolutions to the bottleneck (lowest resolution) block in the UNet configuration.</p>
 <p>This change modifies the last encoder block to use dilated convolutions, which can help increase the receptive field without increasing the number of parameters.</p>
 <dl class="field-list simple">
@@ -608,21 +669,21 @@ This can help with gradient flow and improve training stability.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.double_bottleneck">
-<span class="sig-name descname"><span class="pre">double_bottleneck</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L297-L304"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.double_bottleneck" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">double_bottleneck</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L296-L303"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.double_bottleneck" title="Link to this definition">#</a></dt>
 <dd><p>Apply a double bottleneck configuration to the UNet.</p>
 <p>This change modifies the last encoder block to have two convolutional layers instead of one, which can help increase the capacity of the model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.multiclass_segmentation_mode">
-<span class="sig-name descname"><span class="pre">multiclass_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L341-L350"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">multiclass_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L340-L349"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode" title="Link to this definition">#</a></dt>
 <dd><p>Apply a multi-class segmentation preset to all blocks in the UNet configuration.</p>
 <p>Use this preset for multi-class segmentation tasks, where the output is expected to be a probability map for multiple classes.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.reconstruction_mode">
-<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L306-L320"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L305-L319"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
 <dd><p>Apply a reconstruction preset to all blocks in the UNet configuration.</p>
 <p>This preset is typically used for image reconstruction or superresolution tasks,
 where the output is expected to be a continuous value (e.g., pixel intensity).</p>
@@ -630,26 +691,26 @@ where the output is expected to be a continuous value (e.g., pixel intensity).</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.single_class_segmentation_mode">
-<span class="sig-name descname"><span class="pre">single_class_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L330-L339"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">single_class_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L329-L338"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode" title="Link to this definition">#</a></dt>
 <dd><p>Apply a single-class segmentation preset to all blocks in the UNet configuration.</p>
 <p>Use this preset for binary segmentation tasks, where the output is expected to be a probability map for a single class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_depthwise_separable">
-<span class="sig-name descname"><span class="pre">to_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L352-L359"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_depthwise_separable" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L351-L358"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_depthwise_separable" title="Link to this definition">#</a></dt>
 <dd><p>Apply a depthwise separable convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/DepthwiseSeparableConv">im2sim.layers.DepthwiseSeparableConv</a>) preset to all encoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_ghost_depthwise">
-<span class="sig-name descname"><span class="pre">to_ghost_depthwise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L361-L368"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_ghost_depthwise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L360-L367"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise" title="Link to this definition">#</a></dt>
 <dd><p>Apply a ghost depthwise convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/GhostConv">im2sim.layers.GhostConv</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_ghost_depthwise_separable">
-<span class="sig-name descname"><span class="pre">to_ghost_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L370-L379"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_ghost_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L369-L378"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable" title="Link to this definition">#</a></dt>
 <dd><p>Apply a ghost depthwise separable convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/GhostConv">im2sim.layers.GhostConv</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
@@ -669,12 +730,12 @@ where the output is expected to be a continuous value (e.g., pixel intensity).</
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="ReverseHalfUNetConfig.html"
+       href="SimpleGraphDecoderConfig.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">im2sim.configs.ReverseHalfUNetConfig</p>
+        <p class="prev-next-title">im2sim.configs.SimpleGraphDecoderConfig</p>
       </div>
     </a>
     <a class="right-next"

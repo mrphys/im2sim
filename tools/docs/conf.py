@@ -180,59 +180,135 @@ def linkcode_resolve(domain, info):
     The GitHub URL to the object, or `None` if not relevant.
   """
 
+  if domain != 'py':
+    return None
+
   # Obtain fully-qualified name of object.
   qualname = info['module'] + '.' + info['fullname']
+  print(qualname)
+
   # Remove the `im2sim` bit.
   qualname = qualname.split('.', maxsplit=1)[-1]
+  print(qualname)
 
   # Get the object.
-  # obj = operator.attrgetter(qualname)(im2sim)
   try:
     obj = operator.attrgetter(qualname)(im2sim)
   except AttributeError:
-      return None
-  # We only add links to classes (type `type`) and functions
-  # (type `types.FunctionType`).
+    return None
+
+  # We only add links to classes and functions.
   if not isinstance(obj, (type, types.FunctionType)):
     return None
 
   # Get the file name of the current object.
   file = inspect.getsourcefile(obj)
+
   # If no file, we're done. This happens for C++ ops.
   if file is None:
     return None
+
   # When using TF's deprecation decorators, `getsourcefile` returns the
   # `deprecation.py` file where the decorators are defined instead of the
-  # file where the object is defined. This should probably be fixed on the
-  # decorators themselves. For now, we just don't add the link for deprecated
-  # objects.
+  # file where the object is defined.
   if 'deprecation' in file:
     return None
-  # Crop anything before `im2sim\src`. This path is system
-  # dependent and we don't care about it.
+
+  # Crop anything before `im2sim`.
+  if 'im2sim' not in file:
+    return None
+
   index = file.index('im2sim')
   file = file[index:]
 
   # Base URL.
   url = 'https://github.com/mrphys/im2sim'
+
   # Add version blob.
   url += '/blob/main'
+
   # Add file.
   url += '/' + file
 
-  # Try to add line numbers. This will not work when the class is defined
-  # dynamically. In that case we point to the file, but no line number.
+  # Try to add line numbers.
   try:
     lines, start = inspect.getsourcelines(obj)
     stop = start + len(lines) - 1
   except OSError:
-    # Could not get source lines.
     return url
 
   # Add line numbers.
   url += '#L' + str(start) + '-L' + str(stop)
 
   return url
+
+
+# def linkcode_resolve(domain, info):
+#   """Find the GitHub URL where an object is defined.
+
+#   Args:
+#     domain: The language domain. This is always `py`.
+#     info: A `dict` with keys `module` and `fullname`.
+
+#   Returns:
+#     The GitHub URL to the object, or `None` if not relevant.
+#   """
+
+#   # Obtain fully-qualified name of object.
+#   qualname = info['module'] + '.' + info['fullname']
+#   print(qualname)
+#   # Remove the `im2sim` bit.
+#   qualname = qualname.split('.', maxsplit=1)[-1]
+#   print(qualname)
+
+#   # Get the object.
+#   # obj = operator.attrgetter(qualname)(im2sim)
+#   try:
+#     obj = operator.attrgetter(qualname)(im2sim)
+#   except AttributeError:
+#       return None
+#   # We only add links to classes (type `type`) and functions
+#   # (type `types.FunctionType`).
+#   if not isinstance(obj, (type, types.FunctionType)):
+#     return None
+
+#   # Get the file name of the current object.
+#   file = inspect.getsourcefile(obj)
+#   # If no file, we're done. This happens for C++ ops.
+#   if file is None:
+#     return None
+#   # When using TF's deprecation decorators, `getsourcefile` returns the
+#   # `deprecation.py` file where the decorators are defined instead of the
+#   # file where the object is defined. This should probably be fixed on the
+#   # decorators themselves. For now, we just don't add the link for deprecated
+#   # objects.
+#   if 'deprecation' in file:
+#     return None
+#   # Crop anything before `im2sim\src`. This path is system
+#   # dependent and we don't care about it.
+#   index = file.index('im2sim')
+#   file = file[index:]
+
+#   # Base URL.
+#   url = 'https://github.com/mrphys/im2sim'
+#   # Add version blob.
+#   url += '/blob/main'
+#   # Add file.
+#   url += '/' + file
+
+#   # Try to add line numbers. This will not work when the class is defined
+#   # dynamically. In that case we point to the file, but no line number.
+#   try:
+#     lines, start = inspect.getsourcelines(obj)
+#     stop = start + len(lines) - 1
+#   except OSError:
+#     # Could not get source lines.
+#     return url
+
+#   # Add line numbers.
+#   url += '#L' + str(start) + '-L' + str(stop)
+
+#   return url
 
 
 # -- Hyperlinks --------------------------------------------------------------

@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from im2sim.layers.image_conv_blocks import (
+from im2sim.layers.image_blocks import (
     ImageConvBlock,
     ImageConvBlockConfig,
 )

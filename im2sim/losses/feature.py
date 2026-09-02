@@ -1,87 +1,63 @@
 import torch
+import torch.nn.functional as F
 from torch_geometric.nn import knn_interpolate
 
-
-def mse(x1, x2):
-    return torch.mean((x1 - x2) ** 2)
-
-
-class KnnMSE(torch.nn.Module):
+class KnnFeatureLoss(torch.nn.Module):
     """
-    KNN-based Mean Squared Error loss for graph data.
-    Allows comparison between node features of two graphs without requiring point-to-point correspondence.
-    The features of the true graph are interpolated to the coordinates of the predicted graph using K-Nearest Neighbors (KNN) interpolation,
-    and then the MSE is computed between the interpolated features and the predicted features.
+    Computes the loss between features of two graphs using k-nearest neighbors interpolation based on their coordinates. 
+    This loss can be used to compare the features of a predicted graph against a ground truth graph when they are not in point-to-point correspondence.
 
     Args:
-        k (int): Number of nearest neighbors to consider for interpolation. Default is 3.
-
+        mode (str): The type of loss to compute. Options are 'l1' for L1 loss and 'l2' for L2 loss. Default is 'l1'.
+        k (int): The number of nearest neighbors to use for interpolation. Default is 3.
+        feature_key (str): The attribute name in the graph data that contains the features to compare. Default is 'x'.
+        feature_channels (list or None): A list of channel indices to select from the features. If None, all channels are used. Default is None.
     """
 
-    def __init__(self, k=3):
-        """"""
+    def __init__(self,
+                mode='l1', 
+                k=3, 
+                feature_key='x', 
+                feature_channels=None):
         super().__init__()
+        if mode not in ['l1', 'l2']:
+            raise ValueError("Mode must be either 'l1' or 'l2'.")
+        self.mode = mode
         self.k = k
-
+        self.feature_key = feature_key
+        self.feature_channels = feature_channels
+    
     def forward(self, true_graph, pred_graph):
-        """
-        Computes the KNN-based Mean Squared Error loss between two graphs.
+        if not hasattr(true_graph, 'coords') or not hasattr(pred_graph, 'coords'):
+            raise ValueError("Both true_graph and pred_graph must have 'coords' attribute.")
+        
+        if not hasattr(true_graph, self.feature_key) or not hasattr(pred_graph, self.feature_key):
+            raise ValueError(f"Both true_graph and pred_graph must have '{self.feature_key}' attribute.")
+        
+        if getattr(true_graph, self.feature_key) is None or getattr(pred_graph, self.feature_key) is None:
+            raise ValueError(f"Both true_graph and pred_graph must have non-None '{self.feature_key}' attribute.")
+        
+        c1 = true_graph.coords
+        c2 = pred_graph.coords
 
-        Args:
-            true_graph (torch_geometric.data.Data): The ground truth graph, containing node features and coordinates.
-            pred_graph (torch_geometric.data.Data): The predicted graph, containing node features and coordinates.
-        """
-        c1 = true_graph.x[:, :3]
-        c2 = pred_graph.x[:, :3]
+        if self.feature_channels is not None:
+            f1 = getattr(true_graph, self.feature_key)[:, self.feature_channels]
+            f2 = getattr(pred_graph, self.feature_key)[:, self.feature_channels]
+        else:
+            f1 = getattr(true_graph, self.feature_key)
+            f2 = getattr(pred_graph, self.feature_key)
 
-        f1 = true_graph.x[:, 3:]
-        f2 = pred_graph.x[:, 3:]
-
-        b1 = true_graph.batch
-        b2 = pred_graph.batch
+        if not hasattr(true_graph, 'batch') or not hasattr(pred_graph, 'batch'):
+            b1 = torch.zeros(c1.size(0), dtype=torch.long, device=c1.device)
+            b2 = torch.zeros(c2.size(0), dtype=torch.long, device=c2.device)
+        else:
+            b1 = true_graph.batch
+            b2 = pred_graph.batch
 
         f1_interp = knn_interpolate(f1, c1, c2, b1, b2, k=self.k)
 
-        return mse(f1_interp, f2)
-
-
-def mae(x1, x2):
-    return torch.mean(torch.abs(x1 - x2))
-
-
-class KnnMAE(torch.nn.Module):
-    """
-    KNN-based Mean Absolute Error loss for graph data.
-    Allows comparison between node features of two graphs without requiring point-to-point correspondence.
-    The features of the true graph are interpolated to the coordinates of the predicted graph using K-Nearest Neighbors (KNN) interpolation,
-    and then the MAE is computed between the interpolated features and the predicted features.
-
-    Args:
-        k (int): Number of nearest neighbors to consider for interpolation. Default is 3.
-    """
-
-    def __init__(self, k=3):
-        """"""
-        super().__init__()
-        self.k = k
-
-    def forward(self, true_graph, pred_graph):
-        """
-        Computes the KNN-based Mean Absolute Error loss between two graphs.
-
-        Args:
-            true_graph (torch_geometric.data.Data): The ground truth graph, containing node features and coordinates.
-            pred_graph (torch_geometric.data.Data): The predicted graph, containing node features and coordinates.
-        """
-        c1 = true_graph.x[:, :3]
-        c2 = pred_graph.x[:, :3]
-
-        f1 = true_graph.x[:, 3:]
-        f2 = pred_graph.x[:, 3:]
-
-        b1 = true_graph.batch
-        b2 = pred_graph.batch
-
-        f1_interp = knn_interpolate(f1, c1, c2, b1, b2, k=self.k)
-
-        return mae(f1_interp, f2)
+        if self.mode == 'l1':
+            return F.l1_loss(f1_interp, f2)
+        else:
+            return F.mse_loss(f1_interp, f2)
+        

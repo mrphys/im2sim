@@ -11,9 +11,12 @@ Classes
     :template: configs/class.rst
     :nosignatures:
 
+    GraphConvBlockConfig
     HalfUNetConfig
     ImageConvBlockConfig
+    LayerConfig
     ReverseHalfUNetConfig
+    SimpleGraphDecoderConfig
     UNetConfig
 
 Functions

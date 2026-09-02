@@ -5,7 +5,7 @@ from im2sim.losses.confusion_losses import (
     IoULoss,
     TverskyLoss,
 )
-from im2sim.losses.feature import KnnMAE, KnnMSE
+from im2sim.losses.feature import KnnFeatureLoss
 from im2sim.losses.mesh import (
     AspectRatioLoss,
     FaceNormalLoss,
@@ -21,8 +21,7 @@ __all__ = [
     "TverskyLoss",
     "DiceLoss",
     "IoULoss",
-    "KnnMSE",
-    "KnnMAE",
+    "KnnFeatureLoss",
     "AspectRatioLoss",
     "edge_length_deviation_loss",
     "InversionLoss",

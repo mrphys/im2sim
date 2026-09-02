@@ -30,6 +30,7 @@ class Operation(ABC):
 
     @abstractmethod
     def forward(self, x):
+        """forward pass of the operation"""
         pass
 
     def state_dict(self):
@@ -78,6 +79,7 @@ class InvertibleOperation(Operation):
 
     @abstractmethod
     def inverse(self, x):
+        """inverse pass of the operation"""
         pass
 
 
@@ -89,10 +91,12 @@ class FittableOperation(InvertibleOperation):
 
     @abstractmethod
     def fit_step(self, x):
+        """single step of fitting the operation to a batch of data"""
         pass
 
     @abstractmethod
     def complete_fit(self):
+        """finalize fitting the operation after all batches have been processed"""
         pass
 
 

@@ -3,7 +3,7 @@ from dataclasses import fields
 import torch
 
 from im2sim.configs.reverse_halfunet import ReverseHalfUNetConfig
-from im2sim.layers.image_conv_blocks import ImageConvBlock
+from im2sim.layers.image_blocks import ImageConvBlock
 from im2sim.utils.layer_util import (
     apply_residual_connection,
     call_with_supported_kwargs,

@@ -4,7 +4,8 @@ import pytest
 import torch
 from torch_geometric.data import Data
 
-from im2sim.data import Dataset, Pipeline, transforms
+from im2sim.data import Dataset, Pipeline
+from im2sim.transforms import *
 
 
 def make_toy_dataset():
@@ -59,20 +60,20 @@ def pipeline():
 
     pipeline = Pipeline(
         [
-            transforms.PowerScaling(
+            PowerScaling(
                 exp=1 / 3,
                 preserve_sign=True,
                 keys=["gt"],
                 attr="x",
                 channels=[0],
             ),
-            transforms.FitZScore(
+            FitZScore(
                 keys=["gt"],
                 attr="x",
                 channels=[0, 1, 2, 3],
                 per_channel=True,
             ),
-            transforms.FitZScore(
+            FitZScore(
                 keys=["input"],
                 attr="x",
                 channels=[0, 1, 2, 3, 4, 5, 6],

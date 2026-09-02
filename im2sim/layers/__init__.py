@@ -6,9 +6,20 @@ from im2sim.layers.custom_image_layers import (
     GhostConv,
     SqueezeExcite,
 )
-from im2sim.layers.graph_blocks import GraphConvBlock, GraphConvResBlock, GraphResDecoderBlock
-from im2sim.layers.image_conv_blocks import ImageConvBlock
-from im2sim.layers.projections import OGProjection
+from im2sim.layers.custom_graph_layers import (
+    DefaultGraphNorm, 
+    GraphActivation,
+    GraphDropout,
+    EdgeDropout,
+    GraphECA,
+    GraphSE,
+    NodeDropout,
+    ChannelDropout
+)
+from im2sim.layers.graph_blocks import GraphConvBlock
+from im2sim.layers.image_blocks import ImageConvBlock
+from im2sim.layers.projections import TrilinearProjection
+from im2sim.layers.rasterization import MaskRasterizer, FeatureRasterizer
 
 __all__ = [
     "DepthwiseConv",
@@ -18,8 +29,16 @@ __all__ = [
     "SqueezeExcite",
     "ConditionedSqueezeExcite",
     "GraphConvBlock",
-    "GraphConvResBlock",
-    "GraphResDecoderBlock",
     "ImageConvBlock",
-    "OGProjection",
+    "TrilinearProjection",
+    "MaskRasterizer",
+    "FeatureRasterizer",
+    "DefaultGraphNorm",
+    "GraphActivation",
+    "GraphDropout",
+    "EdgeDropout",
+    "NodeDropout",
+    "ChannelDropout",
+    "GraphECA",
+    "GraphSE",
 ]

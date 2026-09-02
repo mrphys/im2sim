@@ -4,6 +4,8 @@ import logging
 import torch
 import torch_geometric.nn as gnn
 
+from im2sim.losses.mesh import MeshLoss
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,44 +35,28 @@ def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
     d2 = torch.linalg.norm(y2 - y1[nns2[1]], dim=-1).mean()
     return d1 + d2
 
+class ChamferLoss(MeshLoss):
 
-class ChamferLoss(torch.nn.Module):
-    """
-    Chamfer loss for point clouds.
-    This loss computes the Chamfer distance between two point clouds represented as graphs.
-    It allows for optional masking of points in each graph,
-    which can be specified either as a string corresponding to a graph attribute or as a function that takes a graph and returns a boolean mask.
+    def __init__(self, id_key: str =None):
+        required_attrs = ['coords', 'batch']
+        if id_key is not None: 
+            required_attrs.append(id_key)
+        super().__init__(required_attrs=required_attrs, supervised=True)
+        self.id_key = id_key
 
-    Args:
-        mask (str or callable, optional): A string representing a graph attribute to use as a mask,
-            or a callable that takes a graph and returns a boolean mask.
-            If None, no masking is applied. Default is None.
-    """
+    def _compute_loss(self, true_graph, pred_graph):
 
-    def __init__(self, mask=None):
-        super().__init__()
-        if isinstance(mask, str):
-            self.mask = lambda obj: getattr(obj, mask)
-        elif inspect.isfunction(mask):
-            self.mask = mask
+        if self.id_key is not None:
+            true_ids = true_graph[self.id_key]
+            pred_ids = pred_graph[self.id_key]
         else:
-            raise ValueError("mask must be either a graph attribute or a function")
+            true_ids = torch.arange(true_graph.coords.shape[0], device=true_graph.coords.device)
+            pred_ids = torch.arange(pred_graph.coords.shape[0], device=pred_graph.coords.device)
 
-    def forward(self, gr1, gr2):
-        """
-        Computes the Chamfer loss between two graphs.
-
-        Args:
-            gr1 (torch_geometric.data.Data): The first graph, containing node features and coordinates.
-            gr2 (torch_geometric.data.Data): The second graph, containing node features and coordinates.
-        """
-        mask1 = self.mask(gr1)
-        mask2 = self.mask(gr2)
-        logger.debug("mask_type - %s", type(mask1))
-        loss = _compute_batch_chamfer(
-            y1=gr1.x[mask1, :3],
-            y2=gr2.x[mask2, :3],
-            b1=gr1.batch[mask1],
-            b2=gr2.batch[mask2],
+        return _compute_batch_chamfer(
+            y1=true_graph.coords[true_ids],
+            y2=pred_graph.coords[pred_ids],
+            b1=true_graph.batch[true_ids],
+            b2=pred_graph.batch[pred_ids],
         )
-        return loss
+

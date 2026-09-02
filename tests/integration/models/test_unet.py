@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from im2sim.layers.image_conv_blocks import ImageConvBlockConfig
+from im2sim.layers.image_blocks import ImageConvBlockConfig
 from im2sim.configs.core import LayerConfig
 from im2sim.models.unet import UNet, UNetConfig
 

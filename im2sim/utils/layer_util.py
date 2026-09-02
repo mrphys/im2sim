@@ -73,8 +73,8 @@ layer_pattern = r"(Conv|Pool|Norm|Upsample|PixelShuffle|Dropout)"
 
 IMAGE_LAYERS, register_image_layer = make_registry(torch.nn, layer_pattern)
 
-# PyG type graph layers input graph attributes separately and output graph attributes separately, 
-# so we need to wrap them in a class that takes a graph as input and outputs a graph. 
+# PyG type graph layers input graph attributes separately and output graph attributes separately,
+# so we need to wrap them in a class that takes a graph as input and outputs a graph.
 # This works for layers that output a single tensor, but not for layers that output multiple tensors (like pooling layers).
 # This is done in the PyG_Wrapper class below.
 PYG_LAYERS, register_pyg_layer = make_registry(gnn, layer_pattern)
@@ -204,7 +204,6 @@ class PyG_Wrapper(torch.nn.Module):
 
 @register_graph_layer(name="GraphIdentity")
 class GraphIdentity(torch.nn.Module):
-
     def forward(self, graph: pyg.data.Data) -> pyg.data.Data:
         """
         Args:
@@ -215,14 +214,12 @@ class GraphIdentity(torch.nn.Module):
             torch.Tensor: The same tensor as input.
         """
         return graph
-    
 
-    
 
 def get_graph_layer(
     name: str, args: list[Any] = None, kwargs: dict[str, Any] = None
 ) -> torch.nn.Module:
-    
+
     if name is None:
         return GraphIdentity()
 

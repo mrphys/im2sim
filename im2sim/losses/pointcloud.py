@@ -1,4 +1,3 @@
-import inspect
 import logging
 
 import torch
@@ -35,11 +34,11 @@ def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
     d2 = torch.linalg.norm(y2 - y1[nns2[1]], dim=-1).mean()
     return d1 + d2
 
-class ChamferLoss(MeshLoss):
 
-    def __init__(self, id_key: str =None):
-        required_attrs = ['coords', 'batch']
-        if id_key is not None: 
+class ChamferLoss(MeshLoss):
+    def __init__(self, id_key: str = None):
+        required_attrs = ["coords", "batch"]
+        if id_key is not None:
             required_attrs.append(id_key)
         super().__init__(required_attrs=required_attrs, supervised=True)
         self.id_key = id_key
@@ -59,4 +58,3 @@ class ChamferLoss(MeshLoss):
             b1=true_graph.batch[true_ids],
             b2=pred_graph.batch[pred_ids],
         )
-

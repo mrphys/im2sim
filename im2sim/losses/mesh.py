@@ -1,10 +1,10 @@
-from itertools import combinations
 from abc import ABC, abstractmethod
+from itertools import combinations
+
 import torch
 import torch.nn.functional as F
 
 from im2sim.mesh_ops import compute_edge_lengths
-
 
 
 class MeshLoss(torch.nn.Module, ABC):
@@ -15,10 +15,11 @@ class MeshLoss(torch.nn.Module, ABC):
         required_attrs (list[str] | None): List of attributes that must be present in the input graphs for loss computation. Default is `None`.
         supervised (bool): If `True`, both true and predicted graphs are required to have the specified attributes. If `False`, only the predicted graph is required to have the specified attributes. Default is `True`.
     """
+
     def __init__(self, required_attrs=None, supervised=True):
         super().__init__()
         self.supervised = supervised
-        self.required_attrs = required_attrs + ['coords']
+        self.required_attrs = required_attrs + ["coords"]
 
     def forward(self, true_graph, pred_graph):
         """
@@ -41,16 +42,22 @@ class MeshLoss(torch.nn.Module, ABC):
             pred_graph (torch_geometric.data.Data): The predicted graph.
         """
         for attr in self.required_attrs:
-            if self.supervised and (not hasattr(true_graph, attr) or not hasattr(pred_graph, attr)):    
-                raise ValueError(f"Both true_graph and pred_graph must have '{attr}' attribute for supervised loss computation.")   
+            if self.supervised and (not hasattr(true_graph, attr) or not hasattr(pred_graph, attr)):
+                raise ValueError(
+                    f"Both true_graph and pred_graph must have '{attr}' attribute for supervised loss computation."
+                )
             elif not self.supervised and not hasattr(pred_graph, attr):
-                raise ValueError(f"pred_graph must have '{attr}' attribute.") 
-            
-            if self.supervised and (getattr(true_graph, attr) is None or getattr(pred_graph, attr) is None):    
-                raise ValueError(f"Both true_graph and pred_graph must have '{attr}' attribute for supervised loss computation.")   
+                raise ValueError(f"pred_graph must have '{attr}' attribute.")
+
+            if self.supervised and (
+                getattr(true_graph, attr) is None or getattr(pred_graph, attr) is None
+            ):
+                raise ValueError(
+                    f"Both true_graph and pred_graph must have '{attr}' attribute for supervised loss computation."
+                )
             elif not self.supervised and getattr(pred_graph, attr) is None:
-                raise ValueError(f"pred_graph must have '{attr}' attribute.") 
-            
+                raise ValueError(f"pred_graph must have '{attr}' attribute.")
+
     @abstractmethod
     def _compute_loss(self, true_graph, pred_graph):
         """
@@ -70,14 +77,14 @@ class EdgeLengthDeviationLoss(MeshLoss):
     The loss is calculated as the squared difference between the edge length deviations of the two graphs, with a ReLU activation to ensure non-negativity.
 
     Args:
-        supervised (bool): 
+        supervised (bool):
             If `True`, the difference in edge length deviations between the true and predicted graphs is computed.
             If `False`, only the edge length deviation of the predicted graph is computed. Default is `True`.
     """
 
     def __init__(self, supervised=True):
-        super().__init__(required_attrs=['edge_index'], supervised=supervised)
-    
+        super().__init__(required_attrs=["edge_index"], supervised=supervised)
+
     def _compute_loss(self, true_graph, pred_graph):
         if self.supervised:
             return edge_length_deviation_loss(true_graph, pred_graph)
@@ -114,7 +121,7 @@ class AspectRatioLoss(MeshLoss):
         cell_key (str): The key in the graph data object that corresponds to the tetrahedral cells.
                         This is used to select the appropriate cells for computing the aspect ratio loss.
                         The cell ids should be in the shape of [4, num_cells] for tetrahedral meshes.
-        supervised (bool): 
+        supervised (bool):
             If `True`, the difference in aspect ratios between the true and predicted graphs is computed.
             If `False`, only the aspect ratio of the predicted graph is computed. Default is `True`.
     """
@@ -122,7 +129,7 @@ class AspectRatioLoss(MeshLoss):
     def __init__(self, cell_key, supervised=True):
         super().__init__(required_attrs=[cell_key], supervised=supervised)
         self.cell_key = cell_key
-    
+
     def _compute_loss(self, true_graph, pred_graph):
         if self.supervised:
             return aspect_ratio_loss(true_graph, pred_graph, self.cell_key)
@@ -135,6 +142,7 @@ def aspect_ratio_loss(gr1, gr2, cell_key):
     ar2 = _aspect_ratio(x=gr2.coords, cells=gr2[cell_key])
     return F.relu(ar2 - ar1) ** 2
 
+
 def _aspect_ratio(x, cells):
     tet_vertices = x[cells, :]
     vert_ids = list(combinations(range(4), 2))
@@ -143,23 +151,24 @@ def _aspect_ratio(x, cells):
     aspect_ratio = distances.max(0).values / distances.mean(0)
     return aspect_ratio.mean()
 
+
 class FaceNormalLoss(MeshLoss):
     """
-    Computes the face normal loss for triangular meshes. The loss is a combination of two components: consistency and similarity. 
-    The consistency component measures the standard deviation of the face normals within each batch to enforce a flat surface, 
+    Computes the face normal loss for triangular meshes. The loss is a combination of two components: consistency and similarity.
+    The consistency component measures the standard deviation of the face normals within each batch to enforce a flat surface,
     while the similarity component measures the difference between the mean face normals of the true and predicted graphs.
 
     Args:
         face_key (str): The key in the graph data object that corresponds to the triangular faces.
                         This is used to select the appropriate faces for computing the face normal loss.
                         The face ids should be in the shape of [3, num_faces] for triangular meshes.
-        supervised (bool): 
+        supervised (bool):
             If `True`, the difference in face normals between the true and predicted graphs is computed.
             If `False`, only the face normal consistency of the predicted graph is computed. Default is `True`.
     """
 
     def __init__(self, face_key, supervised=True):
-        super().__init__(required_attrs=[face_key, 'batch'], supervised=supervised)
+        super().__init__(required_attrs=[face_key, "batch"], supervised=supervised)
         self.face_key = face_key
 
     def _compute_loss(self, true_graph, pred_graph):
@@ -167,6 +176,7 @@ class FaceNormalLoss(MeshLoss):
             return face_norm_loss(true_graph, pred_graph, self.face_key)
         else:
             return face_norm_consistency(pred_graph, self.face_key)
+
 
 def _face_norm(face_verts):
     side1 = face_verts[1] - face_verts[0]
@@ -176,6 +186,7 @@ def _face_norm(face_verts):
     unit_norm = norm_vec / (torch.norm(norm_vec, dim=-1, keepdim=True) + 1e-8)
     return unit_norm
 
+
 def face_norm_consistency(graph, face_key):
     norm = _face_norm(graph.coords[graph[face_key], :])
     batch = graph.batch[graph[face_key][0]]
@@ -184,6 +195,7 @@ def face_norm_consistency(graph, face_key):
         mask = batch == b
         consistency += torch.norm(norm[mask].std(0))
     return consistency
+
 
 def face_norm_loss(true_graph, pred_graph, face_key):
     # x:[N,3], f:[3,M], norm: [3,M,3]
@@ -204,10 +216,10 @@ def face_norm_loss(true_graph, pred_graph, face_key):
 
     return consistency + similarity
 
-    
+
 class InversionLoss(MeshLoss):
     """
-    Computes the inversion loss for tetrahedral meshes. 
+    Computes the inversion loss for tetrahedral meshes.
     The loss is calculated based on the signed volume of the tetrahedra formed by the predicted coordinates and the specified cells.
     The forward() method accepts a true graph, but doesn't use it for loss computation. The loss is computed solely based on the predicted graph.
 
@@ -218,7 +230,7 @@ class InversionLoss(MeshLoss):
         min_vol (float): The minimum volume threshold. Tetrahedra with volumes below this threshold will contribute to the loss. Default is 1e-3.
     """
 
-    def __init__(self, cell_key:str, min_vol=1e-3):
+    def __init__(self, cell_key: str, min_vol=1e-3):
         super().__init__(required_attrs=[cell_key], supervised=False)
         self.cell_key = cell_key
         self.min_vol = min_vol
@@ -252,6 +264,3 @@ def inversion_loss(x, cells, min_vol=1e-3):
     vol = det6 / 6.0
 
     return torch.maximum(torch.zeros(1).to(vol.device), min_vol - vol).mean()
-
-
-

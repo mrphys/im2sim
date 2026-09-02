@@ -10,14 +10,15 @@ from im2sim.transforms.ops import (
 )
 
 
-def transform_from_fn(fn,
-                    keys: list[str], 
-                    attr: str = None, 
-                    channels: list[int] = None, 
-                    per_channel: bool = False, 
-                    channel_dim: int = -1, 
-                    name: str = None
-)-> Transform:
+def transform_from_fn(
+    fn,
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
 
     class FnOp(Operation):
         def forward(self, x):
@@ -39,12 +40,14 @@ def transform_from_fn(fn,
 # ------------------------------------------------------------------------------------
 
 
-def Norm(keys: list[str], 
-        attr: str = None, 
-        channels: list[int] = None, 
-        per_channel: bool = False, 
-        channel_dim: int = -1, 
-        name: str = None) -> Transform:
+def Norm(
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
     """
     Factory function to create a normalization transform using `im2sim.data.ops.NormOp`.
 
@@ -70,14 +73,15 @@ def Norm(keys: list[str],
     )
 
 
-def RangeNorm(llim: float,
-            hlim: float,
-            keys: list[str], 
-            attr: str = None, 
-            channels: list[int] = None, 
-            per_channel: bool = False, 
-            channel_dim: int = -1, 
-            name: str = None
+def RangeNorm(
+    llim: float,
+    hlim: float,
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
 ) -> Transform:
     """
     Factory function to create a range normalization transform using `im2sim.data.ops.RangeNormOp`.
@@ -106,12 +110,14 @@ def RangeNorm(llim: float,
     )
 
 
-def ZScore(keys: list[str], 
-            attr: str = None, 
-            channels: list[int] = None, 
-            per_channel: bool = False, 
-            channel_dim: int = -1, 
-            name: str = None) -> Transform:
+def ZScore(
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
     """
     Factory function to create a z-score normalization transform using `im2sim.data.ops.ZScoreOp`.
 
@@ -145,12 +151,13 @@ def ZScore(keys: list[str],
 def PowerScaling(
     exp,
     preserve_sign,
-    keys: list[str], 
-    attr: str = None, 
-    channels: list[int] = None, 
-    per_channel: bool = False, 
-    channel_dim: int = -1, 
-    name: str = None) -> Transform:
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
     """
     Factory function to create a power scaling transform using `im2sim.data.ops.PowerScaleOp`.
 
@@ -183,12 +190,14 @@ def PowerScaling(
 # ------------------------------------------------------------------------------------
 
 
-def FitNorm(keys: list[str], 
-            attr: str = None, 
-            channels: list[int] = None, 
-            per_channel: bool = False, 
-            channel_dim: int = -1, 
-            name: str = None) -> Transform:
+def FitNorm(
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
     """
     Factory function to create a fit normalization transform using `im2sim.data.ops.FitNormOp`.
 
@@ -217,16 +226,17 @@ def FitNorm(keys: list[str],
 def FitRangeNorm(
     llim,
     hlim,
-    keys: list[str], 
-    attr: str = None, 
-    channels: list[int] = None, 
-    per_channel: bool = False, 
-    channel_dim: int = -1, 
-    name: str = None) -> Transform:
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
     """
     Factory function to create a fit range normalization transform using `im2sim.data.ops.FitRangeNormOp`.
-    
-    Args: 
+
+    Args:
         llim (float): Lower limit of the target range for normalization.
         hlim (float): Upper limit of the target range for normalization.
         keys (list): List of keys to which the fit range normalization will be applied.
@@ -250,12 +260,14 @@ def FitRangeNorm(
     )
 
 
-def FitZScore(keys: list[str], 
-            attr: str = None, 
-            channels: list[int] = None, 
-            per_channel: bool = False, 
-            channel_dim: int = -1, 
-            name: str = None) -> Transform:
+def FitZScore(
+    keys: list[str],
+    attr: str = None,
+    channels: list[int] = None,
+    per_channel: bool = False,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
     """
     Factory function to create a fit z-score normalization transform using `im2sim.data.ops.FitZScoreOp`.
 

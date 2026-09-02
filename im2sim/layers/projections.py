@@ -1,10 +1,8 @@
 import logging
 
 import torch
-import torch.nn.functional as F
 from torch import nn
 
-from im2sim.utils.layer_util import register_image_layer
 logger = logging.getLogger(__name__)
 
 
@@ -51,10 +49,11 @@ class TrilinearProjection(nn.Module):
     TrilinearProjection layer projects image features onto graph coordinates using trilinear interpolation.
 
     Args:
-        image_dim (int): 
-            The dimension of the first image input feature map (height, width, depth). 
+        image_dim (int):
+            The dimension of the first image input feature map (height, width, depth).
             This is used to scale the graph coordinates to the image feature space.
     """
+
     def __init__(self, image_dim):
         super().__init__()
         self.image_dim = image_dim
@@ -64,11 +63,11 @@ class TrilinearProjection(nn.Module):
         Projects image features onto graph coordinates using trilinear interpolation.
 
         Args:
-            image_features (torch.Tensor): 
+            image_features (torch.Tensor):
                 A tensor of shape [batch_size, channels, height, width, depth] representing the image features.
 
-            graph (pyg.data.Data): 
-                A PyTorch Geometric Data object containing the graph data. 
+            graph (pyg.data.Data):
+                A PyTorch Geometric Data object containing the graph data.
                 It must have 'coords' and 'batch' attributes.
         """
         projections = []

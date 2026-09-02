@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 import torch
 import torch_geometric as pyg
 
-def _get_selected_nodes(graph: pyg.data.Data, 
-                        include_ids: list[str] = None, 
-                        exclude_ids: list[str] = None) -> torch.Tensor:
+
+def _get_selected_nodes(
+    graph: pyg.data.Data, include_ids: list[str] = None, exclude_ids: list[str] = None
+) -> torch.Tensor:
     """
     Helper function to get the selected nodes based on include_ids and exclude_ids.
 
@@ -23,7 +24,7 @@ def _get_selected_nodes(graph: pyg.data.Data,
             else:
                 raise ValueError(f"ID key '{id_key}' not found in graph.")
         return torch.cat(ids, dim=0).unique()
-    
+
     if include_ids is not None:
         ids = get_ids_from_keys(include_ids)
 
@@ -34,8 +35,9 @@ def _get_selected_nodes(graph: pyg.data.Data,
 
     else:
         ids = torch.arange(graph.num_nodes)
-    
+
     return ids
+
 
 class _GraphFeatureWrapper(torch.nn.Module, ABC):
     """
@@ -105,9 +107,7 @@ class _GraphFeatureWrapper(torch.nn.Module, ABC):
 
         # Determine which prediction channels are being operated on.
         if self.pred_feature_channels is None:
-            pred_feature_channels = list(
-                range(self.module.out_channels)
-            )
+            pred_feature_channels = list(range(self.module.out_channels))
         else:
             pred_feature_channels = self.pred_feature_channels
 
@@ -147,9 +147,7 @@ class _GraphFeatureWrapper(torch.nn.Module, ABC):
         """Write the module output into the output graph."""
 
     def forward(self, in_graph: pyg.data.Data) -> pyg.data.Data:
-        graph, out_graph, selected_nodes, pred_feature_channels = (
-            self._prepare_graph(in_graph)
-        )
+        graph, out_graph, selected_nodes, pred_feature_channels = self._prepare_graph(in_graph)
 
         output = self.module(graph)
 
@@ -249,8 +247,6 @@ class GraphPredictor(_GraphFeatureWrapper):
         ] = output.x[selected_nodes]
 
         return out_graph
-    
-GNN_PROTOCOLS = {
-    "update": GraphUpdater,
-    "predict": GraphPredictor
-}
+
+
+GNN_PROTOCOLS = {"update": GraphUpdater, "predict": GraphPredictor}

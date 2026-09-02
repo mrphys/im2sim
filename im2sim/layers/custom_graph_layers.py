@@ -1,10 +1,9 @@
 import torch
 import torch_geometric as pyg
+from torch_geometric.utils import dropout_edge
 
-from torch_geometric.utils import dropout_edge, dropout_node
-from im2sim.utils.layer_util import register_graph_layer, register_pyg_layer, get_activation
 from im2sim.layers.custom_image_layers import EfficientChannelAttn, SqueezeExcite
-
+from im2sim.utils.layer_util import get_activation, register_graph_layer, register_pyg_layer
 
 
 @register_graph_layer(name="GraphActivation")
@@ -32,7 +31,6 @@ class GraphActivation(torch.nn.Module):
         graph = in_graph.clone()
         graph.x = self.activation(graph.x)
         return graph
-
 
 
 @register_pyg_layer(name="DefaultGraphNorm")
@@ -69,7 +67,8 @@ class DefaultGraphNorm(torch.nn.Module):
         for b in torch.unique(batch):
             x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(shape)
         return x
-    
+
+
 @register_graph_layer(name="GraphDropout")
 class GraphDropout(torch.nn.Module):
     """
@@ -105,12 +104,12 @@ class GraphDropout(torch.nn.Module):
             graph.x = self.node_dropout(graph.x)
 
         if self.p_channel > 0:
-            graph.x = self.channel_dropout(graph.x.permute(1,0)).permute(1,0)
-
+            graph.x = self.channel_dropout(graph.x.permute(1, 0)).permute(1, 0)
 
         if self.p_edge > 0:
-
-            graph.edge_index, edge_mask = dropout_edge(graph.edge_index, p=self.p_edge, training=self.training)
+            graph.edge_index, edge_mask = dropout_edge(
+                graph.edge_index, p=self.p_edge, training=self.training
+            )
 
             if graph.edge_attr is not None:
                 graph.edge_attr = graph.edge_attr[edge_mask]
@@ -119,6 +118,7 @@ class GraphDropout(torch.nn.Module):
                 graph.edge_weight = graph.edge_weight[edge_mask]
 
         return graph
+
 
 @register_graph_layer(name="EdgeDropout")
 class EdgeDropout(GraphDropout):
@@ -130,7 +130,7 @@ class EdgeDropout(GraphDropout):
     """
 
     def __init__(self, p: float = 0.1):
-        super().__init__(p_node=0.0, p_edge=p, p_channel=0.0)   
+        super().__init__(p_node=0.0, p_edge=p, p_channel=0.0)
 
 
 @register_graph_layer(name="NodeDropout")
@@ -172,7 +172,7 @@ class GraphECA(torch.nn.Module):
         super().__init__()
         self.eca = EfficientChannelAttn(in_channels, rank=1)
 
-    def forward(self, x: torch.Tensor, batch:torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, batch: torch.Tensor) -> torch.Tensor:
         """
         Args:
             x (torch.Tensor): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
@@ -183,12 +183,15 @@ class GraphECA(torch.nn.Module):
 
         if batch is None:
             batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
-        
+
         for b in torch.unique(batch):
-            x[batch == b] = self.eca(x[batch == b].permute(1, 0).unsqueeze(0)).squeeze(0).permute(1, 0)
+            x[batch == b] = (
+                self.eca(x[batch == b].permute(1, 0).unsqueeze(0)).squeeze(0).permute(1, 0)
+            )
 
         return x
-    
+
+
 @register_pyg_layer(name="SqueezeExcite")
 class GraphSE(torch.nn.Module):
     """
@@ -215,6 +218,8 @@ class GraphSE(torch.nn.Module):
             batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
 
         for b in torch.unique(batch):
-            x[batch == b] = self.se(x[batch == b].permute(1, 0).unsqueeze(0)).squeeze(0).permute(1, 0)
+            x[batch == b] = (
+                self.se(x[batch == b].permute(1, 0).unsqueeze(0)).squeeze(0).permute(1, 0)
+            )
 
         return x

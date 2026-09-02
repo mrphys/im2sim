@@ -117,7 +117,7 @@ class HalfUNet(torch.nn.Module):
 
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.rank=rank
+        self.rank = rank
         self.n_levels = cfg.n_levels
         self.hidden_channels = cfg.hidden_channels
 

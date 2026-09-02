@@ -2,7 +2,6 @@ import torch
 
 from im2sim.data.core import FittableOperation, InvertibleOperation, Operation, register_op
 
-
 # ------------------------------------------------------------------------------------
 # OP FUNCTION LIBRARY
 # ------------------------------------------------------------------------------------
@@ -107,6 +106,7 @@ class NormOp(Operation):
     """
     Normalizes the input tensor to the range [0, 1].
     """
+
     def forward(self, x):
         return normalise(x)
 
@@ -120,6 +120,7 @@ class RangeNormOp(Operation):
         a (float): Lower bound of the target range.
         b (float): Upper bound of the target range.
     """
+
     def __init__(self, a, b):
         self.a = a
         self.b = b
@@ -133,6 +134,7 @@ class ZScoreOp(Operation):
     """
     Standardizes the input tensor to have zero mean and unit variance.
     """
+
     def forward(self, x):
         return standardise(x)
 
@@ -152,6 +154,7 @@ class PowerScaleOp(InvertibleOperation):
         preserve_sign (bool, optional): If True, preserves the sign of the input tensor. Default is True.
         eps (float, optional): A small value added to the absolute value of the input tensor to avoid numerical issues. Default is 1e-8.
     """
+
     def __init__(self, exp, preserve_sign=True, eps=1e-8):
         if exp == 0:
             raise ValueError("exp must not be 0")
@@ -186,6 +189,7 @@ class FitNormOp(FittableOperation):
         max (float, optional): Maximum value for normalization. If None, will be fitted from the data.
         min (float, optional): Minimum value for normalization. If None, will be fitted from the data.
     """
+
     def __init__(self):
         self.max = torch.Tensor([-torch.inf])
         self.min = torch.Tensor([torch.inf])
@@ -213,6 +217,7 @@ class FitRangeNormOp(FittableOperation):
         a (float): Lower bound of the target range.
         b (float): Upper bound of the target range.
     """
+
     def __init__(self, a, b):
         self.a = a
         self.b = b
@@ -238,6 +243,7 @@ class FitZScoreOp(FittableOperation):
     """
     Standardizes the input tensor to have zero mean and unit variance based on the fitted mean and standard deviation.
     """
+
     def __init__(self):
         self.sum = 0
         self.sq_sum = 0

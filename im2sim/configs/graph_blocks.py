@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from im2sim.configs.core import Config, LayerConfig, register_config
 
 
-
 @register_config
 @dataclass
 class GraphConvBlockConfig(Config):
@@ -29,7 +28,7 @@ class GraphConvBlockConfig(Config):
             The activation function to use after the final layer. Default is `None`.
 
         conv_cfg (LayerConfig):
-            Configuration for the graph convolutional layers. 
+            Configuration for the graph convolutional layers.
             Default is `GCNConv` with default PyG parameters.
 
         norm_cfg (LayerConfig):
@@ -124,11 +123,7 @@ class GraphConvBlockConfig(Config):
     depth: int = 1
     activation: str | None = "ReLU"
     out_activation: str | None = None
-    conv_cfg: LayerConfig = field(
-        default_factory=lambda: LayerConfig(
-            name="GCNConv", kwargs={}
-        )
-    )
+    conv_cfg: LayerConfig = field(default_factory=lambda: LayerConfig(name="GCNConv", kwargs={}))
     norm_cfg: LayerConfig = field(
         default_factory=lambda: LayerConfig(name="DefaultGraphNorm", kwargs={})
     )
@@ -183,7 +178,6 @@ class GraphConvBlockConfig(Config):
         self.residual_connections = {self.depth - 1: [0]}
         self.residual_type = "concat"
         return self
-
 
     def add_eca(self):
         """

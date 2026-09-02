@@ -1,15 +1,17 @@
+import sys
+
 import torch
 import torch_geometric as pyg
-import sys
-sys.path.append('/Users/anirudh/Documents/im2sim/im2sim')
-from im2sim.configs.core import LayerConfig
-from im2sim.layers import custom_graph_layers
-from im2sim.configs.graph_blocks import GraphConvBlockConfig
 
+sys.path.append("/Users/anirudh/Documents/im2sim/im2sim")
+from im2sim.configs.core import LayerConfig
+from im2sim.configs.graph_blocks import GraphConvBlockConfig
+from im2sim.layers import custom_graph_layers
 from im2sim.utils.layer_util import (
     apply_residual_connection,
     get_graph_layer,
 )
+
 
 class GraphConvBlock(torch.nn.Module):
     """
@@ -43,7 +45,7 @@ class GraphConvBlock(torch.nn.Module):
                )
 
         Models can be saved and loaded using the standard PyTorch methods:
-        
+
         .. code-block:: python
 
             torch.save(model.state_dict(), "model.pth")
@@ -52,7 +54,7 @@ class GraphConvBlock(torch.nn.Module):
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.GraphConvBlockConfig` class:
     """
 
-    def __init__(self, in_channels: int, out_channels: int,  cfg: GraphConvBlockConfig):
+    def __init__(self, in_channels: int, out_channels: int, cfg: GraphConvBlockConfig):
         super().__init__()
 
         self.in_channels = in_channels
@@ -89,16 +91,17 @@ class GraphConvBlock(torch.nn.Module):
             in_channels_per_layer.append(in_channels_current)
 
             conv = get_graph_layer(
-                    name = self.conv_cfg.name, 
-                    kwargs = {"in_channels": in_channels_per_layer[-1], 
-                                "out_channels": self.out_channels, 
-                                **self.conv_cfg.kwargs}
-                    )
+                name=self.conv_cfg.name,
+                kwargs={
+                    "in_channels": in_channels_per_layer[-1],
+                    "out_channels": self.out_channels,
+                    **self.conv_cfg.kwargs,
+                },
+            )
 
             norm = get_graph_layer(
-                name = self.norm_cfg.name,
-                kwargs = {"in_channels":self.out_channels, 
-                          **self.norm_cfg.kwargs}
+                name=self.norm_cfg.name,
+                kwargs={"in_channels": self.out_channels, **self.norm_cfg.kwargs},
             )
 
             dropout = (
@@ -111,9 +114,8 @@ class GraphConvBlock(torch.nn.Module):
             no_residual_final = len(self.residual_connections.keys()) == 0 and i == self.depth - 1
             if pre_residual or no_residual_final:
                 attn = get_graph_layer(
-                    name = self.attn_cfg.name,
-                    kwargs = {"in_channels":self.out_channels, 
-                              **self.attn_cfg.kwargs}
+                    name=self.attn_cfg.name,
+                    kwargs={"in_channels": self.out_channels, **self.attn_cfg.kwargs},
                 )
             else:
                 attn = torch.nn.Identity()
@@ -184,16 +186,17 @@ if __name__ == "__main__":
         dropout_cfg=LayerConfig(name="EdgeDropout", kwargs={"p": 0.5}),
         attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
         # dropout_position=[1, 3],
-        residual_connections={3: [1,0]},
-        residual_type="concat"
+        residual_connections={3: [1, 0]},
+        residual_type="concat",
     )
     block = GraphConvBlock(in_channels=16, out_channels=32, cfg=block_cfg)
     print(block)
 
     graph = pyg.data.Data(
         x=torch.randn(10, 16),
-        edge_index=torch.tensor([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-                                 [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]], dtype=torch.long),
+        edge_index=torch.tensor(
+            [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]], dtype=torch.long
+        ),
     )
 
     graph.x = graph.x.requires_grad_(True)
@@ -219,6 +222,3 @@ if __name__ == "__main__":
     print(graph.x.shape, graph.edge_index.shape)
     print(output_graph.x.shape, output_graph.edge_index.shape)
     print("All checks passed.")
-
-
-

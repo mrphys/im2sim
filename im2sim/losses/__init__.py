@@ -24,9 +24,9 @@ from im2sim.losses.confusion_losses import (
 from im2sim.losses.feature import KnnFeatureLoss
 from im2sim.losses.mesh import (
     AspectRatioLoss,
+    EdgeLengthDeviationLoss,
     FaceNormalLoss,
     InversionLoss,
-    EdgeLengthDeviationLoss
 )
 from im2sim.losses.pointcloud import ChamferLoss
 from im2sim.losses.ssim import SSIMLoss

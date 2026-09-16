@@ -127,7 +127,8 @@ html_theme_options = {
     'launch_buttons': {
         'colab_url': "https://colab.research.google.com/"
     },
-    'path_to_docs': 'docs'
+    'path_to_docs': 'docs',
+    "default_mode": "light",
 }
 
 html_css_files = [

@@ -39,7 +39,7 @@ class GraphConvBlockConfig(Config):
             The number of convolutional layers in the block. Default is `1`.
 
         hidden_channels(int):
-            The number of channels in the hidden layers. 
+            The number of channels in the hidden layers.
             Default is `None`, which means that the number of channels will be the same as `in_channels` for all layers except the last one, which will have `out_channels`.
 
         activation (str | None):

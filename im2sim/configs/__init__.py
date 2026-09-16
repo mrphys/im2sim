@@ -15,8 +15,6 @@
 # ==============================================================================
 
 
-
-
 from im2sim.configs.core import LayerConfig
 from im2sim.configs.graph_blocks import GraphConvBlockConfig
 from im2sim.configs.graph_decoder import SimpleGraphDecoderConfig

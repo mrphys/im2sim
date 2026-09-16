@@ -17,7 +17,6 @@
 import torch
 import torch_geometric as pyg
 
-
 from im2sim.configs.core import LayerConfig
 from im2sim.configs.graph_blocks import GraphConvBlockConfig
 from im2sim.layers import custom_graph_layers
@@ -73,7 +72,9 @@ class GraphConvBlock(torch.nn.Module):
 
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.hidden_channels = cfg.hidden_channels if cfg.hidden_channels is not None else in_channels
+        self.hidden_channels = (
+            cfg.hidden_channels if cfg.hidden_channels is not None else in_channels
+        )
         self.depth = cfg.depth
         self.activation = custom_graph_layers.GraphActivation(cfg.activation)
         self.out_activation = custom_graph_layers.GraphActivation(cfg.out_activation)
@@ -192,7 +193,8 @@ class GraphConvBlock(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    import sys 
+    import sys
+
     sys.path.append("/Users/anirudh/Documents/im2sim/im2sim")
 
     block_cfg = GraphConvBlockConfig(

@@ -14,14 +14,11 @@
 # limitations under the License.
 # ==============================================================================
 
-import os
 
 import inspect
 
 import torch
 import torch_geometric as pyg
-
-
 
 from im2sim.configs.graph_decoder import SimpleGraphDecoderConfig
 from im2sim.configs.halfunet import HalfUNetConfig

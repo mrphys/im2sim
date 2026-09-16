@@ -41,7 +41,7 @@ def get_structure_ids(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[s
 
         .. code-block:: python
 
-            # load in vtu mesh 
+            # load in vtu mesh
             mesh = pv.read('example_mesh.vtu')
 
             # if CellEntityIds are 0 for volume and 1 for surface, we can create a structure_dict like this:
@@ -240,7 +240,7 @@ def get_edges_surf(mesh: PointGrid) -> torch.Tensor:
             # load in vtk mesh
             mesh = pv.read('example_mesh.vtk')
 
-            # get the edge index for the surface structure 
+            # get the edge index for the surface structure
             edges = get_edges_surf(mesh)
 
 
@@ -276,7 +276,7 @@ def get_node_features(mesh: PointGrid, feature_names: list[str]) -> torch.Tensor
             features = get_node_features(mesh, feature_names)
 
             # features will be a tensor of shape [N, 4] where N is the number of nodes in the mesh and the columns correspond to the specified features
-            
+
     """
     features = torch.from_numpy(np.array([mesh.point_data[name] for name in feature_names]).T)
     return features
@@ -355,11 +355,11 @@ def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Ten
                                    [1.0, 0.0, 0.0],
                                    [1.0, 1.0, 0.0],
                                    [0.0, 1.0, 1.0]])
-            
+
             # 3 edges connecting the nodes
             edges = torch.tensor([[0, 1, 2],
                                   [1, 2, 3]])
-            
+
             distances = compute_edge_lengths(points, edges)
 
             # distances will be a tensor of shape (3,) containing the lengths of the edges
@@ -435,11 +435,11 @@ def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float])
                                    [1.0, 0.0, 0.0],
                                    [1.0, 1.0, 0.0],
                                    [0.0, 1.0, 1.0]])
-            
+
             # image shape and voxel sizes
             im_shape = [128, 128, 128]
             vox_sizes = [1.0, 1.0, 1.0]
-            
+
             distances = rasterize(points, im_shape, vox_sizes)
 
             # distances will be a tensor of shape (128, 128, 128) containing the distance from each voxel centroid to the nearest point in the point cloud

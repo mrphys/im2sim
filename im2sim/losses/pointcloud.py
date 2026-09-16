@@ -56,11 +56,12 @@ class ChamferLoss(MeshLoss):
     Computes the Chamfer loss between two point clouds represented as graphs.
 
     Args:
-        id_key (str, optional): 
-            The key in the graph data that contains ids for points corresponding a specific structure. 
+        id_key (str, optional):
+            The key in the graph data that contains ids for points corresponding a specific structure.
             Set this if you want to compute the loss only for the surface or inlet etc.
             If None, the loss will be computed for all points in both graphs. Default is None.
     """
+
     def __init__(self, id_key: str = None):
         required_attrs = ["coords", "batch"]
         if id_key is not None:

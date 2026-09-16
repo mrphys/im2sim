@@ -15,7 +15,6 @@
 # ==============================================================================
 
 
-
 from dataclasses import dataclass, field
 
 from im2sim.configs.graph_blocks import GraphConvBlockConfig

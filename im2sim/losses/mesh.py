@@ -100,17 +100,17 @@ class EdgeLengthDeviationLoss(MeshLoss):
             If `False`, only the edge length deviation of the predicted graph is computed. Default is `True`.
 
     .. note:
-        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`).
         If supervised is False, the true graph is not used for loss computation.
 
         For the edge length deviation loss, the graph objects only need to have the `coords` and `edge_index` attributes.
 
     Example:
 
-        For supervised training: 
+        For supervised training:
 
         .. code-block:: python
-        
+
             edge_criterion = EdgeLengthDeviationLoss()
             edge_loss = edge_criterion(true_graph, pred_graph)
 
@@ -144,7 +144,7 @@ def edge_length_deviation_loss(gr1, gr2):
         gr2 (torch_geometric.data.Data): The predicted graph, containing node features and edge indices.
 
     .. note:
-        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`).
 
         If supervised is False, the loss is the mean edge length deviation of the predicted graph.
     """
@@ -175,7 +175,7 @@ class AspectRatioLoss(MeshLoss):
             If `False`, only the aspect ratio of the predicted graph is computed. Default is `True`.
 
     .. note:
-        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`).
         If supervised is False, the loss is the mean aspect ratio of the predicted graph.
 
         For the aspect ratio loss, the graph objects need to have `coords` and a cell_index attribute corresponding to `cell_key` of shape [4, n_cells] to store the ids of each tetrahedron.
@@ -183,9 +183,9 @@ class AspectRatioLoss(MeshLoss):
 
     Example:
 
-        
 
-        For supervised training: 
+
+        For supervised training:
 
         .. code-block:: python
 
@@ -241,12 +241,12 @@ class FaceNormalLoss(MeshLoss):
             If `False`, only the face normal consistency of the predicted graph is computed. Default is `True`.
 
     .. note:
-        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`).
         If supervised is False, the loss is the face normal consistency of the predicted graph.
 
         For the face normal loss, the graph objects need to have `coords` and a face_index attribute corresponding to `face_key` of shape [3, n_faces] to store the ids of each triangle face.
         See `im2sim.mesh_ops.get_structure_cells` to generate the face_index attribute from a mesh.
-    
+
     """
 
     def __init__(self, face_key, supervised=True):
@@ -358,21 +358,18 @@ if __name__ == "__main__":
     from torch_geometric.data import Data
 
     # Create a simple tetrahedral mesh graph
-    coords = torch.tensor([[0.0, 0.0, 0.0],
-                           [1.0, 0.0, 0.0],
-                           [0.5, 1.0, 0.0],
-                           [0.5, 0.5, 1.0]], dtype=torch.float32)
-    edge_index = torch.tensor([[0, 1, 2, 3],
-                               [1, 2, 3, 0]], dtype=torch.long)
+    coords = torch.tensor(
+        [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.5, 1.0, 0.0], [0.5, 0.5, 1.0]], dtype=torch.float32
+    )
+    edge_index = torch.tensor([[0, 1, 2, 3], [1, 2, 3, 0]], dtype=torch.long)
     cells = torch.tensor([[0, 1, 2, 3]], dtype=torch.long).T
 
     graph = Data(coords=coords, edge_index=edge_index, cells=cells)
 
     # Create a predicted graph with inverted tetrahedron
-    pred_coords = torch.tensor([[0.0, 0.0, 0.0],
-                                [1.0, 0.0, 0.0],
-                                [0.5, -1.0, 0.0],
-                                [0.5, -0.5, -1.0]], dtype=torch.float32)
+    pred_coords = torch.tensor(
+        [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.5, -1.0, 0.0], [0.5, -0.5, -1.0]], dtype=torch.float32
+    )
     pred_graph = Data(coords=pred_coords, edge_index=edge_index, cells=cells)
 
     # Compute inversion loss

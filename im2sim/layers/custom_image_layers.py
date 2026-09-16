@@ -16,6 +16,7 @@
 
 
 import math
+
 import torch
 
 from im2sim.utils.layer_util import get_image_layer, register_with_ranks

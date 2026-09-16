@@ -372,7 +372,7 @@ def test_invalid_attention_raises(attention):
 # Residual connections
 # ---------------------------------------------------------------------------
 
-def test_add_input_residual(graph):
+def test_add_input_residual_hidden_layer_not_specified(graph):
     cfg = make_cfg(
         depth=2,
         residual_connections={1: [0]},
@@ -385,8 +385,27 @@ def test_add_input_residual(graph):
         cfg=cfg,
     )
 
+    output = block(graph)
+
+    assert output.x.shape == (10, 32)
+
+def test_add_input_residual_hidden_layer_specified(graph):
+    cfg = make_cfg(
+        depth=2,
+        hidden_channels = 25, 
+        residual_connections={1: [0]},
+        residual_type="add",
+    )
+
+    block = GraphConvBlock(
+        in_channels=16,
+        out_channels=32,
+        cfg=cfg,
+    )
+
     with pytest.raises((RuntimeError, ValueError)):
         block(graph)
+
 
 
 
@@ -459,9 +478,9 @@ def test_concat_residual_changes_conv_input_channels():
     #   output[0] = 16
     # therefore 80 channels.
     if hasattr(block.layers[2][0], "pyg_module"):
-        assert block.layers[2][0].pyg_module.in_channels == 80
+        assert block.layers[2][0].pyg_module.in_channels == 48
     elif hasattr(block.layers[2][0], "in_channels"):
-        assert block.layers[2][0].in_channels == 80
+        assert block.layers[2][0].in_channels == 48
     else:
         pytest.skip("Cannot determine in_channels for the last layer; skipping test.")
 

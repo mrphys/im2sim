@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -465,7 +465,7 @@ document.write(`
 <h1>im2sim.losses.KnnFeatureLoss<a class="headerlink" href="#im2sim-losses-knnfeatureloss" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.losses.KnnFeatureLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KnnFeatureLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/losses/feature.py#L5-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.KnnFeatureLoss" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KnnFeatureLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/losses/feature.py#L6-L66"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.KnnFeatureLoss" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>Computes the loss between features of two graphs using k-nearest neighbors interpolation based on their coordinates.
 This loss can be used to compare the features of a predicted graph against a ground truth graph when they are not in point-to-point correspondence.</p>
@@ -482,7 +482,7 @@ This loss can be used to compare the features of a predicted graph against a gro
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.losses.KnnFeatureLoss.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/losses/feature.py#L30-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.KnnFeatureLoss.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">true_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/losses/feature.py#L27-L66"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.KnnFeatureLoss.forward" title="Link to this definition">#</a></dt>
 <dd><p>Define the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">

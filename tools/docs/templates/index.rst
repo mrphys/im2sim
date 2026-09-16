@@ -5,7 +5,13 @@ IM2SIM |release|
    :start-after: start-intro
    :end-before: end-intro
 
+.. toctree::
+   :caption: Tutorials
+   :hidden:
 
+   Tutorials <tutorials>
+   Segmentation <tutorials/segment>
+   
 .. toctree::
    :caption: API Documentation
    :hidden:

@@ -49,7 +49,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="im2sim.mesh_ops.cluster_pool" href="mesh_ops/cluster_pool.html" />
-    <link rel="prev" title="im2sim.losses.edge_length_deviation_loss" href="losses/edge_length_deviation_loss.html" />
+    <link rel="prev" title="im2sim.losses.TverskyLoss" href="losses/TverskyLoss.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">im2sim.mesh_ops</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -459,10 +459,29 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-im2sim.mesh_ops">
-<span id="im2sim-mesh-ops"></span><h1>im2sim.mesh_ops<a class="headerlink" href="#module-im2sim.mesh_ops" title="Link to this heading">#</a></h1>
+  <section id="im2sim-mesh-ops">
+<h1>im2sim.mesh_ops<a class="headerlink" href="#im2sim-mesh-ops" title="Link to this heading">#</a></h1>
+<p><cite>mesh_ops</cite> is a set of utilities that allow for the manipulation of 3D meshes.
+It includes functions for computing various properties of meshes such as normals, curvature, and surface area.</p>
+<p>It is specifically compatible with Pyvista pointgrid objects and can be used to convert mesh representations between PyVista and Pytorch Geometric formats.</p>
+<p>For example if you have a PyVista mesh saved as a .vtu file, you can follow the worksflow below to convert it to a simple Pytorch Geometric mesh representation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">im2sim.mesh_ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">M</span>
+
+<span class="c1"># Load the PyVista mesh from a .vtu file</span>
+<span class="n">pv_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;example_mesh.vtu&quot;</span><span class="p">)</span>
+
+<span class="n">coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pv_mesh</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">edge_index</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_edges_tet</span><span class="p">(</span><span class="n">pv_mesh</span><span class="p">)</span>
+
+<span class="c1"># Convert the PyVista mesh to a Pytorch Geometric mesh representation</span>
+<span class="n">pyg_mesh</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">)</span>
+</pre></div>
+</div>
 <section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
+<span id="module-im2sim.mesh_ops"></span><h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 </tbody>
@@ -483,7 +502,7 @@ document.write(`
 <td><p>Extracts edges for a single structure in a pyvista PointGrid object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/get_edges_surf.html#im2sim.mesh_ops.get_edges_surf" title="im2sim.mesh_ops.get_edges_surf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edges_surf</span></code></a></p></td>
-<td><p>A function to get the edge index for training from a pyvista surface mesh</p></td>
+<td><p>A function to get the edge index for training from a pyvista surface mesh.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/get_edges_tet.html#im2sim.mesh_ops.get_edges_tet" title="im2sim.mesh_ops.get_edges_tet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edges_tet</span></code></a></p></td>
 <td><p>A function to get the edge index for training from a tetrahedral pyvista mesh</p></td>
@@ -533,12 +552,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="losses/edge_length_deviation_loss.html"
+       href="losses/TverskyLoss.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">im2sim.losses.edge_length_deviation_loss</p>
+        <p class="prev-next-title">im2sim.losses.TverskyLoss</p>
       </div>
     </a>
     <a class="right-next"

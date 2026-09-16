@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -466,7 +466,7 @@ document.write(`
 <h1>im2sim.transforms.PowerScaleOp<a class="headerlink" href="#im2sim-transforms-powerscaleop" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.transforms.PowerScaleOp">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PowerScaleOp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/transforms/ops.py#L145-L172"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.transforms.PowerScaleOp" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PowerScaleOp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/transforms/ops.py#L147-L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.transforms.PowerScaleOp" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../data/InvertibleOperation.html#im2sim.data.InvertibleOperation" title="im2sim.data.core.InvertibleOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InvertibleOperation</span></code></a></p>
 <p>Scales the input tensor by raising it to a specified power.</p>
 <dl class="field-list simple">
@@ -480,13 +480,13 @@ document.write(`
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.transforms.PowerScaleOp.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/transforms/ops.py#L162-L166"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.transforms.PowerScaleOp.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/transforms/ops.py#L165-L169"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.transforms.PowerScaleOp.forward" title="Link to this definition">#</a></dt>
 <dd><p>forward pass of the operation</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.transforms.PowerScaleOp.inverse">
-<span class="sig-name descname"><span class="pre">inverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/transforms/ops.py#L168-L172"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.transforms.PowerScaleOp.inverse" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">inverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/transforms/ops.py#L171-L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.transforms.PowerScaleOp.inverse" title="Link to this definition">#</a></dt>
 <dd><p>inverse pass of the operation</p>
 </dd></dl>
 

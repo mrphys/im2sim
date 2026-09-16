@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>im2sim.losses.edge_length_deviation_loss &#8212; IM2SIM Documentation</title>
+    <title>im2sim.losses.EdgeLengthDeviationLoss &#8212; IM2SIM Documentation</title>
   
   
   
@@ -43,13 +43,13 @@
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/losses/edge_length_deviation_loss';</script>
-    <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/losses/edge_length_deviation_loss.html" />
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/losses/EdgeLengthDeviationLoss';</script>
+    <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/losses/EdgeLengthDeviationLoss.html" />
     <link rel="icon" href="../../../_static/im2sim_logo.png"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="im2sim.mesh_ops" href="../mesh_ops.html" />
-    <link rel="prev" title="im2sim.losses.TverskyLoss" href="TverskyLoss.html" />
+    <link rel="next" title="im2sim.losses.FaceNormalLoss" href="FaceNormalLoss.html" />
+    <link rel="prev" title="im2sim.losses.DiceLoss" href="DiceLoss.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -352,7 +352,7 @@
       
       
       
-      <li><a href="../../../_sources/api_docs/im2sim/losses/edge_length_deviation_loss.rst" target="_blank"
+      <li><a href="../../../_sources/api_docs/im2sim/losses/EdgeLengthDeviationLoss.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -436,7 +436,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>im2sim.losses.edge_length_deviation_loss</h1>
+    <h1>im2sim.losses.EdgeLengthDeviationLoss</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -446,7 +446,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.losses.edge_length_deviation_loss"><code class="docutils literal notranslate"><span class="pre">edge_length_deviation_loss()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.losses.EdgeLengthDeviationLoss"><code class="docutils literal notranslate"><span class="pre">EdgeLengthDeviationLoss</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -458,21 +458,33 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="im2sim-losses-edge-length-deviation-loss">
-<h1>im2sim.losses.edge_length_deviation_loss<a class="headerlink" href="#im2sim-losses-edge-length-deviation-loss" title="Link to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="im2sim.losses.edge_length_deviation_loss">
-<span class="sig-name descname"><span class="pre">edge_length_deviation_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gr1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gr2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/losses/mesh.py#L88-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.edge_length_deviation_loss" title="Link to this definition">#</a></dt>
-<dd><p>Computes the edge length deviation loss between two graphs.
-The loss is calculated as the squared difference between the edge length deviations of the two graphs, with a ReLU activation to ensure non-negativity.</p>
+  <section id="im2sim-losses-edgelengthdeviationloss">
+<h1>im2sim.losses.EdgeLengthDeviationLoss<a class="headerlink" href="#im2sim-losses-edgelengthdeviationloss" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="im2sim.losses.EdgeLengthDeviationLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EdgeLengthDeviationLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supervised</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/losses/mesh.py#L77-L121"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.EdgeLengthDeviationLoss" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MeshLoss</span></code></p>
+<p>Computes the edge length deviation loss between two graphs.
+The edge deviation is defined as the standard deviation of the edge lenghths divided by the mean edge length.</p>
+<p>The loss is calculated as the squared difference between the edge length deviations of the two graphs, with a ReLU activation to ensure non-negativity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gr1</strong> (<em>torch_geometric.data.Data</em>) – The ground truth graph, containing node features and edge indices.</p></li>
-<li><p><strong>gr2</strong> (<em>torch_geometric.data.Data</em>) – The predicted graph, containing node features and edge indices.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>supervised</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – <p>If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True">True</a>, the difference in edge length deviations between the true and predicted graphs is computed.
+If <a class="reference external" href="https://docs.python.org/3/library/constants.html#False">False</a>, only the edge length deviation of the predicted graph is computed. Default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#True">True</a>.</p>
+</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<p>For supervised training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">edge_criterion</span> <span class="o">=</span> <span class="n">EdgeLengthDeviationLoss</span><span class="p">()</span>
+<span class="n">edge_loss</span> <span class="o">=</span> <span class="n">edge_criterion</span><span class="p">(</span><span class="n">true_graph</span><span class="p">,</span> <span class="n">pred_graph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For unsupervised training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">edge_criterion</span> <span class="o">=</span> <span class="n">EdgeLengthDeviationLoss</span><span class="p">(</span><span class="n">supervised</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">edge_loss</span> <span class="o">=</span> <span class="n">edge_criterion</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">pred_graph</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -489,20 +501,20 @@ The loss is calculated as the squared difference between the edge length deviati
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="TverskyLoss.html"
+       href="DiceLoss.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">im2sim.losses.TverskyLoss</p>
+        <p class="prev-next-title">im2sim.losses.DiceLoss</p>
       </div>
     </a>
     <a class="right-next"
-       href="../mesh_ops.html"
+       href="FaceNormalLoss.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">im2sim.mesh_ops</p>
+        <p class="prev-next-title">im2sim.losses.FaceNormalLoss</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -522,7 +534,7 @@ The loss is calculated as the squared difference between the edge length deviati
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.losses.edge_length_deviation_loss"><code class="docutils literal notranslate"><span class="pre">edge_length_deviation_loss()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.losses.EdgeLengthDeviationLoss"><code class="docutils literal notranslate"><span class="pre">EdgeLengthDeviationLoss</span></code></a></li>
 </ul>
   </nav></div>
 

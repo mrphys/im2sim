@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -465,7 +465,7 @@ document.write(`
 <h1>im2sim.layers.TrilinearProjection<a class="headerlink" href="#im2sim-layers-trilinearprojection" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.layers.TrilinearProjection">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrilinearProjection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_dim</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/layers/projections.py#L49-L152"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.TrilinearProjection" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrilinearProjection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_dim</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/projections.py#L47-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.TrilinearProjection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>TrilinearProjection layer projects image features onto graph coordinates using trilinear interpolation.</p>
 <dl class="field-list simple">
@@ -477,7 +477,7 @@ This is used to scale the graph coordinates to the image feature space.</p>
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.layers.TrilinearProjection.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/layers/projections.py#L62-L152"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.TrilinearProjection.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/projections.py#L61-L151"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.TrilinearProjection.forward" title="Link to this definition">#</a></dt>
 <dd><p>Projects image features onto graph coordinates using trilinear interpolation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

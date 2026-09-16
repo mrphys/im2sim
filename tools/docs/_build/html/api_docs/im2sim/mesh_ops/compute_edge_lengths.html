@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -462,7 +462,7 @@ document.write(`
 <h1>im2sim.mesh_ops.compute_edge_lengths<a class="headerlink" href="#im2sim-mesh-ops-compute-edge-lengths" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="im2sim.mesh_ops.compute_edge_lengths">
-<span class="sig-name descname"><span class="pre">compute_edge_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/mesh_ops/mesh_utils.py#L211-L231"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.compute_edge_lengths" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_edge_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L315-L353"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.compute_edge_lengths" title="Link to this definition">#</a></dt>
 <dd><p>Computes the squared Euclidean distance for each edge in a mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -488,6 +488,22 @@ lengths.</p>
 <dd class="field-odd"><p>distances (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>)</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 4 nodes in 3D space</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                       <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+
+<span class="c1"># 3 edges connecting the nodes</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+
+<span class="n">distances</span> <span class="o">=</span> <span class="n">compute_edge_lengths</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+
+<span class="c1"># distances will be a tensor of shape (3,) containing the lengths of the edges</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

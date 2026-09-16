@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -475,7 +475,7 @@ document.write(`
 <h1>im2sim.configs.ImageConvBlockConfig<a class="headerlink" href="#im2sim-configs-imageconvblockconfig" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ImageConvBlockConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation='ReLU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_position=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_connections=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_type='add'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L6-L228"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ImageConvBlockConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation='ReLU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_position=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_connections=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_type='add'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L6-L228"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></p>
 <p>Configuration class for defining the parameters of an image convolutional block.</p>
 <p>The default configuration consists of a single convolutional layer with ReLU activation, InstanceNorm normalization, and no dropout or attention layers.</p>
@@ -560,37 +560,37 @@ or to add a residual connection from the input to the output of the last layer, 
 <p>Refer to the methods below to see all available transformations that can be applied to the configuration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.add_conv1_residual">
-<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L160-L167"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L160-L167"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to have a residual connection from the output of the first layer to the output of the last layer.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.add_eca">
-<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L203-L208"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_eca" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L203-L208"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_eca" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to use Efficient Channel Attention (ECA)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.add_input_concat_residual">
-<span class="sig-name descname"><span class="pre">add_input_concat_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L169-L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_input_concat_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_input_concat_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L169-L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_input_concat_residual" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to have a residual connection from the input to the output of the last layer, using concatenation instead of addition.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.add_input_residual">
-<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L152-L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_input_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L152-L158"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_input_residual" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to have a residual connection from the input to the output of the last layer.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.add_se">
-<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L210-L215"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_se" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L210-L215"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.add_se" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to use Squeeze-and-Excitation (SE) attention</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.dilate_convs">
-<span class="sig-name descname"><span class="pre">dilate_convs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L192-L201"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.dilate_convs" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dilate_convs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L192-L201"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.dilate_convs" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to use dilated convolutions with dilation instead of standard convolutions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -601,31 +601,31 @@ or to add a residual connection from the input to the output of the last layer, 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.nullify">
-<span class="sig-name descname"><span class="pre">nullify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L217-L228"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.nullify" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">nullify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L217-L228"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.nullify" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to have no normalization, dropout, or attention layers.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.reconstruction_mode">
-<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L177-L183"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L177-L183"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block for reconstruction tasks by removing normalization and dropout layers.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.segmentation_mode">
-<span class="sig-name descname"><span class="pre">segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L185-L190"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.segmentation_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L185-L190"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.segmentation_mode" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block for segmentation tasks by using InstanceNorm with trainable parameters.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.to_single_block">
-<span class="sig-name descname"><span class="pre">to_single_block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L143-L150"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.to_single_block" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_single_block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L143-L150"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.to_single_block" title="Link to this definition">#</a></dt>
 <dd><p>Sets the block depth to 1 and removes dropout and residual connections, but keeps normalization and activation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.ImageConvBlockConfig.to_single_conv">
-<span class="sig-name descname"><span class="pre">to_single_conv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/image_blocks.py#L131-L141"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.to_single_conv" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_single_conv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/image_blocks.py#L131-L141"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.ImageConvBlockConfig.to_single_conv" title="Link to this definition">#</a></dt>
 <dd><p>Converts the blcok into a single convolutional layer with no normalization, dropout, or residual connections.</p>
 </dd></dl>
 

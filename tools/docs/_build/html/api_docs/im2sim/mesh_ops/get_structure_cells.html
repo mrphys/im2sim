@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -462,7 +462,7 @@ document.write(`
 <h1>im2sim.mesh_ops.get_structure_cells<a class="headerlink" href="#im2sim-mesh-ops-get-structure-cells" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="im2sim.mesh_ops.get_structure_cells">
-<span class="sig-name descname"><span class="pre">get_structure_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_dict</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/mesh_ops/mesh_utils.py#L71-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.get_structure_cells" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_structure_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_dict</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L99-L139"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.get_structure_cells" title="Link to this definition">#</a></dt>
 <dd><p>Extracts cells for different substructures in a pyvista PointGrid object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -479,6 +479,18 @@ and N is the number of cells in the structure.</p>
 <dd class="field-odd"><p>cells (<em>Dict</em>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>, <a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>])</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load in vtu mesh</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;example_mesh.vtu&#39;</span><span class="p">)</span>
+
+<span class="c1"># if CellEntityIds are 0 for volume and 1 for surface, we can create a structure_dict like this:</span>
+<span class="n">structure_dict</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;vol&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;surf&quot;</span><span class="p">}</span>
+
+<span class="n">cells</span> <span class="o">=</span> <span class="n">get_structure_cells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">structure_dict</span><span class="p">)</span>
+
+<span class="c1"># cells will be a dictionary like {&#39;vol_cell_index&#39;: tensor([[...], [...], [...], [...]]), &#39;surf_cell_index&#39;: tensor([[...], [...], [...]])}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

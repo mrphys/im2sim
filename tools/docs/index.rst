@@ -11,7 +11,7 @@ IM2SIM |release|
 
    Tutorials <tutorials>
    Segmentation <tutorials/segment>
-
+   
 .. toctree::
    :caption: API Documentation
    :hidden:

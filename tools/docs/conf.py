@@ -218,9 +218,9 @@ def linkcode_resolve(domain, info):
   if 'im2sim' not in file:
     return None
 
-  index = file.index('im2sim')
-  file = file[index:]
-
+  print(file)
+  file = file.removeprefix(ROOT)
+  print(file)
   # Base URL.
   url = 'https://github.com/mrphys/im2sim'
 
@@ -229,6 +229,7 @@ def linkcode_resolve(domain, info):
 
   # Add file.
   url += '/' + file
+  print(url)
 
   # Try to add line numbers.
   try:

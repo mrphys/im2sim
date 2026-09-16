@@ -1,0 +1,89 @@
+Metadata-Version: 2.4
+Name: im2sim
+Version: 0.1.0
+Summary: A framework for ML-accelerated digital twins
+Author-email: Anirudh Raman <anirudh.raman.24@ucl.ac.uk>
+License: ElasticV2
+Project-URL: Homepage, https://mrphys.github.io/im2sim/
+Project-URL: Documentation, https://mrphys.github.io/im2sim/
+Project-URL: Repository, https://github.com/mrphys/im2sim
+Project-URL: Issues, https://github.com/mrphys/im2sim/issues
+Keywords: machine learning,digital twins,computational modelling,graph neural networks,PyTorch,PyTorch Geometric,scientific machine learning,ML,DL,medical imaging,GNN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Requires-Python: >=3.10
+Description-Content-Type: text/x-rst
+Requires-Dist: torch<3,>=2.3
+Requires-Dist: torch-geometric
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: scikit-learn
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: hypothesis; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx; extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints; extra == "docs"
+Requires-Dist: sphinx-last-updated-by-git; extra == "docs"
+Requires-Dist: sphinx-sitemap; extra == "docs"
+Requires-Dist: sphinx_rtd_theme; extra == "docs"
+Requires-Dist: myst-nb; extra == "docs"
+Requires-Dist: myst-parser; extra == "docs"
+Requires-Dist: sphinx-book-theme; extra == "docs"
+Requires-Dist: sphinx-copybutton; extra == "docs"
+Provides-Extra: mesh
+Requires-Dist: pyvista; extra == "mesh"
+
+# im2sim
+
+.. start-intro
+
+`im2sim` is a library designed to simplify the development of ML-accelerated
+digital twins based on medical images.
+
+This includes two main components:
+
+1. Deep Learning (DL) frameworks based on
+   `PyTorch <https://pytorch.org>`_ and
+   `PyTorch Geometric <https://pytorch-geometric.readthedocs.io/en/latest/>`_.
+
+2. Mesh processing frameworks based on
+   `VTK <https://vtk.org>`_ and
+   `PyVista <https://docs.pyvista.org/index.html>`_.
+
+## Features
+
+* Image and Mesh Data Processing
+* DL models for medical imaging applications
+* DL models for digital twin applications
+* Hybrid DL models for simulation outputs directly from images
+* Building blocks for custom DL models
+* Visualisation utilities
+
+## Installation
+
+1. Install the CUDA dependencies:
+
+   .. code-block:: bash
+
+      pip install torch-scatter torch-cluster 
+      -f https://data.pyg.org/whl/torch-2.3.1+cu121.html
+
+2. Install the repository:
+
+   .. code-block:: bash
+
+      pip install git+https://github.com/mrphys/im2sim.git
+
+.. end-intro

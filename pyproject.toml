@@ -14,15 +14,40 @@ authors = [
     { name = "Anirudh Raman", email = "anirudh.raman.24@ucl.ac.uk" }
 ]
 
+keywords = [
+    "machine learning",
+    "digital twins",
+    "computational modelling",
+    "graph neural networks",
+    "PyTorch",
+    "PyTorch Geometric",
+    "scientific machine learning",
+    "ML",
+    "DL",
+    "medical imaging",
+    "GNN"
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
 dependencies = [
-    "torch==2.3.1",
-    "torch_geometric==2.7.0",
-    "pyvista==0.47.0",
+    "torch>=2.3,<3",
+    "torch-geometric",
     "numpy",
     "matplotlib",
     "scikit-learn"
 ]
-
 
 [project.optional-dependencies]
 dev = [
@@ -43,6 +68,19 @@ docs = [
     "sphinx-book-theme",
     "sphinx-copybutton"
 ]
+
+mesh = [
+    "pyvista"
+]
+
+[project.scripts]
+im2sim-install-pyg-addons = "im2sim.cli:install_pyg"
+
+[project.urls]
+Homepage = "https://mrphys.github.io/im2sim/"
+Documentation = "https://mrphys.github.io/im2sim/"
+Repository = "https://github.com/mrphys/im2sim"
+Issues = "https://github.com/mrphys/im2sim/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]

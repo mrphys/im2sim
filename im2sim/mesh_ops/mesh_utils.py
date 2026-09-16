@@ -1,3 +1,19 @@
+# ==============================================================================
+# Copyright 2026 University College London.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
 import numpy as np
 import torch
 import torch_geometric.nn as gnn
@@ -20,6 +36,20 @@ def get_structure_ids(mesh: PointGrid, structure_dict: dict[int, str]) -> dict[s
 
     Returns:
         ids (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(N), where N is the number of nodes in the structure.
+
+    Example:
+
+        .. code-block:: python
+
+            # load in vtu mesh 
+            mesh = pv.read('example_mesh.vtu')
+
+            # if CellEntityIds are 0 for volume and 1 for surface, we can create a structure_dict like this:
+            structure_dict = {0: "vol", 1: "surf"}
+
+            ids = get_structure_ids(mesh, structure_dict)
+
+            # ids will be a dictionary like {'vol_index': tensor([...]), 'surf_index': tensor([...])}
     """
     cells = get_structure_edges(mesh, structure_dict)
     ids = {f"{k.split('_edge_index')[0]}_index": torch.unique(v) for k, v in cells.items()}
@@ -37,6 +67,20 @@ def get_structure_edges(mesh: PointGrid, structure_dict: dict[int, str]) -> dict
     Returns:
         edges (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(2, N),
         where N is the number of edges in the structure.
+
+    Example:
+
+        .. code-block:: python
+
+            # load in vtu mesh
+            mesh = pv.read('example_mesh.vtu')
+
+            # if CellEntityIds are 0 for volume and 1 for surface, we can create a structure_dict like this:
+            structure_dict = {0: "vol", 1: "surf"}
+
+            edges = get_structure_edges(mesh, structure_dict)
+
+            # edges will be a dictionary like {'vol_edge_index': tensor([[...], [...]]), 'surf_edge_index': tensor([[...], [...]])}
     """
 
     if _has_missing_ids(mesh, structure_dict):
@@ -79,6 +123,21 @@ def get_structure_cells(mesh: PointGrid, structure_dict: dict[int, str]) -> dict
     Returns:
         cells (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(m, N), where m is 3 for triangles and 4 for tetrahedrons
         and N is the number of cells in the structure.
+
+    Example:
+
+        .. code-block:: python
+
+            # load in vtu mesh
+            mesh = pv.read('example_mesh.vtu')
+
+            # if CellEntityIds are 0 for volume and 1 for surface, we can create a structure_dict like this:
+            structure_dict = {0: "vol", 1: "surf"}
+
+            cells = get_structure_cells(mesh, structure_dict)
+
+            # cells will be a dictionary like {'vol_cell_index': tensor([[...], [...], [...], [...]]), 'surf_cell_index': tensor([[...], [...], [...]])}
+
     """
     if _has_missing_ids(mesh, structure_dict):
         raise InputMeshError("Mesh has missing ids")
@@ -114,6 +173,25 @@ def set_attrs(data: Data, attrs: dict[str, torch.Tensor]) -> None:
 
     Returns:
         None
+
+    Examples:
+
+        .. code-block:: python
+
+            # load in vtu mesh
+            mesh = pv.read('example_mesh.vtu')
+
+            # create a PyG Data object
+            data = Data(coords=torch.from_numpy(mesh.points).float())
+
+            # get node ids for different structures
+            structure_dict = {0: "vol", 1: "surf"}
+            ids = get_structure_ids(mesh, structure_dict)
+
+            # set the ids as attributes in the Data object
+            set_attrs(data, ids)
+
+            # now data will have attributes 'vol_index' and 'surf_index' with the corresponding node ids
     """
     for k, v in attrs.items():
         setattr(data, k, v)
@@ -128,6 +206,18 @@ def get_edges_tet(mesh: PointGrid) -> torch.Tensor:
 
     Returns:
         edges (torch.Tensor): A tensor of shape [2,M] where M is the number of edges and the values are the node ids
+
+    Example:
+
+        .. code-block:: python
+
+            # load in vtu mesh
+            mesh = pv.read('example_mesh.vtu')
+
+            # get the edge index for the volume structure (assuming CellEntityIds 0 corresponds to volume)
+            edges = get_edges_tet(mesh)
+
+            # edges will be a tensor of shape [2, M] where M is the number of edges in the volume structure
     """
     edges = get_structure_edges(mesh, {0: "vol"})["vol_edge_index"]
     return edges
@@ -135,13 +225,25 @@ def get_edges_tet(mesh: PointGrid) -> torch.Tensor:
 
 def get_edges_surf(mesh: PointGrid) -> torch.Tensor:
     """
-    A function to get the edge index for training from a pyvista surface mesh
+    A function to get the edge index for training from a pyvista surface mesh. Use this function for meshes that are not tetrahedral, e.g. .vtk files.
 
     Args:
         mesh (pyvista.core.pointset.PointGrid): A pyvista mesh object.
 
     Returns:
         edges (torch.Tensor): A tensor of shape [2,M] where M is the number of edges and the values are the node ids
+
+    Example:
+
+        .. code-block:: python
+
+            # load in vtk mesh
+            mesh = pv.read('example_mesh.vtk')
+
+            # get the edge index for the surface structure 
+            edges = get_edges_surf(mesh)
+
+
     """
     edges = mesh.extract_all_edges().lines.reshape(-1, 3)[:, 1:]
     edges = torch.Tensor(edges).T.long()
@@ -159,6 +261,22 @@ def get_node_features(mesh: PointGrid, feature_names: list[str]) -> torch.Tensor
 
     Returns:
         features (torch.Tensor): A tensor of shape [N,C] where N is the number of nodes and C is len(feature_names).
+
+    Example:
+
+        If each node in the mesh has features like pressure, x-velocity, y-velocity, and z-velocity, you can extract these features as follows:
+
+        .. code-block:: python
+
+            # load in vtu mesh
+            mesh = pv.read('example_mesh.vtu')
+
+            # get the node features for the specified feature names
+            feature_names = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity']
+            features = get_node_features(mesh, feature_names)
+
+            # features will be a tensor of shape [N, 4] where N is the number of nodes in the mesh and the columns correspond to the specified features
+            
     """
     features = torch.from_numpy(np.array([mesh.point_data[name] for name in feature_names]).T)
     return features
@@ -190,16 +308,18 @@ def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> tuple[torch.Tenso
             or for zeroing out padded positions in a loss function.
 
     Example:
-        >>> # 5 nodes total, 3 instances: instance 0 has 3 nodes, instances 1 and 2 have 1 node each
-        >>> x = torch.randn(5, 8)
-        >>> batch = torch.tensor([0, 0, 0, 1, 2])
-        >>> padded_x, mask = make_padded_batch(x, batch)
-        >>> padded_x.shape  # (3, 3, 8)
-        >>> mask.shape      # (3, 3)
-        >>> mask
-        tensor([[ True,  True,  True],
-                [ True, False, False],
-                [ True, False, False]])
+
+        .. code-block:: python
+            # 5 nodes total, 3 instances: instance 0 has 3 nodes, instances 1 and 2 have 1 node each
+            x = torch.randn(5, 8)
+            batch = torch.tensor([0, 0, 0, 1, 2])
+            padded_x, mask = make_padded_batch(x, batch)
+            padded_x.shape  # (3, 3, 8)
+            mask.shape      # (3, 3)
+            mask
+            tensor([[ True,  True,  True],
+                    [ True, False, False],
+                    [ True, False, False]])
     """
     jagged_x = [x[batch == i] for i in torch.unique(batch)]
     padded_x = torch.nn.utils.rnn.pad_sequence(jagged_x, batch_first=True)
@@ -225,6 +345,24 @@ def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Ten
             per-dimension squared differences between the endpoints of each
             edge. Sum over the last dimension to get scalar squared edge
             lengths.
+
+    Example:
+
+        .. code-block:: python
+
+            # 4 nodes in 3D space
+            points = torch.tensor([[0.0, 0.0, 0.0],
+                                   [1.0, 0.0, 0.0],
+                                   [1.0, 1.0, 0.0],
+                                   [0.0, 1.0, 1.0]])
+            
+            # 3 edges connecting the nodes
+            edges = torch.tensor([[0, 1, 2],
+                                  [1, 2, 3]])
+            
+            distances = compute_edge_lengths(points, edges)
+
+            # distances will be a tensor of shape (3,) containing the lengths of the edges
     """
     coords = points[edges]
     distances = torch.linalg.norm(coords[0] - coords[1], dim=-1)
@@ -257,6 +395,14 @@ def cluster_pool(mesh: Data) -> Data:
           epsilon prevents division by zero for degenerate zero-length edges.
         - Pooling is performed using torch_geometric.nn.avg_pool, so node
           features in each cluster are averaged.
+
+    Example:
+
+        .. code-block:: python
+            # Assume mesh is a PyG Data object with x and edge_index
+            pooled_mesh = cluster_pool(mesh)
+
+            # pooled_mesh will have fewer nodes and edges, with features averaged over clusters
     """
     distances = compute_edge_lengths(mesh.x, mesh.edge_index)
     weights = 1 / (distances + 1e-8)
@@ -280,6 +426,23 @@ def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float])
     Returns:
         distances (torch.Tensor): A tensor of shape specified by im_shape where each voxel
             is the distance of the voxel centroid to the pointcloud.
+
+    Example:
+        .. code-block:: python
+
+            # 4 nodes in 3D space
+            points = torch.tensor([[0.0, 0.0, 0.0],
+                                   [1.0, 0.0, 0.0],
+                                   [1.0, 1.0, 0.0],
+                                   [0.0, 1.0, 1.0]])
+            
+            # image shape and voxel sizes
+            im_shape = [128, 128, 128]
+            vox_sizes = [1.0, 1.0, 1.0]
+            
+            distances = rasterize(points, im_shape, vox_sizes)
+
+            # distances will be a tensor of shape (128, 128, 128) containing the distance from each voxel centroid to the nearest point in the point cloud
     """
     im_coords = [
         torch.arange(size / 2, n, size) for n, size in zip(im_shape, vox_sizes, strict=True)

@@ -1,9 +1,23 @@
-import sys
+# ==============================================================================
+# Copyright 2026 University College London.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 
 import torch
 import torch_geometric as pyg
 
-sys.path.append("/Users/anirudh/Documents/im2sim/im2sim")
+
 from im2sim.configs.core import LayerConfig
 from im2sim.configs.graph_blocks import GraphConvBlockConfig
 from im2sim.layers import custom_graph_layers
@@ -59,6 +73,7 @@ class GraphConvBlock(torch.nn.Module):
 
         self.in_channels = in_channels
         self.out_channels = out_channels
+        self.hidden_channels = cfg.hidden_channels if cfg.hidden_channels is not None else in_channels
         self.depth = cfg.depth
         self.activation = custom_graph_layers.GraphActivation(cfg.activation)
         self.out_activation = custom_graph_layers.GraphActivation(cfg.out_activation)
@@ -89,19 +104,19 @@ class GraphConvBlock(torch.nn.Module):
                     in_channels_current += in_channels_per_layer[src]
 
             in_channels_per_layer.append(in_channels_current)
-
+            out_channels_current = self.hidden_channels if i < self.depth - 1 else self.out_channels
             conv = get_graph_layer(
                 name=self.conv_cfg.name,
                 kwargs={
                     "in_channels": in_channels_per_layer[-1],
-                    "out_channels": self.out_channels,
+                    "out_channels": out_channels_current,
                     **self.conv_cfg.kwargs,
                 },
             )
 
             norm = get_graph_layer(
                 name=self.norm_cfg.name,
-                kwargs={"in_channels": self.out_channels, **self.norm_cfg.kwargs},
+                kwargs={"in_channels": out_channels_current, **self.norm_cfg.kwargs},
             )
 
             dropout = (
@@ -115,7 +130,7 @@ class GraphConvBlock(torch.nn.Module):
             if pre_residual or no_residual_final:
                 attn = get_graph_layer(
                     name=self.attn_cfg.name,
-                    kwargs={"in_channels": self.out_channels, **self.attn_cfg.kwargs},
+                    kwargs={"in_channels": out_channels_current, **self.attn_cfg.kwargs},
                 )
             else:
                 attn = torch.nn.Identity()
@@ -129,7 +144,7 @@ class GraphConvBlock(torch.nn.Module):
             )
             self.layers.append(block)
 
-            in_channels_current = self.out_channels
+            in_channels_current = out_channels_current
 
     def _set_default_configs(self):
         if self.conv_cfg is None:
@@ -177,8 +192,12 @@ class GraphConvBlock(torch.nn.Module):
 
 
 if __name__ == "__main__":
+    import sys 
+    sys.path.append("/Users/anirudh/Documents/im2sim/im2sim")
+
     block_cfg = GraphConvBlockConfig(
         depth=4,
+        hidden_channels=64,
         activation="LeakyReLU",
         out_activation="sigmoid",
         conv_cfg=LayerConfig(name="GATConv", kwargs={}),
@@ -186,8 +205,8 @@ if __name__ == "__main__":
         dropout_cfg=LayerConfig(name="EdgeDropout", kwargs={"p": 0.5}),
         attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
         # dropout_position=[1, 3],
-        residual_connections={3: [1, 0]},
-        residual_type="concat",
+        residual_connections={3: [1, 2]},
+        residual_type="add",
     )
     block = GraphConvBlock(in_channels=16, out_channels=32, cfg=block_cfg)
     print(block)

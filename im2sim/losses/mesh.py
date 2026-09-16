@@ -1,3 +1,19 @@
+# ==============================================================================
+# Copyright 2026 University College London.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
 from abc import ABC, abstractmethod
 from itertools import combinations
 
@@ -74,15 +90,41 @@ class MeshLoss(torch.nn.Module, ABC):
 class EdgeLengthDeviationLoss(MeshLoss):
     """
     Computes the edge length deviation loss between two graphs.
+    The edge deviation is defined as the standard deviation of the edge lenghths divided by the mean edge length.
+
     The loss is calculated as the squared difference between the edge length deviations of the two graphs, with a ReLU activation to ensure non-negativity.
 
     Args:
         supervised (bool):
             If `True`, the difference in edge length deviations between the true and predicted graphs is computed.
             If `False`, only the edge length deviation of the predicted graph is computed. Default is `True`.
+
+    .. note:
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        If supervised is False, the true graph is not used for loss computation.
+
+        For the edge length deviation loss, the graph objects only need to have the `coords` and `edge_index` attributes.
+
+    Example:
+
+        For supervised training: 
+
+        .. code-block:: python
+        
+            edge_criterion = EdgeLengthDeviationLoss()
+            edge_loss = edge_criterion(true_graph, pred_graph)
+
+        For unsupervised training:
+
+        .. code-block:: python
+
+            edge_criterion = EdgeLengthDeviationLoss(supervised=False)
+            edge_loss = edge_criterion(None, pred_graph)
+
     """
 
     def __init__(self, supervised=True):
+        """"""
         super().__init__(required_attrs=["edge_index"], supervised=supervised)
 
     def _compute_loss(self, true_graph, pred_graph):
@@ -100,6 +142,11 @@ def edge_length_deviation_loss(gr1, gr2):
     Args:
         gr1 (torch_geometric.data.Data): The ground truth graph, containing node features and edge indices.
         gr2 (torch_geometric.data.Data): The predicted graph, containing node features and edge indices.
+
+    .. note:
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+
+        If supervised is False, the loss is the mean edge length deviation of the predicted graph.
     """
     ed1 = _edge_length_deviation(gr1.coords, gr1.edge_index)
     ed2 = _edge_length_deviation(gr2.coords, gr2.edge_index)
@@ -114,7 +161,9 @@ def _edge_length_deviation(points, edges):
 
 class AspectRatioLoss(MeshLoss):
     """
-    Computes the aspect ratio loss for tetrahedral meshes.
+    Computes the aspect ratio loss for tetrahedral meshes, which is a measure of skewness or distortion of the tetrahedra in the mesh.
+    The aspect ratio is defined as the mean ratio of the maximum edge length to the mean edge length of all tetrahedra in the mesh.
+
     The loss is calculated as the squared difference between the aspect ratios of the true and predicted graphs, with a ReLU activation to ensure non-negativity.
 
     Args:
@@ -124,6 +173,31 @@ class AspectRatioLoss(MeshLoss):
         supervised (bool):
             If `True`, the difference in aspect ratios between the true and predicted graphs is computed.
             If `False`, only the aspect ratio of the predicted graph is computed. Default is `True`.
+
+    .. note:
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        If supervised is False, the loss is the mean aspect ratio of the predicted graph.
+
+        For the aspect ratio loss, the graph objects need to have `coords` and a cell_index attribute corresponding to `cell_key` of shape [4, n_cells] to store the ids of each tetrahedron.
+        See `im2sim.mesh_ops.get_structure_cells` to generate the cell_index attribute from a tetrahedral mesh.
+
+    Example:
+
+        
+
+        For supervised training: 
+
+        .. code-block:: python
+
+            skewness_criterion = AspectRatioLoss(cell_key = 'volume_cell_index')
+            skew_loss = skewness_criterion(true_graph, pred_graph)
+
+        For unsupervised training:
+
+        .. code-block:: python
+
+            skewness_criterion = AspectRatioLoss(cell_key = 'volume_cell_index', supervised=False)
+            skew_loss = skewness_criterion(None, pred_graph)
     """
 
     def __init__(self, cell_key, supervised=True):
@@ -165,6 +239,14 @@ class FaceNormalLoss(MeshLoss):
         supervised (bool):
             If `True`, the difference in face normals between the true and predicted graphs is computed.
             If `False`, only the face normal consistency of the predicted graph is computed. Default is `True`.
+
+    .. note:
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`). 
+        If supervised is False, the loss is the face normal consistency of the predicted graph.
+
+        For the face normal loss, the graph objects need to have `coords` and a face_index attribute corresponding to `face_key` of shape [3, n_faces] to store the ids of each triangle face.
+        See `im2sim.mesh_ops.get_structure_cells` to generate the face_index attribute from a mesh.
+    
     """
 
     def __init__(self, face_key, supervised=True):
@@ -228,6 +310,12 @@ class InversionLoss(MeshLoss):
                         This is used to select the appropriate cells for computing the inversion loss.
                         The cell ids should be in the shape of [4, num_cells] for tetrahedral meshes.
         min_vol (float): The minimum volume threshold. Tetrahedra with volumes below this threshold will contribute to the loss. Default is 1e-3.
+
+    .. note:
+        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`) but only uses the pred_graph for this loss.
+
+        For the aspect ratio loss, the graph objects need to have `coords` and a cell_index attribute corresponding to `cell_key` of shape [4, n_cells] to store the ids of each tetrahedron.
+        See `im2sim.mesh_ops.get_structure_cells` to generate the cell_index attribute from a tetrahedral mesh.
     """
 
     def __init__(self, cell_key: str, min_vol=1e-3):
@@ -264,3 +352,31 @@ def inversion_loss(x, cells, min_vol=1e-3):
     vol = det6 / 6.0
 
     return torch.maximum(torch.zeros(1).to(vol.device), min_vol - vol).mean()
+
+
+if __name__ == "__main__":
+    from torch_geometric.data import Data
+
+    # Create a simple tetrahedral mesh graph
+    coords = torch.tensor([[0.0, 0.0, 0.0],
+                           [1.0, 0.0, 0.0],
+                           [0.5, 1.0, 0.0],
+                           [0.5, 0.5, 1.0]], dtype=torch.float32)
+    edge_index = torch.tensor([[0, 1, 2, 3],
+                               [1, 2, 3, 0]], dtype=torch.long)
+    cells = torch.tensor([[0, 1, 2, 3]], dtype=torch.long).T
+
+    graph = Data(coords=coords, edge_index=edge_index, cells=cells)
+
+    # Create a predicted graph with inverted tetrahedron
+    pred_coords = torch.tensor([[0.0, 0.0, 0.0],
+                                [1.0, 0.0, 0.0],
+                                [0.5, -1.0, 0.0],
+                                [0.5, -0.5, -1.0]], dtype=torch.float32)
+    pred_graph = Data(coords=pred_coords, edge_index=edge_index, cells=cells)
+
+    # Compute inversion loss
+    inv_loss = EdgeLengthDeviationLoss(supervised=True)
+    loss_value = inv_loss(graph, pred_graph=pred_graph)
+
+    print(loss_value)

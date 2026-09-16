@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -462,10 +462,11 @@ document.write(`
 <h1>im2sim.losses.AspectRatioLoss<a class="headerlink" href="#im2sim-losses-aspectratioloss" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.losses.AspectRatioLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AspectRatioLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supervised</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/losses/mesh.py#L108-L130"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.AspectRatioLoss" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AspectRatioLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supervised</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/losses/mesh.py#L149-L198"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.losses.AspectRatioLoss" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MeshLoss</span></code></p>
-<p>Computes the aspect ratio loss for tetrahedral meshes.
-The loss is calculated as the squared difference between the aspect ratios of the true and predicted graphs, with a ReLU activation to ensure non-negativity.</p>
+<p>Computes the aspect ratio loss for tetrahedral meshes, which is a measure of skewness or distortion of the tetrahedra in the mesh.
+The aspect ratio is defined as the mean ratio of the maximum edge length to the mean edge length of all tetrahedra in the mesh.</p>
+<p>The loss is calculated as the squared difference between the aspect ratios of the true and predicted graphs, with a ReLU activation to ensure non-negativity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -478,6 +479,17 @@ If <a class="reference external" href="https://docs.python.org/3/library/constan
 </ul>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<p>For supervised training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">skewness_criterion</span> <span class="o">=</span> <span class="n">AspectRatioLoss</span><span class="p">(</span><span class="n">cell_key</span> <span class="o">=</span> <span class="s1">&#39;volume_cell_index&#39;</span><span class="p">)</span>
+<span class="n">skew_loss</span> <span class="o">=</span> <span class="n">skewness_criterion</span><span class="p">(</span><span class="n">true_graph</span><span class="p">,</span> <span class="n">pred_graph</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For unsupervised training:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">skewness_criterion</span> <span class="o">=</span> <span class="n">AspectRatioLoss</span><span class="p">(</span><span class="n">cell_key</span> <span class="o">=</span> <span class="s1">&#39;volume_cell_index&#39;</span><span class="p">,</span> <span class="n">supervised</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">skew_loss</span> <span class="o">=</span> <span class="n">skewness_criterion</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">pred_graph</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 

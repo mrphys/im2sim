@@ -224,6 +224,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
@@ -231,7 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../losses/edge_length_deviation_loss.html">im2sim.losses.edge_length_deviation_loss</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -478,7 +478,7 @@ document.write(`
 <h1>im2sim.configs.UNetConfig<a class="headerlink" href="#im2sim-configs-unetconfig" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UNetConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_connection_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fusion_type='concat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L8-L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UNetConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filters=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_connection_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_block_cfg=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_blocks_per_level=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fusion_type='concat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L8-L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></p>
 <p>Configuration class for the UNet model (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/models/UNet">im2sim.models.UNet</a>).</p>
 <dl class="field-list simple">
@@ -606,7 +606,7 @@ For example, to convert the convolutional blocks to use depthwise separable conv
 <p>Refer to the methods below to see all available transformations that can be applied to the configuration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_conv1_residual">
-<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L262-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L262-L281"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
 <dd><p>Apply a residual connection to the first convolutional layer in all encoder blocks in the UNet configuration.</p>
 <p>The residual connection type is set to “add” for all encoder blocks,
 which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
@@ -620,13 +620,13 @@ This is because a residual connection requires at least one layer to add to the 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_eca">
-<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L380-L387"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_eca" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L380-L387"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_eca" title="Link to this definition">#</a></dt>
 <dd><p>Apply an Efficient Channel Attention (ECA) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/EfficientChannelAttn">im2sim.layers.EfficientChannelAttn</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_input_residual">
-<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L239-L260"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_input_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L239-L260"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_input_residual" title="Link to this definition">#</a></dt>
 <dd><p>Apply a residual connection to all encoder blocks in the UNet configuration.</p>
 <p>The residual connection type is set to “add” for all encoder blocks,
 which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
@@ -639,25 +639,25 @@ This can help with gradient flow and improve training stability.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_se">
-<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L389-L396"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_se" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L389-L396"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_se" title="Link to this definition">#</a></dt>
 <dd><p>Apply a Squeeze-and-Excitation (SE) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/SqueezeExcite">im2sim.layers.SqueezeExcite</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_skip_eca">
-<span class="sig-name descname"><span class="pre">add_skip_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L398-L403"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_eca" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_skip_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L398-L403"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_eca" title="Link to this definition">#</a></dt>
 <dd><p>Apply an Efficient Channel Attention (ECA) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/EfficientChannelAttn">im2sim.layers.EfficientChannelAttn</a>) preset to all skips in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.add_skip_se">
-<span class="sig-name descname"><span class="pre">add_skip_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L405-L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_se" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_skip_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L405-L410"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.add_skip_se" title="Link to this definition">#</a></dt>
 <dd><p>Apply a Squeeze-and-Excitation (SE) (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/SqueezeExcite">im2sim.layers.SqueezeExcite</a>) preset to all skips in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.dilate_bottleneck">
-<span class="sig-name descname"><span class="pre">dilate_bottleneck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L283-L294"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.dilate_bottleneck" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dilate_bottleneck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L283-L294"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.dilate_bottleneck" title="Link to this definition">#</a></dt>
 <dd><p>Apply dilated convolutions to the bottleneck (lowest resolution) block in the UNet configuration.</p>
 <p>This change modifies the last encoder block to use dilated convolutions, which can help increase the receptive field without increasing the number of parameters.</p>
 <dl class="field-list simple">
@@ -669,21 +669,21 @@ This can help with gradient flow and improve training stability.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.double_bottleneck">
-<span class="sig-name descname"><span class="pre">double_bottleneck</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L296-L303"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.double_bottleneck" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">double_bottleneck</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L296-L303"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.double_bottleneck" title="Link to this definition">#</a></dt>
 <dd><p>Apply a double bottleneck configuration to the UNet.</p>
 <p>This change modifies the last encoder block to have two convolutional layers instead of one, which can help increase the capacity of the model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.multiclass_segmentation_mode">
-<span class="sig-name descname"><span class="pre">multiclass_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L340-L349"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">multiclass_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L340-L349"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.multiclass_segmentation_mode" title="Link to this definition">#</a></dt>
 <dd><p>Apply a multi-class segmentation preset to all blocks in the UNet configuration.</p>
 <p>Use this preset for multi-class segmentation tasks, where the output is expected to be a probability map for multiple classes.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.reconstruction_mode">
-<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L305-L319"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reconstruction_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L305-L319"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.reconstruction_mode" title="Link to this definition">#</a></dt>
 <dd><p>Apply a reconstruction preset to all blocks in the UNet configuration.</p>
 <p>This preset is typically used for image reconstruction or superresolution tasks,
 where the output is expected to be a continuous value (e.g., pixel intensity).</p>
@@ -691,26 +691,26 @@ where the output is expected to be a continuous value (e.g., pixel intensity).</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.single_class_segmentation_mode">
-<span class="sig-name descname"><span class="pre">single_class_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L329-L338"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">single_class_segmentation_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L329-L338"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.single_class_segmentation_mode" title="Link to this definition">#</a></dt>
 <dd><p>Apply a single-class segmentation preset to all blocks in the UNet configuration.</p>
 <p>Use this preset for binary segmentation tasks, where the output is expected to be a probability map for a single class.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_depthwise_separable">
-<span class="sig-name descname"><span class="pre">to_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L351-L358"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_depthwise_separable" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L351-L358"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_depthwise_separable" title="Link to this definition">#</a></dt>
 <dd><p>Apply a depthwise separable convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/DepthwiseSeparableConv">im2sim.layers.DepthwiseSeparableConv</a>) preset to all encoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_ghost_depthwise">
-<span class="sig-name descname"><span class="pre">to_ghost_depthwise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L360-L367"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_ghost_depthwise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L360-L367"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise" title="Link to this definition">#</a></dt>
 <dd><p>Apply a ghost depthwise convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/GhostConv">im2sim.layers.GhostConv</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.UNetConfig.to_ghost_depthwise_separable">
-<span class="sig-name descname"><span class="pre">to_ghost_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main/im2sim/im2sim/im2sim/configs/unet.py#L369-L378"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_ghost_depthwise_separable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/unet.py#L369-L378"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.UNetConfig.to_ghost_depthwise_separable" title="Link to this definition">#</a></dt>
 <dd><p>Apply a ghost depthwise separable convolution (see <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/GhostConv">im2sim.layers.GhostConv</a>) preset to all encoder and decoder blocks in the UNet configuration.</p>
 </dd></dl>
 

@@ -1,3 +1,20 @@
+# ==============================================================================
+# Copyright 2026 University College London.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
+
 from dataclasses import dataclass, field
 
 from im2sim.configs.core import Config, LayerConfig, register_config
@@ -20,6 +37,10 @@ class GraphConvBlockConfig(Config):
 
         depth (int):
             The number of convolutional layers in the block. Default is `1`.
+
+        hidden_channels(int):
+            The number of channels in the hidden layers. 
+            Default is `None`, which means that the number of channels will be the same as `in_channels` for all layers except the last one, which will have `out_channels`.
 
         activation (str | None):
             The activation function to use after each convolutional layer. Default is `"ReLU"`.
@@ -121,6 +142,7 @@ class GraphConvBlockConfig(Config):
     """
 
     depth: int = 1
+    hidden_channels: int | None = None
     activation: str | None = "ReLU"
     out_activation: str | None = None
     conv_cfg: LayerConfig = field(default_factory=lambda: LayerConfig(name="GCNConv", kwargs={}))

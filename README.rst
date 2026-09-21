@@ -15,7 +15,7 @@ This includes two main components:
    `VTK <https://vtk.org>`_ and
    `PyVista <https://docs.pyvista.org/index.html>`_.
 
-## Features
+`Features`
 
 * Image and Mesh Data Processing
 * DL models for medical imaging applications
@@ -24,7 +24,7 @@ This includes two main components:
 * Building blocks for custom DL models
 * Visualisation utilities
 
-## Installation
+`Installation`
 
 1. Install the CUDA dependencies:
 
@@ -38,5 +38,9 @@ This includes two main components:
    .. code-block:: bash
 
       pip install git+https://github.com/mrphys/im2sim.git
+
+`Documentation`
+
+https://mrphys.github.io/im2sim/
 
 .. end-intro

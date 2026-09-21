@@ -76,14 +76,15 @@ class DefaultGraphNorm(torch.nn.Module):
         """
         if x.dim() != 2:
             raise RuntimeError(f"Expected x.dim()==2, got {x.dim()}")
-        shape = x.shape
+        C = x.shape[1]
 
         if batch is None:
             batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
 
+        out = torch.zeros_like(x)
         for b in torch.unique(batch):
-            x[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(shape)
-        return x
+            out[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(-1, C)
+        return out
 
 
 @register_graph_layer(name="GraphDropout")
@@ -201,12 +202,13 @@ class GraphECA(torch.nn.Module):
         if batch is None:
             batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
 
+        out = torch.zeros_like(x)
         for b in torch.unique(batch):
-            x[batch == b] = (
+            out[batch == b] = (
                 self.eca(x[batch == b].permute(1, 0).unsqueeze(0)).squeeze(0).permute(1, 0)
             )
 
-        return x
+        return out
 
 
 @register_pyg_layer(name="SqueezeExcite")
@@ -234,9 +236,10 @@ class GraphSE(torch.nn.Module):
         if batch is None:
             batch = torch.zeros(x.shape[0], dtype=torch.long, device=x.device)
 
+        out = torch.zeros_like(x)
         for b in torch.unique(batch):
-            x[batch == b] = (
+            out[batch == b] = (
                 self.se(x[batch == b].permute(1, 0).unsqueeze(0)).squeeze(0).permute(1, 0)
             )
 
-        return x
+        return out

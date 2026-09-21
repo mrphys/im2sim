@@ -14,7 +14,6 @@
 # limitations under the License.
 # ==============================================================================
 
-
 import inspect
 
 import torch
@@ -191,11 +190,11 @@ class Im2SimGen2(Im2SimBase):
         )
 
         in_graph_channels = graph_channels + projection_channels
-        if decoder_cfg.pred_feature_key != "x":
-            if decoder_cfg.pred_feature_channels is not None:
-                in_graph_channels += len(decoder_cfg.pred_feature_channels)
-            else:
-                in_graph_channels += out_channels
+        # if decoder_cfg.pred_feature_key != "x":
+        #     if decoder_cfg.pred_feature_channels is not None:
+        #         in_graph_channels += len(decoder_cfg.pred_feature_channels)
+        #     else:
+        #         in_graph_channels += out_channels
 
         graph_decoder = SimpleGraphDecoder(
             in_channels=in_graph_channels, out_channels=out_channels, cfg=decoder_cfg
@@ -215,6 +214,8 @@ class Im2SimGen2(Im2SimBase):
 
 
 if __name__ == "__main__":
+
+    
     device = torch.device("cpu")
     # Example usage
     encoder_cfg = HalfUNetConfig()

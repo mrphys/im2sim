@@ -68,6 +68,8 @@ class _GraphFeatureWrapper(torch.nn.Module, ABC):
     def __init__(
         self,
         module: torch.nn.Module,
+        in_channels: int,
+        out_channels: int,
         pred_feature_key: str = "x",
         pred_feature_channels: list[int] | None = None,
         include_ids: list[str] | None = None,
@@ -82,6 +84,8 @@ class _GraphFeatureWrapper(torch.nn.Module, ABC):
             )
 
         self.module = module
+        self.in_channels = in_channels
+        self.out_channels = out_channels
         self.pred_feature_key = pred_feature_key
         self.pred_feature_channels = pred_feature_channels
         self.include_ids = include_ids
@@ -110,20 +114,20 @@ class _GraphFeatureWrapper(torch.nn.Module, ABC):
         # Create the prediction feature if it does not already exist.
         if self.pred_feature_key not in graph:
             graph[self.pred_feature_key] = torch.zeros(
-                (graph.num_nodes, self.module.out_channels),
+                (graph.num_nodes, self.out_channels),
                 device=graph.x.device,
                 dtype=graph.x.dtype,
             )
 
             out_graph[self.pred_feature_key] = torch.zeros(
-                (graph.num_nodes, self.module.out_channels),
+                (graph.num_nodes, self.out_channels),
                 device=graph.x.device,
                 dtype=graph.x.dtype,
             )
 
         # Determine which prediction channels are being operated on.
         if self.pred_feature_channels is None:
-            pred_feature_channels = list(range(self.module.out_channels))
+            pred_feature_channels = list(range(self.out_channels))
         else:
             pred_feature_channels = self.pred_feature_channels
 

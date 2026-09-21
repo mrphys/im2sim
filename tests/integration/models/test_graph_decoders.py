@@ -160,7 +160,7 @@ def test_predict_selected_channels(graph):
     )
 
     decoder = SimpleGraphDecoder(
-        in_channels=6,
+        in_channels=4,
         out_channels=2,
         cfg=decoder_cfg,
     )
@@ -196,7 +196,7 @@ def test_update_selected_channels(graph):
     )
 
     decoder = SimpleGraphDecoder(
-        in_channels=6,
+        in_channels=4,
         out_channels=2,
         cfg=decoder_cfg,
     )
@@ -336,7 +336,7 @@ def test_non_x_prediction_key(graph):
 
     # x (4) + pred (2) are fed to the GNN.
     decoder = SimpleGraphDecoder(
-        in_channels=6,
+        in_channels=4,
         out_channels=2,
         cfg=decoder_cfg,
     )
@@ -367,7 +367,7 @@ def test_non_x_update_key(graph):
     )
 
     decoder = SimpleGraphDecoder(
-        in_channels=6,
+        in_channels=4,
         out_channels=2,
         cfg=decoder_cfg,
     )

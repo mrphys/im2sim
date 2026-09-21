@@ -45,11 +45,32 @@ class SimpleGraphDecoder(torch.nn.Module):
 
     def __init__(self, in_channels: int, out_channels: int, cfg: SimpleGraphDecoderConfig):
         super().__init__()
-        block = GraphConvBlock(
-            in_channels=in_channels, out_channels=out_channels, cfg=cfg.block_cfg
+
+        in_channels += out_channels if cfg.pred_feature_key != 'x' else 0
+
+        hidden_channels = cfg.block_cfg.hidden_channels if cfg.block_cfg.hidden_channels is not None else in_channels
+
+        process_blocks = [
+                GraphConvBlock(
+                    in_channels=in_channels if i == 0 else hidden_channels,
+                    out_channels=hidden_channels,
+                    cfg=cfg.block_cfg,
+                )
+                for i in range(cfg.n_blocks)
+            ]
+
+        out_conv = GraphConvBlock(
+            in_channels=hidden_channels,
+            out_channels=out_channels,
+            cfg=cfg.block_cfg.to_single_conv(),
         )
-        self.decoder_block = GNN_PROTOCOLS[cfg.protocol](
-            module=block,
+
+        module = torch.nn.Sequential(*process_blocks, out_conv)
+
+        self.decoder = GNN_PROTOCOLS[cfg.protocol](
+            module=module,
+            in_channels=in_channels,
+            out_channels=out_channels,
             pred_feature_key=cfg.pred_feature_key,
             pred_feature_channels=cfg.pred_feature_channels,
             include_ids=cfg.include_ids,
@@ -59,12 +80,18 @@ class SimpleGraphDecoder(torch.nn.Module):
     def forward(
         self, in_graph: pyg.data.Data, projected_features: torch.Tensor = None
     ) -> pyg.data.Data:
+
         graph = in_graph.clone()
         init_channels = graph.x.shape[-1]
+
         if projected_features is not None:
             # Concatenate the image features to the node features
             graph.x = torch.cat([graph.x, projected_features], dim=-1)
-        # Apply the graph convolution block
-        graph = self.decoder_block(graph)
-        graph.x = graph.x[:, :init_channels]  # Keep only the original number of channels
+
+        # Apply the process blocks
+        graph = self.decoder(graph)
+
+        # Keep only the original number of channels
+        graph.x = graph.x[:, :init_channels]
+
         return graph

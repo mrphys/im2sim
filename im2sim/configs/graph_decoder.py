@@ -26,6 +26,9 @@ class SimpleGraphDecoderConfig:
     Configuration class for defining the parameters of a graph decoder.
 
     Args:
+        n_blocks (int):
+            Number of graph convolution blocks to use in the decoder. Default is 1.
+
         block_cfg (GraphConvBlockConfig):
             Configuration for the graph convolution block.
 
@@ -45,6 +48,7 @@ class SimpleGraphDecoderConfig:
             List of graph attributes that contain node IDs to exclude from the prediction. If `None`, no nodes will be excluded. Default is `None`.
     """
 
+    n_blocks: int = 1
     block_cfg: GraphConvBlockConfig = field(default_factory=GraphConvBlockConfig)
     protocol: str = "update"
     pred_feature_key: str = "x"

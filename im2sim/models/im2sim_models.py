@@ -214,8 +214,6 @@ class Im2SimGen2(Im2SimBase):
 
 
 if __name__ == "__main__":
-
-    
     device = torch.device("cpu")
     # Example usage
     encoder_cfg = HalfUNetConfig()

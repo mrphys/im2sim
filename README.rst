@@ -1,4 +1,10 @@
-# im2sim
+IM2SIM
+======
+
+`For documentation, tutorials and examples, please visit`
+
+https://mrphys.github.io/im2sim/
+
 
 .. start-intro
 
@@ -15,6 +21,7 @@ This includes two main components:
    `VTK <https://vtk.org>`_ and
    `PyVista <https://docs.pyvista.org/index.html>`_.
 
+
 `Features`
 
 * Image and Mesh Data Processing
@@ -26,21 +33,23 @@ This includes two main components:
 
 `Installation`
 
-1. Install the CUDA dependencies:
-
-   .. code-block:: bash
-
-      pip install torch-scatter torch-cluster 
-      -f https://data.pyg.org/whl/torch-2.3.1+cu121.html
-
-2. Install the repository:
+To install the base repository for imaging tasks, run the following command:
 
    .. code-block:: bash
 
       pip install git+https://github.com/mrphys/im2sim.git
 
-`Documentation`
+To install with optional mesh dependencies, run:
 
-https://mrphys.github.io/im2sim/
+   .. code-block:: bash
+
+      pip install "im2sim[mesh] @ git+https://github.com/mrphys/im2sim.git"
+
+To install with Pytorch Geometric functionality required for fast GNN ops, run:
+
+   .. code-block:: bash 
+
+      pip install git+https://github.com/mrphys/im2sim.git
+      im2sim-install-pyg-addons
 
 .. end-intro

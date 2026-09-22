@@ -46,18 +46,22 @@ class SimpleGraphDecoder(torch.nn.Module):
     def __init__(self, in_channels: int, out_channels: int, cfg: SimpleGraphDecoderConfig):
         super().__init__()
 
-        in_channels += out_channels if cfg.pred_feature_key != 'x' else 0
+        in_channels += out_channels if cfg.pred_feature_key != "x" else 0
 
-        hidden_channels = cfg.block_cfg.hidden_channels if cfg.block_cfg.hidden_channels is not None else in_channels
+        hidden_channels = (
+            cfg.block_cfg.hidden_channels
+            if cfg.block_cfg.hidden_channels is not None
+            else in_channels
+        )
 
         process_blocks = [
-                GraphConvBlock(
-                    in_channels=in_channels if i == 0 else hidden_channels,
-                    out_channels=hidden_channels,
-                    cfg=cfg.block_cfg,
-                )
-                for i in range(cfg.n_blocks)
-            ]
+            GraphConvBlock(
+                in_channels=in_channels if i == 0 else hidden_channels,
+                out_channels=hidden_channels,
+                cfg=cfg.block_cfg,
+            )
+            for i in range(cfg.n_blocks)
+        ]
 
         out_conv = GraphConvBlock(
             in_channels=hidden_channels,

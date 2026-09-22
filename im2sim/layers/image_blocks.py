@@ -193,17 +193,17 @@ class ImageConvBlock(torch.nn.Module):
         """ """
         outputs = [x]
         for i, layer in enumerate(self.layers):
-            if i in self.residual_connections:
-                for src in self.residual_connections[i]:
-                    x = apply_residual_connection(
-                        outputs[src], x, connection_type=self.residual_type
-                    )
-
+            x = self._check_and_apply_residual(x, i, outputs)
             x = layer(x)
-
             outputs.append(x)
-
+        x = self._check_and_apply_residual(x, self.depth, outputs)
         x = self.out_activation(x)
+        return x
+
+    def _check_and_apply_residual(self, x, i, outputs):
+        if i in self.residual_connections:
+            for src in self.residual_connections[i]:
+                x = apply_residual_connection(outputs[src], x, connection_type=self.residual_type)
         return x
 
 

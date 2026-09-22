@@ -51,7 +51,6 @@ class GraphConvBlock(torch.nn.Module):
 
             cfg = GraphConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
             model = GraphConvBlock(
-                   rank=2,
                    in_channels=32,
                    out_channels=32,
                    cfg=cfg,
@@ -177,19 +176,22 @@ class GraphConvBlock(torch.nn.Module):
         """ """
         graph = in_graph.clone()
         outputs = [graph.x]
-        for i, layer in enumerate(self.layers):
-            if i in self.residual_connections:
-                for src in self.residual_connections[i]:
-                    graph.x = apply_residual_connection(
-                        outputs[src], graph.x, connection_type=self.residual_type
-                    )
 
+        for i, layer in enumerate(self.layers):
+            graph.x = self._check_and_apply_residual(graph.x, i, outputs)
             graph = layer(graph)
             outputs.append(graph.x)
 
+        graph.x = self._check_and_apply_residual(graph.x, self.depth, outputs)
         graph = self.out_activation(graph)
         graph.edge_index = in_graph.edge_index
         return graph
+
+    def _check_and_apply_residual(self, x, i, outputs):
+        if i in self.residual_connections:
+            for src in self.residual_connections[i]:
+                x = apply_residual_connection(outputs[src], x, connection_type=self.residual_type)
+        return x
 
 
 if __name__ == "__main__":

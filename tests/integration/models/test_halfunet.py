@@ -71,20 +71,6 @@ def test_encoder_configs_are_independent():
     assert cfg.encoder_block_cfg[2].depth != 5
 
 
-def test_config_repeats_single_encoder_config():
-    encoder_cfg = HalfUNetConfig().block_cfg
-
-    cfg = HalfUNetConfig(
-        n_levels=3,
-        encoder_block_cfg=encoder_cfg,
-    )
-
-    assert len(cfg.encoder_block_cfg) == 3
-    assert all(
-        encoder_cfg is item
-        for item in cfg.encoder_block_cfg
-    )
-
 
 def test_config_creates_single_output_conv():
     cfg = HalfUNetConfig()

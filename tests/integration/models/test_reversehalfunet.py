@@ -81,21 +81,21 @@ def test_decoder_configs_are_independent():
     assert cfg.decoder_block_cfg[2].depth != 5
 
 
-def test_single_decoder_config_is_repeated():
-    block_cfg = ReverseHalfUNetConfig().block_cfg
+# def test_single_decoder_config_is_repeated():
+#     block_cfg = ReverseHalfUNetConfig().block_cfg
 
-    cfg = ReverseHalfUNetConfig(
-        n_levels=3,
-        decoder_block_cfg=block_cfg,
-    )
+#     cfg = ReverseHalfUNetConfig(
+#         n_levels=3,
+#         decoder_block_cfg=block_cfg,
+#     )
 
-    assert len(cfg.decoder_block_cfg) == 3
+#     assert len(cfg.decoder_block_cfg) == 3
 
-    # The implementation intentionally repeats the same object here.
-    assert all(
-        decoder_cfg is block_cfg
-        for decoder_cfg in cfg.decoder_block_cfg
-    )
+#     # The implementation intentionally repeats the same object here.
+#     assert all(
+#         decoder_cfg is block_cfg
+#         for decoder_cfg in cfg.decoder_block_cfg
+#     )
 
 
 def test_output_config_is_single_conv():

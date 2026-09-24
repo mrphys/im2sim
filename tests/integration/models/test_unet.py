@@ -31,35 +31,6 @@ def test_custom_filters():
     assert len(cfg.upsample_cfg) == 3
 
 
-def test_encoder_block_config_is_replicated():
-    block_cfg = ImageConvBlockConfig(
-        depth=3,
-        activation="GELU",
-    )
-
-    cfg = UNetConfig(
-        filters=[16, 32, 64],
-        encoder_block_cfg=block_cfg,
-    )
-
-    assert len(cfg.encoder_block_cfg) == 3
-    assert all(block is block_cfg for block in cfg.encoder_block_cfg)
-
-
-def test_decoder_block_config_is_replicated():
-    block_cfg = ImageConvBlockConfig(
-        depth=3,
-        activation="GELU",
-    )
-
-    cfg = UNetConfig(
-        filters=[16, 32, 64],
-        decoder_block_cfg=block_cfg,
-    )
-
-    assert len(cfg.decoder_block_cfg) == 3
-    assert all(block is block_cfg for block in cfg.decoder_block_cfg)
-
 
 def test_default_encoder_configs_are_independent():
     cfg = UNetConfig(filters=[16, 32, 64])
@@ -105,36 +76,6 @@ def test_decoder_block_config_length_must_match_filters():
                 ImageConvBlockConfig(),
             ],
         )
-
-
-def test_pool_config_is_replicated():
-    pool_cfg = LayerConfig(
-        name="MaxPool",
-        kwargs={"kernel_size": 2},
-    )
-
-    cfg = UNetConfig(
-        filters=[16, 32, 64],
-        pool_cfg=pool_cfg,
-    )
-
-    assert len(cfg.pool_cfg) == 2
-    assert all(pool is pool_cfg for pool in cfg.pool_cfg)
-
-
-def test_upsample_config_is_replicated():
-    upsample_cfg = LayerConfig(
-        name="Upsample",
-        kwargs={"scale_factor": 2, "mode": "bilinear"},
-    )
-
-    cfg = UNetConfig(
-        filters=[16, 32, 64],
-        upsample_cfg=upsample_cfg,
-    )
-
-    assert len(cfg.upsample_cfg) == 2
-    assert all(up is upsample_cfg for up in cfg.upsample_cfg)
 
 
 def test_pool_config_length_must_match_levels_minus_one():

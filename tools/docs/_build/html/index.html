@@ -31,7 +31,8 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -43,6 +44,8 @@
     <script src="_static/documentation_options.js?v=a1637f0b"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -51,7 +54,7 @@
     <link rel="icon" href="_static/im2sim_logo.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="TensorFlow MRI tutorials" href="tutorials.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -165,14 +168,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -226,7 +223,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -242,7 +238,6 @@
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -272,12 +267,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -299,7 +292,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim/utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -479,7 +471,7 @@ digital twins based on medical images.</p>
 <a class="reference external" href="https://vtk.org">VTK</a> and
 <a class="reference external" href="https://docs.pyvista.org/index.html">PyVista</a>.</p></li>
 </ol>
-<p>## Features</p>
+<p><cite>Features</cite></p>
 <ul class="simple">
 <li><p>Image and Mesh Data Processing</p></li>
 <li><p>DL models for medical imaging applications</p></li>
@@ -488,20 +480,26 @@ digital twins based on medical images.</p>
 <li><p>Building blocks for custom DL models</p></li>
 <li><p>Visualisation utilities</p></li>
 </ul>
-<p>## Installation</p>
-<ol class="arabic">
-<li><p>Install the CUDA dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torch-scatter<span class="w"> </span>torch-cluster
--f<span class="w"> </span>https://data.pyg.org/whl/torch-2.3.1+cu121.html
+<p><cite>Installation</cite></p>
+<p>To install the base repository for imaging tasks, run the following command:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/mrphys/im2sim.git
 </pre></div>
 </div>
-</li>
-<li><p>Install the repository:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/mrphys/im2sim.git
+</div></blockquote>
+<p>To install with optional mesh dependencies, run:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;im2sim[mesh] @ git+https://github.com/mrphys/im2sim.git&quot;</span>
 </pre></div>
 </div>
-</li>
-</ol>
+</div></blockquote>
+<p>To install with Pytorch Geometric functionality required for fast GNN ops, run:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/mrphys/im2sim.git
+im2sim-install-pyg-addons
+</pre></div>
+</div>
+</div></blockquote>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -520,11 +518,11 @@ digital twins based on medical images.</p>
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="tutorials.html"
+       href="tutorials/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">TensorFlow MRI tutorials</p>
+        <p class="prev-next-title">Tutorials</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

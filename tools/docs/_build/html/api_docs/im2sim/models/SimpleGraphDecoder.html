@@ -30,7 +30,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -42,6 +43,8 @@
     <script src="../../../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/models/SimpleGraphDecoder';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/models/SimpleGraphDecoder.html" />
@@ -161,14 +164,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -222,7 +219,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="../losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -238,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -268,12 +263,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="../plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="../transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -295,7 +288,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -479,7 +471,7 @@ document.write(`
 <h1>im2sim.models.SimpleGraphDecoder<a class="headerlink" href="#im2sim-models-simplegraphdecoder" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.models.SimpleGraphDecoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SimpleGraphDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/graph_decoders.py#L26-L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.SimpleGraphDecoder" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SimpleGraphDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/graph_decoders.py#L26-L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.SimpleGraphDecoder" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>A graph decoder that takes a graph and image features and produces an updated graph.</p>
 <dl class="field-list simple">
@@ -497,7 +489,7 @@ This should match the number of channels in <code class="docutils literal notran
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.models.SimpleGraphDecoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projected_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/graph_decoders.py#L59-L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.SimpleGraphDecoder.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projected_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/graph_decoders.py#L84-L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.SimpleGraphDecoder.forward" title="Link to this definition">#</a></dt>
 <dd><p>Define the computation performed at every call.</p>
 <p>Should be overridden by all subclasses.</p>
 <div class="admonition note">

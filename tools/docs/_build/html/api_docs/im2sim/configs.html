@@ -30,7 +30,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -42,6 +43,8 @@
     <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/configs';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/configs.html" />
@@ -161,14 +164,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -222,7 +219,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -238,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -268,12 +263,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -295,7 +288,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -465,9 +457,15 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.configs</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-hierarchy">Configuration hierarchy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-model-architectures">Configuring model architectures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-configurations">Modifying configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-presets">Configuration presets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-residual-connections">Working with residual connections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-modifications-across-a-model">Applying modifications across a model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading-configurations">Saving and loading Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -522,44 +520,320 @@ document.write(`
 </div>
 </section>
 </section>
-<section id="id1">
-<h1>im2sim.configs<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<section id="module-0">
-<span id="id2"></span><h2>Classes<a class="headerlink" href="#module-0" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="configs/GraphConvBlockConfig.html#im2sim.configs.GraphConvBlockConfig" title="im2sim.configs.GraphConvBlockConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvBlockConfig</span></code></a></p></td>
-<td><p>Configuration class for defining the parameters of a graph convolutional block.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig" title="im2sim.configs.HalfUNetConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HalfUNetConfig</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageConvBlockConfig</span></code></a></p></td>
-<td><p>Configuration class for defining the parameters of an image convolutional block.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="configs/LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LayerConfig</span></code></a></p></td>
-<td><p>Configuration for a single layer/module.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="configs/ReverseHalfUNetConfig.html#im2sim.configs.ReverseHalfUNetConfig" title="im2sim.configs.ReverseHalfUNetConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReverseHalfUNetConfig</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="configs/SimpleGraphDecoderConfig.html#im2sim.configs.SimpleGraphDecoderConfig" title="im2sim.configs.SimpleGraphDecoderConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleGraphDecoderConfig</span></code></a></p></td>
-<td><p>Configuration class for defining the parameters of a graph decoder.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="configs/UNetConfig.html#im2sim.configs.UNetConfig" title="im2sim.configs.UNetConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNetConfig</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="guide">
+<h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">configs</span></code> provides a structured configuration system for defining and customising
+the components of <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> models.</p>
+<p>Configurations are implemented as dataclasses and can be composed hierarchically.
+For example, a model configuration can contain configurations for its convolutional
+blocks, which in turn contain configurations for individual layers. This makes it
+possible to customise a model at different levels of detail without having to
+construct the underlying PyTorch modules manually.</p>
+<p>The configuration system also provides utilities for:</p>
+<ul class="simple">
+<li><p>modifying existing configurations;</p></li>
+<li><p>applying common configuration presets;</p></li>
+<li><p>recursively serialising configurations; and</p></li>
+<li><p>saving and loading configurations from files.</p></li>
+</ul>
+<section id="configuration-hierarchy">
+<h2>Configuration hierarchy<a class="headerlink" href="#configuration-hierarchy" title="Link to this heading">#</a></h2>
+<p>The configuration classes are designed to be composed from general-purpose
+configurations into increasingly specialised components.</p>
+<p>At the lowest level, <a class="reference internal" href="configs/LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LayerConfig</span></code></a> describes an individual layer or module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">LayerConfig</span>
+
+<span class="n">conv_cfg</span> <span class="o">=</span> <span class="n">LayerConfig</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">LayerConfig</span></code> specifies the name of the layer and the keyword arguments
+that should be passed to it when the layer is constructed.</p>
+<p>Higher-level configurations can then use <code class="docutils literal notranslate"><span class="pre">LayerConfig</span></code> objects to describe
+their constituent layers. For example, an <a class="reference internal" href="configs/ImageConvBlockConfig.html#im2sim.configs.ImageConvBlockConfig" title="im2sim.configs.ImageConvBlockConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageConvBlockConfig</span></code></a> can
+specify the convolution, normalisation, dropout, and attention layers within
+a convolutional block:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlockConfig</span><span class="p">,</span> <span class="n">LayerConfig</span>
+
+<span class="n">block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span>
+    <span class="n">conv_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">norm_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BatchNorm&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;affine&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">dropout_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dropout&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This hierarchical structure allows configurations to be reused across
+different parts of a model.</p>
+</section>
+<section id="configuring-model-architectures">
+<h2>Configuring model architectures<a class="headerlink" href="#configuring-model-architectures" title="Link to this heading">#</a></h2>
+<p>Complete model configurations can be built by combining these lower-level
+configurations. For example, a <a class="reference internal" href="configs/UNetConfig.html#im2sim.configs.UNetConfig" title="im2sim.configs.UNetConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">UNetConfig</span></code></a> controls the architecture
+of a U-Net while allowing the convolutional blocks to be customised:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlockConfig</span><span class="p">,</span> <span class="n">LayerConfig</span><span class="p">,</span> <span class="n">UNetConfig</span>
+
+<span class="n">block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span>
+    <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">,</span>
+    <span class="n">conv_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">norm_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;BatchNorm&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;affine&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">dropout_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dropout&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">attn_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SqueezeExcite&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+    <span class="n">pool_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MaxPool&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">upsample_cfg</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Upsample&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;scale_factor&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">block_cfg</span><span class="o">=</span><span class="n">block_cfg</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
 </div>
 </section>
-<section id="id6">
-<h2>Functions<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
+<section id="modifying-configurations">
+<h2>Modifying configurations<a class="headerlink" href="#modifying-configurations" title="Link to this heading">#</a></h2>
+<p>Configurations can be modified after they have been created. The
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Config.mod()</span></code> method creates a modified copy of a configuration while
+leaving the original configuration unchanged.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">mini_block_cfg</span> <span class="o">=</span> <span class="n">block_cfg</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
 </div>
+<p>This is particularly useful when several configurations share a common
+starting point.</p>
+<p>The same approach can be used with model configurations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span>
+    <span class="n">encoder_block_cfg</span><span class="o">=</span><span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">decoder_block_cfg</span><span class="o">=</span><span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-presets">
+<h2>Configuration presets<a class="headerlink" href="#configuration-presets" title="Link to this heading">#</a></h2>
+<p>Many configurations provide methods for applying common architectural
+modifications without manually changing individual fields.</p>
+<p>For example, convolutional blocks can be configured for reconstruction or
+segmentation tasks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">reconstruction_mode</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For a U-Net, task-specific presets can be applied to the complete
+configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">single_class_segmentation_mode</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For multi-class segmentation, the corresponding preset can be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">multiclass_segmentation_mode</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Other presets can modify the architecture itself. For example, depthwise
+separable convolutions and residual connections can be enabled together:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">to_depthwise_separable</span><span class="p">()</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_input_residual</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>These methods can also be chained:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">UNetConfig</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">to_depthwise_separable</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">add_input_residual</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Available presets include modifications to convolution types, residual
+connections, dilation, attention mechanisms, and task-specific
+configurations. Refer to the individual configuration classes for the full
+set of available transformations.</p>
+</section>
+<section id="working-with-residual-connections">
+<h2>Working with residual connections<a class="headerlink" href="#working-with-residual-connections" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ImageConvBlockConfig</span></code>  and <code class="docutils literal notranslate"><span class="pre">GraphConvBlockConfig</span></code> provides utilities for configuring residual
+connections within convolutional blocks.</p>
+<p>For example, an input-to-output residual connection can be added with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_input_residual</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Residual connections can also use concatenation rather than addition:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_input_concat_residual</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Alternatively, a residual connection can be added from the first convolution
+to the final convolution:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_conv1_residual</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Residual connections can also be specified directly using
+<cite>residual_connections</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">residual_connections</span><span class="o">=</span><span class="p">{</span><span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]},</span>
+    <span class="n">residual_type</span><span class="o">=</span><span class="s2">&quot;concat&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The keys identify target layers and the values identify the source layers.
+Layer <cite>0</cite> represents the input to the block.
+Layer <cite>1</cite> represents the input to the first convolution, and so on.</p>
+<p>To add a residual connection from the input to the output of the final convolution, the following configuration can be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">residual_connections</span><span class="o">=</span><span class="p">{</span><span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]},</span>
+    <span class="n">residual_type</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="applying-modifications-across-a-model">
+<h2>Applying modifications across a model<a class="headerlink" href="#applying-modifications-across-a-model" title="Link to this heading">#</a></h2>
+<p>Because model configurations contain nested configuration objects, a
+modification can be propagated to multiple components.</p>
+<p>For example, encoder and decoder blocks can be created from a common base
+configuration and modified independently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">block_cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+    <span class="n">out_activation</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">encoder_block_cfg</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">block_cfg</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">decoder_block_cfg</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">block_cfg</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+    <span class="n">encoder_block_cfg</span><span class="o">=</span><span class="n">encoder_block_cfg</span><span class="p">,</span>
+    <span class="n">decoder_block_cfg</span><span class="o">=</span><span class="n">decoder_block_cfg</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This approach is useful when a model requires consistent configuration across
+multiple levels while retaining control over individual blocks.</p>
+</section>
+<section id="saving-and-loading-configurations">
+<h2>Saving and loading Configurations<a class="headerlink" href="#saving-and-loading-configurations" title="Link to this heading">#</a></h2>
+<p>Configurations can be serialised and saved for later use. Nested
+configurations, lists, dictionaries, and enumerated values are handled
+recursively by the configuration system.</p>
+<p>For example, a model configuration can be saved and subsequently restored:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+
+<span class="n">loaded_cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This makes configurations convenient for experiment management and for
+reproducing model architectures across different runs.</p>
+<p>The configuration system can also convert configurations to dictionaries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_dict</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and reconstruct them from dictionaries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">configs</span></code> module provides a composable way to define model architectures
+and their components. Rather than specifying model parameters directly when
+constructing each model, configurations can be built hierarchically and then
+modified or transformed using reusable presets.</p>
+<p>The general workflow is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>LayerConfig
+    │
+    ▼
+ImageConvBlockConfig
+    │
+    ▼
+Model configuration (e.g. UNetConfig)
+    │
+    ├── modify with mod()
+    ├── apply architectural presets
+    └── save/load configuration
+</pre></div>
+</div>
+<p>This allows the same configuration objects to be reused across experiments
+while keeping model architecture definitions explicit and reproducible.</p>
 </section>
 </section>
 
@@ -613,9 +887,15 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.configs</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-hierarchy">Configuration hierarchy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-model-architectures">Configuring model architectures</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-configurations">Modifying configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-presets">Configuration presets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-residual-connections">Working with residual connections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-modifications-across-a-model">Applying modifications across a model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading-configurations">Saving and loading Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>

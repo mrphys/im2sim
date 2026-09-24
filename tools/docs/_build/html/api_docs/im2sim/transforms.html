@@ -30,7 +30,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -42,6 +43,8 @@
     <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/transforms';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/transforms.html" />
@@ -161,14 +164,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -222,7 +219,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -238,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -268,12 +263,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">im2sim.transforms</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -295,7 +288,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -465,9 +457,18 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.transforms</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-application">Transform application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#invertible-transforms">Invertible transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fittable-transforms">Fittable transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#per-channel-transforms">Per-channel transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transforms">Custom transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelines">Pipelines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-a-transform">Choosing a transform</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-considerations">Training considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-fitted-transforms">Saving fitted transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-pattern">Design pattern</a></li>
 </ul>
 </li>
 </ul>
@@ -546,68 +547,288 @@ document.write(`
 </div>
 </section>
 </section>
-<section id="id1">
-<h1>im2sim.transforms<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<section id="module-0">
-<span id="id2"></span><h2>Classes<a class="headerlink" href="#module-0" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<section id="guide">
+<h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
+<p><cite>transforms</cite> provides tensor transformations for preprocessing, normalising, scaling, and inverting data used by <cite>im2sim</cite> datasets and training pipelines.</p>
+<p>The transforms are designed around a common <a class="reference internal" href="data/Transform.html#im2sim.data.Transform" title="im2sim.data.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a> interface. A transform wraps an operation and specifies <strong>which data entries, attributes, and channels</strong> the operation should act on.
+This allows the same operation to be applied to tensors, PyG data objects, individual channels, or multiple dataset fields.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>The available transforms fall into three categories:</p>
+<dl class="field-list simple">
+<dt class="field-odd">header-rows<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1</p>
+</dd>
+<dt class="field-even">widths<span class="colon">:</span></dt>
+<dd class="field-even"><p>20 30 30 20</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><ul>
+<li><p>Category</p></li>
+<li><p>Purpose</p></li>
+<li><p>Dataset statistics</p></li>
+<li><p>Invertible</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>Simple normalisation</p></li>
+<li><p>Normalise individual inputs</p></li>
+<li><p>Computed from each input</p></li>
+<li><p>No</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>Invertible scaling</p></li>
+<li><p>Change the distribution of values while retaining recoverability</p></li>
+<li><p>Not required</p></li>
+<li><p>Yes</p></li>
+</ul>
+</li>
+<li><ul>
+<li><p>Fittable normalisation</p></li>
+<li><p>Apply consistent normalisation across a dataset</p></li>
+<li><p>Learned during <code class="docutils literal notranslate"><span class="pre">fit()</span></code></p></li>
+<li><p>Yes</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="transform-application">
+<h2>Transform application<a class="headerlink" href="#transform-application" title="Link to this heading">#</a></h2>
+<p>Transforms are configured with a set of <code class="docutils literal notranslate"><span class="pre">keys</span></code> identifying the entries in the data dictionary to which they should be applied.</p>
+<p>For example, a tensor stored under <code class="docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code> can be normalised with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Norm</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">Norm</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The transform can also operate on an attribute of an object. This is particularly useful for PyTorch Geometric data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span> <span class="o">=</span> <span class="n">Norm</span><span class="p">(</span>
+    <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">],</span>
+    <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, the operation is applied to <code class="docutils literal notranslate"><span class="pre">graph.x</span></code> rather than replacing the entire <code class="docutils literal notranslate"><span class="pre">graph</span></code> object. The <code class="docutils literal notranslate"><span class="pre">attr=&quot;all&quot;</span></code> option can instead be used when an operation should receive the complete object.</p>
+<p>Transforms can additionally be restricted to particular channels:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span> <span class="o">=</span> <span class="n">Norm</span><span class="p">(</span>
+    <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">],</span>
+    <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, selected channels share the same operation. Setting <code class="docutils literal notranslate"><span class="pre">per_channel=True</span></code> creates an independent operation for each channel. This distinction is particularly important for fittable transforms, where <cite>per_channel=True</cite> results in separate statistics being fitted for each channel.</p>
+</section>
+<section id="invertible-transforms">
+<h2>Invertible transforms<a class="headerlink" href="#invertible-transforms" title="Link to this heading">#</a></h2>
+<p>Invertible transforms provide both a forward transformation and an <code class="docutils literal notranslate"><span class="pre">inverse()</span></code> operation.
+They are useful when data must be transformed for model training but converted back to its original representation for interpretation, visualisation, or physical evaluation.</p>
+</section>
+<section id="fittable-transforms">
+<h2>Fittable transforms<a class="headerlink" href="#fittable-transforms" title="Link to this heading">#</a></h2>
+<p>Fittable transforms are intended for datasets where normalisation statistics should be determined from a collection of training samples rather than independently for every sample.</p>
+<p>The general workflow is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span> <span class="o">=</span> <span class="n">FitZScore</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">])</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="n">transform</span><span class="p">,</span>
+<span class="p">])</span>
+
+<span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+<span class="n">dataset</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">pipeline</span>
+</pre></div>
+</div>
+<p>During fitting, the transform accumulates statistics over the dataset.
+Once fitting has completed, the resulting statistics are reused for subsequent samples.
+A fittable transform cannot be applied before it has been fitted.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Fit transforms should be fitted using the <strong>training dataset only</strong>.
+Fitting using validation or test samples would allow information from those samples to influence the preprocessing statistics.</p>
+</div>
+</section>
+<section id="per-channel-transforms">
+<h2>Per-channel transforms<a class="headerlink" href="#per-channel-transforms" title="Link to this heading">#</a></h2>
+<p>All transform factories support:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">channels</span></code></dt><dd><p>Selects which channels are transformed.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">per_channel</span></code></dt><dd><p>Creates an independent operation for each selected channel.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">channel_dim</span></code></dt><dd><p>Specifies the dimension containing the channels.</p>
+</dd>
+</dl>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span> <span class="o">=</span> <span class="n">FitZScore</span><span class="p">(</span>
+    <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">],</span>
+    <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="n">per_channel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">channel_dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">per_channel=True</span></code>, each channel obtains its own fitted mean and standard deviation rather than sharing statistics across channels.</p>
+<p>This is particularly useful when different channels represent different physical quantities or have substantially different numerical scales.</p>
+</section>
+<section id="custom-transforms">
+<h2>Custom transforms<a class="headerlink" href="#custom-transforms" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">transform_from_fn</span></code> provides a lightweight way to turn an arbitrary Python function into an <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> transform.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">transform_from_fn</span>
+
+<span class="n">transform</span> <span class="o">=</span> <span class="n">transform_from_fn</span><span class="p">(</span>
+    <span class="n">fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting transform uses the supplied function as its operation while retaining the normal <code class="docutils literal notranslate"><span class="pre">Transform</span></code> interface, including key, attribute, and channel selection.</p>
+<p>This is useful for simple one-off preprocessing operations that do not justify defining a new <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class.</p>
+<p>For reusable or more complex operations, defining an <code class="docutils literal notranslate"><span class="pre">Operation</span></code> subclass is preferable because operations can then participate in the operation registry and support additional functionality such as inversion or fitting.</p>
+</section>
+<section id="pipelines">
+<h2>Pipelines<a class="headerlink" href="#pipelines" title="Link to this heading">#</a></h2>
+<p>Transforms are normally combined using <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitZScore</span><span class="p">,</span> <span class="n">PowerScaling</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="n">PowerScaling</span><span class="p">(</span>
+        <span class="n">exp</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">preserve_sign</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">FitZScore</span><span class="p">(</span>
+        <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">],</span>
+    <span class="p">),</span>
+<span class="p">])</span>
+
+<span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span>
+
+<span class="n">sample</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Transforms are applied sequentially in the order in which they are defined. When <code class="docutils literal notranslate"><span class="pre">Pipeline.inverse()</span></code> is used, invertible transforms are applied in reverse order. Non-invertible transforms are skipped.</p>
+<p>The order of transforms is therefore significant. For example, if a power transformation is intended to reduce skew before standardisation, the power transformation should precede <code class="docutils literal notranslate"><span class="pre">FitZScore</span></code>.</p>
+</section>
+<section id="choosing-a-transform">
+<h2>Choosing a transform<a class="headerlink" href="#choosing-a-transform" title="Link to this heading">#</a></h2>
+<p>The appropriate transform depends primarily on whether the statistics should be determined <strong>per sample</strong> or <strong>from the training dataset</strong>, and whether the transformation needs to be reversible.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Transform</p></th>
+<th class="head"><p>Use when</p></th>
+<th class="head"><p>Main consideration</p></th>
+</tr>
+</thead>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/FitNormOp.html#im2sim.transforms.FitNormOp" title="im2sim.transforms.FitNormOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitNormOp</span></code></a></p></td>
-<td><p>Normalizes the input tensor to the range [0, 1] based on the fitted maximum and minimum values.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Norm</span></code></p></td>
+<td><p>Each sample should independently occupy <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code></p></td>
+<td><p>Absolute sample-to-sample scale is discarded</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/FitRangeNormOp.html#im2sim.transforms.FitRangeNormOp" title="im2sim.transforms.FitRangeNormOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitRangeNormOp</span></code></a></p></td>
-<td><p>Normalizes the input tensor to a specified range [a, b] based on the fitted maximum and minimum values.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RangeNorm</span></code></p></td>
+<td><p>Each sample should independently occupy a specified range</p></td>
+<td><p>Statistics are calculated per input</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/FitZScoreOp.html#im2sim.transforms.FitZScoreOp" title="im2sim.transforms.FitZScoreOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitZScoreOp</span></code></a></p></td>
-<td><p>Standardizes the input tensor to have zero mean and unit variance based on the fitted mean and standard deviation.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ZScore</span></code></p></td>
+<td><p>Each sample should be centred and scaled independently</p></td>
+<td><p>Mean and standard deviation are calculated per input</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/NormOp.html#im2sim.transforms.NormOp" title="im2sim.transforms.NormOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NormOp</span></code></a></p></td>
-<td><p>Normalizes the input tensor to the range [0, 1].</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FitNorm</span></code></p></td>
+<td><p>A consistent <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> scale is required across a dataset</p></td>
+<td><p>Must be fitted on representative training data</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/PowerScaleOp.html#im2sim.transforms.PowerScaleOp" title="im2sim.transforms.PowerScaleOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PowerScaleOp</span></code></a></p></td>
-<td><p>Scales the input tensor by raising it to a specified power.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FitRangeNorm</span></code></p></td>
+<td><p>A consistent arbitrary range is required across a dataset</p></td>
+<td><p>Must be fitted on representative training data</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/RangeNormOp.html#im2sim.transforms.RangeNormOp" title="im2sim.transforms.RangeNormOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RangeNormOp</span></code></a></p></td>
-<td><p>Normalizes the input tensor to a specified range [a, b].</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FitZScore</span></code></p></td>
+<td><p>A consistent standardised representation is required across a dataset</p></td>
+<td><p>Must be fitted on representative training data</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/ZScoreOp.html#im2sim.transforms.ZScoreOp" title="im2sim.transforms.ZScoreOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZScoreOp</span></code></a></p></td>
-<td><p>Standardizes the input tensor to have zero mean and unit variance.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PowerScaling</span></code></p></td>
+<td><p>A skewed or large dynamic range should be compressed</p></td>
+<td><p>Transformation can be inverted</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
-<section id="id3">
-<h2>Functions<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/FitNorm.html#im2sim.transforms.FitNorm" title="im2sim.transforms.FitNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitNorm</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/FitRangeNorm.html#im2sim.transforms.FitRangeNorm" title="im2sim.transforms.FitRangeNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitRangeNorm</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/FitZScore.html#im2sim.transforms.FitZScore" title="im2sim.transforms.FitZScore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitZScore</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/Norm.html#im2sim.transforms.Norm" title="im2sim.transforms.Norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Norm</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/PowerScaling.html#im2sim.transforms.PowerScaling" title="im2sim.transforms.PowerScaling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PowerScaling</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/RangeNorm.html#im2sim.transforms.RangeNorm" title="im2sim.transforms.RangeNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RangeNorm</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="transforms/ZScore.html#im2sim.transforms.ZScore" title="im2sim.transforms.ZScore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZScore</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="transforms/transform_from_fn.html#im2sim.transforms.transform_from_fn" title="im2sim.transforms.transform_from_fn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_from_fn</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<section id="training-considerations">
+<h2>Training considerations<a class="headerlink" href="#training-considerations" title="Link to this heading">#</a></h2>
+<p>For machine-learning applications, the distinction between <strong>sample-wise</strong> and <strong>dataset-wise</strong> normalisation is important.</p>
+<p>Sample-wise transforms such as <code class="docutils literal notranslate"><span class="pre">Norm</span></code> and <code class="docutils literal notranslate"><span class="pre">ZScore</span></code> can remove information about the absolute magnitude of a variable. For example, normalising each CFD sample independently can make two samples with very different pressure ranges appear numerically similar.</p>
+<p>Fittable transforms instead preserve the relative scale between samples because the same statistics are used throughout the dataset.</p>
+<p>A typical supervised-learning pipeline is therefore:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="n">FitZScore</span><span class="p">(</span>
+        <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">FitZScore</span><span class="p">(</span>
+        <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;graph&quot;</span><span class="p">],</span>
+        <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+        <span class="n">per_channel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">])</span>
+
+<span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span>
+
+<span class="n">train_sample</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">train_sample</span><span class="p">)</span>
+<span class="n">val_sample</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">val_sample</span><span class="p">)</span>
+<span class="n">test_sample</span> <span class="o">=</span> <span class="n">pipeline</span><span class="p">(</span><span class="n">test_sample</span><span class="p">)</span>
+</pre></div>
 </div>
+<p>The fitting stage should be performed once using the training data, after which the fitted state should be reused for validation, testing, inference, and deployment.</p>
+</section>
+<section id="saving-fitted-transforms">
+<h2>Saving fitted transforms<a class="headerlink" href="#saving-fitted-transforms" title="Link to this heading">#</a></h2>
+<p>Transforms and pipelines expose configuration and state information that can be serialised. This allows fitted preprocessing to be saved and restored alongside a trained model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_pipeline</span><span class="p">,</span> <span class="n">load_pipeline</span>
+
+<span class="n">save_pipeline</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="s2">&quot;pipeline.pt&quot;</span><span class="p">)</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">load_pipeline</span><span class="p">(</span><span class="s2">&quot;pipeline.pt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The configuration records the transform type and its arguments, while the state contains fitted operation parameters such as dataset statistics.</p>
+</section>
+<section id="design-pattern">
+<h2>Design pattern<a class="headerlink" href="#design-pattern" title="Link to this heading">#</a></h2>
+<p>The transform system separates <strong>what an operation does</strong> from <strong>where it is applied</strong>.</p>
+<p>An <code class="docutils literal notranslate"><span class="pre">Operation</span></code> defines the numerical transformation:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Operation
+    |
+    +-- NormOp
+    +-- RangeNormOp
+    +-- ZScoreOp
+    +-- PowerScaleOp
+    +-- FitNormOp
+    +-- FitRangeNormOp
+    +-- FitZScoreOp
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">Transform</span></code> wraps the operation and handles data selection:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Transform
+    |
+    +-- keys
+    +-- attr
+    +-- channels
+    +-- per_channel
+    +-- channel_dim
+    |
+    +-- Operation
+</pre></div>
+</div>
+<p>This separation means that the same operation can be reused for different dataset fields without duplicating its implementation.</p>
 </section>
 </section>
 
@@ -661,9 +882,18 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.transforms</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-application">Transform application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#invertible-transforms">Invertible transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fittable-transforms">Fittable transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#per-channel-transforms">Per-channel transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transforms">Custom transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelines">Pipelines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-a-transform">Choosing a transform</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-considerations">Training considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-fitted-transforms">Saving fitted transforms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-pattern">Design pattern</a></li>
 </ul>
 </li>
 </ul>

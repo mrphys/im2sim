@@ -30,7 +30,8 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -42,6 +43,8 @@
     <script src="../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim.html" />
@@ -49,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="im2sim.configs" href="im2sim/configs.html" />
-    <link rel="prev" title="Segmentation tutorial" href="../tutorials/segmentation/seg_tutorial_hvsmr.html" />
+    <link rel="prev" title="3D UNet Segmentation" href="../tutorials/seg_tutorial_hvsmr.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -161,14 +164,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -222,7 +219,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -238,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="im2sim/mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="im2sim/mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -268,12 +263,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="im2sim/transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="im2sim/transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -295,7 +288,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="im2sim/utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -476,34 +468,36 @@ document.write(`
 <span id="im2sim"></span><h1>im2sim<a class="headerlink" href="#module-im2sim" title="Link to this heading">#</a></h1>
 <section id="modules">
 <h2>Modules<a class="headerlink" href="#modules" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/configs.html#module-0" title="im2sim.configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">configs</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="im2sim/configs.html#module-im2sim.configs" title="im2sim.configs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.configs</span></code></a></p></td>
+<td><p>Flexible configurations for im2sim <code class="docutils literal notranslate"><span class="pre">models</span></code> and <code class="docutils literal notranslate"><span class="pre">layers</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="im2sim/data.html#module-0" title="im2sim.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/models.html#module-im2sim.models" title="im2sim.models"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.models</span></code></a></p></td>
+<td><p>Neural network models for imaging and simulation tasks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/layers.html#module-1" title="im2sim.layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">layers</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="im2sim/layers.html#module-im2sim.layers" title="im2sim.layers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.layers</span></code></a></p></td>
+<td><p>Building blocks for constructing image and graph neural networks.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="im2sim/losses.html#module-1" title="im2sim.losses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">losses</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/losses.html#module-im2sim.losses" title="im2sim.losses"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.losses</span></code></a></p></td>
+<td><p>Loss functions for training neural networks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/mesh_ops.html#module-0" title="im2sim.mesh_ops"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_ops</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="im2sim/plot.html#module-im2sim.plot" title="im2sim.plot"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.plot</span></code></a></p></td>
+<td><p>Plotting utilities for visualizing images, graphs, and training results.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="im2sim/models.html#module-1" title="im2sim.models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">models</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/data.html#module-im2sim.data" title="im2sim.data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.data</span></code></a></p></td>
+<td><p>Data loading and preprocessing utilities for imaging and simulation tasks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/plot.html#module-1" title="im2sim.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="im2sim/transforms.html#module-im2sim.transforms" title="im2sim.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.transforms</span></code></a></p></td>
+<td><p>Data augmentation and transformation utilities to be used alongside <code class="docutils literal notranslate"><span class="pre">im2sim.data</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="im2sim/transforms.html#module-0" title="im2sim.transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transforms</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="im2sim/utils.html#module-1" title="im2sim.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">im2sim.transforms.mesh_ops</span></code></p></td>
+<td><p>Mesh operations for 3D data processing and manipulation.</p></td>
 </tr>
 </tbody>
 </table>
@@ -523,12 +517,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../tutorials/segmentation/seg_tutorial_hvsmr.html"
+       href="../tutorials/seg_tutorial_hvsmr.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Segmentation tutorial</p>
+        <p class="prev-next-title">3D UNet Segmentation</p>
       </div>
     </a>
     <a class="right-next"

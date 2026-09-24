@@ -212,26 +212,26 @@ class HalfUNetConfig(Config):
         if self.encoder_block_cfg is None:
             self.encoder_block_cfg = [deepcopy(self.block_cfg) for _ in range(L)]
         elif isinstance(self.encoder_block_cfg, ImageConvBlockConfig):
-            self.encoder_block_cfg = [self.encoder_block_cfg] * L
+            self.encoder_block_cfg = [deepcopy(self.encoder_block_cfg) for _ in range(L)]
         else:
             assert len(self.encoder_block_cfg) == L, (
                 f"Length of encoder_block_cfg ({len(self.encoder_block_cfg)}) must be equal to number of levels ({L})"
             )
 
         if self.out_block_cfg is None:
-            self.out_block_cfg = self.block_cfg.to_single_conv()
+            self.out_block_cfg = deepcopy(self.block_cfg).to_single_conv()
             self.out_block_cfg.conv_cfg.kwargs.update({"kernel_size": 1, "stride": 1, "padding": 0})
             self.out_block_cfg.out_activation = self.out_activation
 
         if isinstance(self.pool_cfg, LayerConfig):
-            self.pool_cfg = [self.pool_cfg] * (L - 1)
+            self.pool_cfg = [deepcopy(self.pool_cfg) for _ in range(L - 1)]
         else:
             assert len(self.pool_cfg) == L - 1, (
                 f"Length of pool_cfg ({len(self.pool_cfg)}) must be equal to levels - 1 ({L - 1})"
             )
 
         if isinstance(self.upsample_cfg, LayerConfig):
-            self.upsample_cfg = [self.upsample_cfg] * (L - 1)
+            self.upsample_cfg = [deepcopy(self.upsample_cfg) for _ in range(L - 1)]
         else:
             assert len(self.upsample_cfg) == L - 1, (
                 f"Length of upsample_cfg ({len(self.upsample_cfg)}) must be equal to levels - 1 ({L - 1})"

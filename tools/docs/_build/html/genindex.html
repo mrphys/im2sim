@@ -29,7 +29,8 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -41,6 +42,8 @@
     <script src="_static/documentation_options.js?v=a1637f0b"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/genindex.html" />
@@ -160,14 +163,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -221,7 +218,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -237,7 +233,6 @@
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -267,12 +262,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_docs/im2sim/transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="api_docs/im2sim/transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -294,7 +287,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="api_docs/im2sim/utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -750,49 +742,49 @@ document.write(`
     im2sim.configs
 
       <ul>
-        <li><a href="api_docs/im2sim/configs.html#module-0">module</a>, <a href="api_docs/im2sim/configs.html#module-im2sim.configs">[1]</a>
+        <li><a href="api_docs/im2sim/configs.html#module-im2sim.configs">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.data
 
       <ul>
-        <li><a href="api_docs/im2sim/data.html#module-0">module</a>, <a href="api_docs/im2sim/data.html#module-im2sim.data">[1]</a>
+        <li><a href="api_docs/im2sim/data.html#module-im2sim.data">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.layers
 
       <ul>
-        <li><a href="api_docs/im2sim/layers.html#module-0">module</a>, <a href="api_docs/im2sim/layers.html#module-1">[1]</a>, <a href="api_docs/im2sim/layers.html#module-im2sim.layers">[2]</a>
+        <li><a href="api_docs/im2sim/layers.html#module-im2sim.layers">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.losses
 
       <ul>
-        <li><a href="api_docs/im2sim/losses.html#module-0">module</a>, <a href="api_docs/im2sim/losses.html#module-1">[1]</a>, <a href="api_docs/im2sim/losses.html#module-im2sim.losses">[2]</a>
+        <li><a href="api_docs/im2sim/losses.html#module-im2sim.losses">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.mesh_ops
 
       <ul>
-        <li><a href="api_docs/im2sim/mesh_ops.html#module-0">module</a>, <a href="api_docs/im2sim/mesh_ops.html#module-im2sim.mesh_ops">[1]</a>
+        <li><a href="api_docs/im2sim/mesh_ops.html#module-im2sim.mesh_ops">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.models
 
       <ul>
-        <li><a href="api_docs/im2sim/models.html#module-0">module</a>, <a href="api_docs/im2sim/models.html#module-1">[1]</a>, <a href="api_docs/im2sim/models.html#module-im2sim.models">[2]</a>
+        <li><a href="api_docs/im2sim/models.html#module-im2sim.models">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.plot
 
       <ul>
-        <li><a href="api_docs/im2sim/plot.html#module-0">module</a>, <a href="api_docs/im2sim/plot.html#module-1">[1]</a>, <a href="api_docs/im2sim/plot.html#module-im2sim.plot">[2]</a>
+        <li><a href="api_docs/im2sim/plot.html#module-im2sim.plot">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -801,14 +793,14 @@ document.write(`
     im2sim.transforms
 
       <ul>
-        <li><a href="api_docs/im2sim/transforms.html#module-0">module</a>, <a href="api_docs/im2sim/transforms.html#module-im2sim.transforms">[1]</a>
+        <li><a href="api_docs/im2sim/transforms.html#module-im2sim.transforms">module</a>
 </li>
       </ul></li>
       <li>
     im2sim.utils
 
       <ul>
-        <li><a href="api_docs/im2sim/utils.html#module-0">module</a>, <a href="api_docs/im2sim/utils.html#module-1">[1]</a>, <a href="api_docs/im2sim/utils.html#module-im2sim.utils">[2]</a>
+        <li><a href="api_docs/im2sim/utils.html#module-im2sim.utils">module</a>
 </li>
       </ul></li>
       <li><a href="api_docs/im2sim/models/Im2SimBase.html#im2sim.models.Im2SimBase">Im2SimBase (class in im2sim.models)</a>
@@ -873,23 +865,23 @@ document.write(`
       <ul>
         <li><a href="api_docs/im2sim.html#module-im2sim">im2sim</a>
 </li>
-        <li><a href="api_docs/im2sim/configs.html#module-0">im2sim.configs</a>, <a href="api_docs/im2sim/configs.html#module-im2sim.configs">[1]</a>
+        <li><a href="api_docs/im2sim/configs.html#module-im2sim.configs">im2sim.configs</a>
 </li>
-        <li><a href="api_docs/im2sim/data.html#module-0">im2sim.data</a>, <a href="api_docs/im2sim/data.html#module-im2sim.data">[1]</a>
+        <li><a href="api_docs/im2sim/data.html#module-im2sim.data">im2sim.data</a>
 </li>
-        <li><a href="api_docs/im2sim/layers.html#module-0">im2sim.layers</a>, <a href="api_docs/im2sim/layers.html#module-1">[1]</a>, <a href="api_docs/im2sim/layers.html#module-im2sim.layers">[2]</a>
+        <li><a href="api_docs/im2sim/layers.html#module-im2sim.layers">im2sim.layers</a>
 </li>
-        <li><a href="api_docs/im2sim/losses.html#module-0">im2sim.losses</a>, <a href="api_docs/im2sim/losses.html#module-1">[1]</a>, <a href="api_docs/im2sim/losses.html#module-im2sim.losses">[2]</a>
+        <li><a href="api_docs/im2sim/losses.html#module-im2sim.losses">im2sim.losses</a>
 </li>
-        <li><a href="api_docs/im2sim/mesh_ops.html#module-0">im2sim.mesh_ops</a>, <a href="api_docs/im2sim/mesh_ops.html#module-im2sim.mesh_ops">[1]</a>
+        <li><a href="api_docs/im2sim/mesh_ops.html#module-im2sim.mesh_ops">im2sim.mesh_ops</a>
 </li>
-        <li><a href="api_docs/im2sim/models.html#module-0">im2sim.models</a>, <a href="api_docs/im2sim/models.html#module-1">[1]</a>, <a href="api_docs/im2sim/models.html#module-im2sim.models">[2]</a>
+        <li><a href="api_docs/im2sim/models.html#module-im2sim.models">im2sim.models</a>
 </li>
-        <li><a href="api_docs/im2sim/plot.html#module-0">im2sim.plot</a>, <a href="api_docs/im2sim/plot.html#module-1">[1]</a>, <a href="api_docs/im2sim/plot.html#module-im2sim.plot">[2]</a>
+        <li><a href="api_docs/im2sim/plot.html#module-im2sim.plot">im2sim.plot</a>
 </li>
-        <li><a href="api_docs/im2sim/transforms.html#module-0">im2sim.transforms</a>, <a href="api_docs/im2sim/transforms.html#module-im2sim.transforms">[1]</a>
+        <li><a href="api_docs/im2sim/transforms.html#module-im2sim.transforms">im2sim.transforms</a>
 </li>
-        <li><a href="api_docs/im2sim/utils.html#module-0">im2sim.utils</a>, <a href="api_docs/im2sim/utils.html#module-1">[1]</a>, <a href="api_docs/im2sim/utils.html#module-im2sim.utils">[2]</a>
+        <li><a href="api_docs/im2sim/utils.html#module-im2sim.utils">im2sim.utils</a>
 </li>
       </ul></li>
   </ul></td>

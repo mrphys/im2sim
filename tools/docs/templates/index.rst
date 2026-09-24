@@ -10,7 +10,7 @@ IM2SIM |release|
    :hidden:
 
    Tutorials <tutorials>
-   Segmentation <tutorials/segment>
+   3D UNet Segmentation <tutorials/index.rst>
    
 .. toctree::
    :caption: API Documentation

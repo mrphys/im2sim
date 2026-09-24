@@ -2,13 +2,13 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" >
+<html lang="en" data-content_root="../" >
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Segmentation tutorial &#8212; IM2SIM Documentation</title>
+    <title>3D UNet Segmentation &#8212; IM2SIM Documentation</title>
   
   
   
@@ -18,38 +18,41 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
-    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=691f4282" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/segmentation/seg_tutorial_hvsmr';</script>
-    <link rel="canonical" href="https://mrphys.github.io/im2sim/tutorials/segmentation/seg_tutorial_hvsmr.html" />
-    <link rel="icon" href="../../_static/im2sim_logo.png"/>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="im2sim" href="../../api_docs/im2sim.html" />
-    <link rel="prev" title="Image reconstruction" href="../segment.html" />
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/seg_tutorial_hvsmr';</script>
+    <link rel="canonical" href="https://mrphys.github.io/im2sim/tutorials/seg_tutorial_hvsmr.html" />
+    <link rel="icon" href="../_static/im2sim_logo.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="im2sim" href="../api_docs/im2sim.html" />
+    <link rel="prev" title="Tutorials" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -81,7 +84,7 @@
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="../../search.html"
+      action="../search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -130,7 +133,7 @@
     
   
 
-<a class="navbar-brand logo" href="../../index.html">
+<a class="navbar-brand logo" href="../index.html">
   
   
   
@@ -141,8 +144,8 @@
       
     
     
-    <img src="../../_static/im2sim_logo.png" class="logo__image only-light" alt="IM2SIM Documentation - Home"/>
-    <script>document.write(`<img src="../../_static/im2sim_logo.png" class="logo__image only-dark" alt="IM2SIM Documentation - Home"/>`);</script>
+    <img src="../_static/im2sim_logo.png" class="logo__image only-light" alt="IM2SIM Documentation - Home"/>
+    <script>document.write(`<img src="../_static/im2sim_logo.png" class="logo__image only-dark" alt="IM2SIM Documentation - Home"/>`);</script>
   
   
 </a></div>
@@ -161,141 +164,130 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../segment.html">Segmentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">3D UNet Segmentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../api_docs/im2sim.html">im2sim</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/GraphConvBlockConfig.html">im2sim.configs.GraphConvBlockConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/LayerConfig.html">im2sim.configs.LayerConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/SimpleGraphDecoderConfig.html">im2sim.configs.SimpleGraphDecoderConfig</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim.html">im2sim</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/configs.html">im2sim.configs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/GraphConvBlockConfig.html">im2sim.configs.GraphConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/HalfUNetConfig.html">im2sim.configs.HalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/ImageConvBlockConfig.html">im2sim.configs.ImageConvBlockConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/LayerConfig.html">im2sim.configs.LayerConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/ReverseHalfUNetConfig.html">im2sim.configs.ReverseHalfUNetConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/SimpleGraphDecoderConfig.html">im2sim.configs.SimpleGraphDecoderConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/configs/UNetConfig.html">im2sim.configs.UNetConfig</a></li>
 </ul>
 </details></li>
 
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/data.html">im2sim.data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/Dataset.html">im2sim.data.Dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/FittableOperation.html">im2sim.data.FittableOperation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/InvertibleOperation.html">im2sim.data.InvertibleOperation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/Operation.html">im2sim.data.Operation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/Pipeline.html">im2sim.data.Pipeline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/Transform.html">im2sim.data.Transform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/DataLoader.html">im2sim.data.DataLoader</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/collate.html">im2sim.data.collate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/data/register_op.html">im2sim.data.register_op</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/data.html">im2sim.data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/Dataset.html">im2sim.data.Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/FittableOperation.html">im2sim.data.FittableOperation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/InvertibleOperation.html">im2sim.data.InvertibleOperation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/Operation.html">im2sim.data.Operation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/Pipeline.html">im2sim.data.Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/Transform.html">im2sim.data.Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/DataLoader.html">im2sim.data.DataLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/collate.html">im2sim.data.collate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/data/register_op.html">im2sim.data.register_op</a></li>
 </ul>
 </details></li>
 
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/ChannelDropout.html">im2sim.layers.ChannelDropout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/DefaultGraphNorm.html">im2sim.layers.DefaultGraphNorm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/EdgeDropout.html">im2sim.layers.EdgeDropout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/FeatureRasterizer.html">im2sim.layers.FeatureRasterizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/GraphActivation.html">im2sim.layers.GraphActivation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/GraphDropout.html">im2sim.layers.GraphDropout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/GraphECA.html">im2sim.layers.GraphECA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/GraphSE.html">im2sim.layers.GraphSE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/MaskRasterizer.html">im2sim.layers.MaskRasterizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/NodeDropout.html">im2sim.layers.NodeDropout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/layers/TrilinearProjection.html">im2sim.layers.TrilinearProjection</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/layers.html">im2sim.layers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/ChannelDropout.html">im2sim.layers.ChannelDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/ConditionedSqueezeExcite.html">im2sim.layers.ConditionedSqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/DefaultGraphNorm.html">im2sim.layers.DefaultGraphNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/DepthwiseConv.html">im2sim.layers.DepthwiseConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/DepthwiseSeparableConv.html">im2sim.layers.DepthwiseSeparableConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/EdgeDropout.html">im2sim.layers.EdgeDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/EfficientChannelAttn.html">im2sim.layers.EfficientChannelAttn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/FeatureRasterizer.html">im2sim.layers.FeatureRasterizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GhostConv.html">im2sim.layers.GhostConv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphActivation.html">im2sim.layers.GraphActivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphConvBlock.html">im2sim.layers.GraphConvBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphDropout.html">im2sim.layers.GraphDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphECA.html">im2sim.layers.GraphECA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/GraphSE.html">im2sim.layers.GraphSE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/ImageConvBlock.html">im2sim.layers.ImageConvBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/MaskRasterizer.html">im2sim.layers.MaskRasterizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/NodeDropout.html">im2sim.layers.NodeDropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/SqueezeExcite.html">im2sim.layers.SqueezeExcite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/layers/TrilinearProjection.html">im2sim.layers.TrilinearProjection</a></li>
 </ul>
 </details></li>
 
-
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/ConfusionLoss.html">im2sim.losses.ConfusionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/DiceLoss.html">im2sim.losses.DiceLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/EdgeLengthDeviationLoss.html">im2sim.losses.EdgeLengthDeviationLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/FaceNormalLoss.html">im2sim.losses.FaceNormalLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/FocalTverskyLoss.html">im2sim.losses.FocalTverskyLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/InversionLoss.html">im2sim.losses.InversionLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/IoULoss.html">im2sim.losses.IoULoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/KnnFeatureLoss.html">im2sim.losses.KnnFeatureLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/SSIMLoss.html">im2sim.losses.SSIMLoss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
 
-
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/compute_edge_lengths.html">im2sim.mesh_ops.compute_edge_lengths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_edges.html">im2sim.mesh_ops.get_edges</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_edges_surf.html">im2sim.mesh_ops.get_edges_surf</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_edges_tet.html">im2sim.mesh_ops.get_edges_tet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_node_features.html">im2sim.mesh_ops.get_node_features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_structure_cells.html">im2sim.mesh_ops.get_structure_cells</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_structure_edges.html">im2sim.mesh_ops.get_structure_edges</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/get_structure_ids.html">im2sim.mesh_ops.get_structure_ids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/hard_threshold.html">im2sim.mesh_ops.hard_threshold</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/make_padded_batch.html">im2sim.mesh_ops.make_padded_batch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/rasterize.html">im2sim.mesh_ops.rasterize</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/set_attrs.html">im2sim.mesh_ops.set_attrs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/mesh_ops/soft_threshold.html">im2sim.mesh_ops.soft_threshold</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/compute_edge_lengths.html">im2sim.mesh_ops.compute_edge_lengths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_edges.html">im2sim.mesh_ops.get_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_edges_surf.html">im2sim.mesh_ops.get_edges_surf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_edges_tet.html">im2sim.mesh_ops.get_edges_tet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_node_features.html">im2sim.mesh_ops.get_node_features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_structure_cells.html">im2sim.mesh_ops.get_structure_cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_structure_edges.html">im2sim.mesh_ops.get_structure_edges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/get_structure_ids.html">im2sim.mesh_ops.get_structure_ids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/hard_threshold.html">im2sim.mesh_ops.hard_threshold</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/make_padded_batch.html">im2sim.mesh_ops.make_padded_batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/rasterize.html">im2sim.mesh_ops.rasterize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/set_attrs.html">im2sim.mesh_ops.set_attrs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/mesh_ops/soft_threshold.html">im2sim.mesh_ops.soft_threshold</a></li>
 </ul>
 </details></li>
 
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/models/Im2SimBase.html">im2sim.models.Im2SimBase</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/models/Im2SimGen2.html">im2sim.models.Im2SimGen2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/models/SimpleGraphDecoder.html">im2sim.models.SimpleGraphDecoder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/models/UNet.html">im2sim.models.UNet</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/models.html">im2sim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/HalfUNet.html">im2sim.models.HalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/Im2SimBase.html">im2sim.models.Im2SimBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/Im2SimGen2.html">im2sim.models.Im2SimGen2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/ReverseHalfUNet.html">im2sim.models.ReverseHalfUNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/SimpleGraphDecoder.html">im2sim.models.SimpleGraphDecoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/models/UNet.html">im2sim.models.UNet</a></li>
 </ul>
 </details></li>
 
-
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
 
-
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_docs/im2sim/transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/FitRangeNormOp.html">im2sim.transforms.FitRangeNormOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/FitZScoreOp.html">im2sim.transforms.FitZScoreOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/NormOp.html">im2sim.transforms.NormOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/PowerScaleOp.html">im2sim.transforms.PowerScaleOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/RangeNormOp.html">im2sim.transforms.RangeNormOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/ZScoreOp.html">im2sim.transforms.ZScoreOp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/FitNorm.html">im2sim.transforms.FitNorm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/FitRangeNorm.html">im2sim.transforms.FitRangeNorm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/FitZScore.html">im2sim.transforms.FitZScore</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/Norm.html">im2sim.transforms.Norm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/PowerScaling.html">im2sim.transforms.PowerScaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/RangeNorm.html">im2sim.transforms.RangeNorm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/ZScore.html">im2sim.transforms.ZScore</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../api_docs/im2sim/transforms/transform_from_fn.html">im2sim.transforms.transform_from_fn</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api_docs/im2sim/transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/FitRangeNormOp.html">im2sim.transforms.FitRangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/FitZScoreOp.html">im2sim.transforms.FitZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/NormOp.html">im2sim.transforms.NormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/PowerScaleOp.html">im2sim.transforms.PowerScaleOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/RangeNormOp.html">im2sim.transforms.RangeNormOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/ZScoreOp.html">im2sim.transforms.ZScoreOp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/FitNorm.html">im2sim.transforms.FitNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/FitRangeNorm.html">im2sim.transforms.FitRangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/FitZScore.html">im2sim.transforms.FitZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/Norm.html">im2sim.transforms.Norm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/PowerScaling.html">im2sim.transforms.PowerScaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/RangeNorm.html">im2sim.transforms.RangeNorm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/ZScore.html">im2sim.transforms.ZScore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_docs/im2sim/transforms/transform_from_fn.html">im2sim.transforms.transform_from_fn</a></li>
 </ul>
 </details></li>
 
-<li class="toctree-l1"><a class="reference internal" href="../../api_docs/im2sim/utils.html">im2sim.utils</a></li>
-
+<li class="toctree-l1"><a class="reference internal" href="../api_docs/im2sim/utils.html">im2sim.utils</a></li>
 
 </ul>
 
@@ -351,7 +343,7 @@
       
       
       
-      <li><a href="https://colab.research.google.com/github/mrphys/im2sim/blob/master/docs/tutorials/segmentation/seg_tutorial_hvsmr.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/mrphys/im2sim/blob/main/tools/docs/tutorials/seg_tutorial_hvsmr.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch on Colab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -360,7 +352,7 @@
 
 <span class="btn__icon-container">
   
-    <img alt="Colab logo" src="../../_static/images/logo_colab.png">
+    <img alt="Colab logo" src="../_static/images/logo_colab.png">
   </span>
 <span class="btn__text-container">Colab</span>
 </a>
@@ -397,7 +389,7 @@
       
       
       
-      <li><a href="../../_sources/tutorials/segmentation/seg_tutorial_hvsmr.ipynb" target="_blank"
+      <li><a href="../_sources/tutorials/seg_tutorial_hvsmr.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -481,7 +473,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Segmentation tutorial</h1>
+    <h1>3D UNet Segmentation</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -491,22 +483,16 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Segmentation tutorial</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#import-dependencies">Import dependencies</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-data">Prepare Data</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalize-and-downsample">Normalize and downsample</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-dataset">Define Dataset</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split-into-train-validation-test">Split into train / validation / test</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-model-and-define-the-loss">Build the model and define the loss</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#write-training-inference-loop">Write training/inference loop</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-model-on-test-set">Apply model on test set</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-dependencies">1. Import dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-data">2. Prepare Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalize-and-downsample">3. Normalize and downsample</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-dataset">4. Define Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split-into-train-validation-test">5. Split into train / validation / test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-model-and-define-the-loss">6. Build the model and define the loss</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-training-inference-loop">7. Write training/inference loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-model-on-test-set">8. Apply model on test set</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
-</li>
-</ul>
-
             </nav>
         </div>
     </div>
@@ -517,15 +503,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="segmentation-tutorial">
-<h1>Segmentation tutorial<a class="headerlink" href="#segmentation-tutorial" title="Link to this heading">#</a></h1>
+  <section id="d-unet-segmentation">
+<h1>3D UNet Segmentation<a class="headerlink" href="#d-unet-segmentation" title="Link to this heading">#</a></h1>
 <p>This tutorial provides a practical introduction to training a 3D U-Net/Half U-Net in PyTorch via an aortic segmentation task on the <em>HVSMR-2.0</em> dataset[1] (Available at: https://figshare.com/articles/dataset/HVSMR-2_0_orig_/25226360)</p>
 <p>It covers how  images and segmentation masks are organised and loaded, how the data are divided for training and evaluation, how the U-Net is configured, and how the model is trained using a segmentation loss. It also shows how to monitor learning through training and validation loss, visually inspect predictions across 3D volumes using GIFs, and finally assess the trained model on an independent test set.</p>
 <p>The tutorial uses 3D NIfTI data stored in a single folder. For each patient, the original MRI volume is stored as a <em>.nii.gz file</em> and the corresponding segmentation is stored as a separate <em>_seg.nii.gz file</em>. The segmentation contains multiple anatomical labels: in this tutorial, only label 5, corresponding to the aorta, is selected and converted into a binary mask.</p>
 <p>Before training, the MRI volumes are normalized and both images and masks are downsampled to 128 × 128 × 128 voxels and saved as .npy files for the subsequent steps.</p>
-</section>
 <section id="import-dependencies">
-<h1>Import dependencies<a class="headerlink" href="#import-dependencies" title="Link to this heading">#</a></h1>
+<h2>1. Import dependencies<a class="headerlink" href="#import-dependencies" title="Link to this heading">#</a></h2>
 <p>We start by importing the libraries and functions needed for the tutorial.</p>
 <p>Link to the library used to implement the U-Net architecture and the loss function: https://mrphys.github.io/im2sim/</p>
 <div class="cell docutils container">
@@ -559,7 +544,7 @@ document.write(`
 </div>
 </section>
 <section id="prepare-data">
-<h1>Prepare Data<a class="headerlink" href="#prepare-data" title="Link to this heading">#</a></h1>
+<h2>2. Prepare Data<a class="headerlink" href="#prepare-data" title="Link to this heading">#</a></h2>
 <p>First we need to define the folder containing the images and the corresponding segmentation masks (change the path depending on your data). In this dataset, the images and masks are stored in the same folder, with the masks identified by _seg in the file name.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -616,8 +601,9 @@ Valid image-mask pairs: 60
 </div>
 </div>
 </div>
+</section>
 <section id="normalize-and-downsample">
-<h2>Normalize and downsample<a class="headerlink" href="#normalize-and-downsample" title="Link to this heading">#</a></h2>
+<h2>3. Normalize and downsample<a class="headerlink" href="#normalize-and-downsample" title="Link to this heading">#</a></h2>
 <p>Before defining the Dataset, we preprocess the data and save the processed images and masks in separate folders.</p>
 <p>This is needed because the original MRI volumes have different sizes, high spatial resolution, and non-normalized intensity values. We therefore select only label 5, corresponding to the aorta, normalize the MRI, and resize both image and mask to 128 × 128 × 128.</p>
 <p>The processed data are then saved as .npy files so these operations only need to be performed once.</p>
@@ -691,7 +677,7 @@ Valid image-mask pairs: 60
 </div>
 </section>
 <section id="define-dataset">
-<h2>Define Dataset<a class="headerlink" href="#define-dataset" title="Link to this heading">#</a></h2>
+<h2>4. Define Dataset<a class="headerlink" href="#define-dataset" title="Link to this heading">#</a></h2>
 <p>We then define the Dataset. Its purpose is to tell PyTorch how our data are organised and how to retrieve one image together with its corresponding mask.</p>
 <p>The Dataset receives three pieces of information: the list of patient names that belong to the dataset, the folder containing the processed images, and the folder containing the processed masks.</p>
 <ol class="arabic simple">
@@ -746,7 +732,7 @@ The <strong>getitem</strong> function takes the position of one sample, finds th
 </div>
 </section>
 <section id="split-into-train-validation-test">
-<h2>Split into train / validation / test<a class="headerlink" href="#split-into-train-validation-test" title="Link to this heading">#</a></h2>
+<h2>5. Split into train / validation / test<a class="headerlink" href="#split-into-train-validation-test" title="Link to this heading">#</a></h2>
 <p>We divide the data into training, validation, and test sets so that we can train the model, tune/check its performance during development, and finally evaluate it on unseen data.</p>
 <p>For the data used in this tutorial, there is only one image per patient, so the dataset can be randomly split into training, validation, and test sets at the file level. However, if your dataset contains multiple images or files from the same patient, you should split the data by patient rather than by individual file. This prevents images from the same patient appearing in different sets, which would cause data leakage and could make the model performance appear better than it really is.</p>
 <div class="cell docutils container">
@@ -873,13 +859,12 @@ N of files after split: 60
 Mask batch shape: torch.Size([1, 1, 128, 128, 128])
 </pre></div>
 </div>
-<img alt="../../_images/b21dbd12564a5fdd4b51ea5bb9fc255fd4e2f128d65421241e706f1e7d091bd4.png" src="../../_images/b21dbd12564a5fdd4b51ea5bb9fc255fd4e2f128d65421241e706f1e7d091bd4.png" />
+<img alt="../_images/b21dbd12564a5fdd4b51ea5bb9fc255fd4e2f128d65421241e706f1e7d091bd4.png" src="../_images/b21dbd12564a5fdd4b51ea5bb9fc255fd4e2f128d65421241e706f1e7d091bd4.png" />
 </div>
 </div>
-</section>
 </section>
 <section id="build-the-model-and-define-the-loss">
-<h1>Build the model and define the loss<a class="headerlink" href="#build-the-model-and-define-the-loss" title="Link to this heading">#</a></h1>
+<h2>6. Build the model and define the loss<a class="headerlink" href="#build-the-model-and-define-the-loss" title="Link to this heading">#</a></h2>
 <p><strong>UNetConfig</strong> specifies how the U-Net is built. The <em>filters=[32, 64, 128]</em> define how many feature channels are used at the different levels of the network, while the encoder and decoder blocks each contain three convolutional layers with <em>ReLU</em> activation. The output block produces a single output channel and applies a <em>sigmoid</em> activation, so the final prediction is a value between 0 and 1 for each voxel.</p>
 <p>The model is then created with <em>in_channels=1</em> because each input volume has one channel, <em>out_channels=1</em> because we are predicting one binary segmentation mask, and <em>rank=3</em> because we are working with 3D volumes. Finally, <strong>.to(device)</strong> moves the model to the selected device, usually the GPU if available.</p>
 <div class="cell docutils container">
@@ -938,7 +923,7 @@ Mask batch shape: torch.Size([1, 1, 128, 128, 128])
 </div>
 </section>
 <section id="write-training-inference-loop">
-<h1>Write training/inference loop<a class="headerlink" href="#write-training-inference-loop" title="Link to this heading">#</a></h1>
+<h2>7. Write training/inference loop<a class="headerlink" href="#write-training-inference-loop" title="Link to this heading">#</a></h2>
 <p>We now train the model using the training set and evaluate it on the validation set after each epoch, while storing both losses to monitor learning over time.</p>
 <p>Every 50 epochs, we also apply the current model to the test set and use the GIF functions to create an animated comparison between the predicted segmentation and the ground-truth segmentation across the slices of the 3D volume.</p>
 <p>The generated GIFs are saved locally in a dedicated folder (<em>segmentation_gifs</em>), so that we can visually compare how the model predictions change during training. The following code is neeed for the generation and saving of the GIFs.</p>
@@ -1160,12 +1145,12 @@ Mask batch shape: torch.Size([1, 1, 128, 128, 128])
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e943cbc3827832bd187883659f00158c4fb9f426db0464d4464e206c9c975362.png" src="../../_images/e943cbc3827832bd187883659f00158c4fb9f426db0464d4464e206c9c975362.png" />
+<img alt="../_images/e943cbc3827832bd187883659f00158c4fb9f426db0464d4464e206c9c975362.png" src="../_images/e943cbc3827832bd187883659f00158c4fb9f426db0464d4464e206c9c975362.png" />
 </div>
 </div>
 </section>
 <section id="apply-model-on-test-set">
-<h1>Apply model on test set<a class="headerlink" href="#apply-model-on-test-set" title="Link to this heading">#</a></h1>
+<h2>8. Apply model on test set<a class="headerlink" href="#apply-model-on-test-set" title="Link to this heading">#</a></h2>
 <p>Finally, let’s apply the model we trained on the test set to see how it performs</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1235,7 +1220,7 @@ Mask batch shape: torch.Size([1, 1, 128, 128, 128])
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2889d81eefe84a99630f9e8dd6d36f9c9bf62ef6598a49d6dd85aa7047738c36.png" src="../../_images/2889d81eefe84a99630f9e8dd6d36f9c9bf62ef6598a49d6dd85aa7047738c36.png" />
+<img alt="../_images/2889d81eefe84a99630f9e8dd6d36f9c9bf62ef6598a49d6dd85aa7047738c36.png" src="../_images/2889d81eefe84a99630f9e8dd6d36f9c9bf62ef6598a49d6dd85aa7047738c36.png" />
 </div>
 </div>
 <p>To save the model locally:</p>
@@ -1246,6 +1231,7 @@ Mask batch shape: torch.Size([1, 1, 128, 128, 128])
 </div>
 </div>
 </div>
+</section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <p>[1] Pace, D.F., Contreras, H.T.M., Romanowicz, J. et al. HVSMR-2.0: A 3D cardiovascular MR dataset for whole-heart segmentation in congenital heart disease. Sci Data 11, 721 (2024). https://doi.org/10.1038/s41597-024-03469-9</p>
@@ -1264,16 +1250,16 @@ Mask batch shape: torch.Size([1, 1, 128, 128, 128])
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../segment.html"
+       href="index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Image reconstruction</p>
+        <p class="prev-next-title">Tutorials</p>
       </div>
     </a>
     <a class="right-next"
-       href="../../api_docs/im2sim.html"
+       href="../api_docs/im2sim.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
@@ -1297,22 +1283,16 @@ Mask batch shape: torch.Size([1, 1, 128, 128, 128])
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Segmentation tutorial</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#import-dependencies">Import dependencies</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-data">Prepare Data</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalize-and-downsample">Normalize and downsample</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-dataset">Define Dataset</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split-into-train-validation-test">Split into train / validation / test</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-model-and-define-the-loss">Build the model and define the loss</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#write-training-inference-loop">Write training/inference loop</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-model-on-test-set">Apply model on test set</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-dependencies">1. Import dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-data">2. Prepare Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalize-and-downsample">3. Normalize and downsample</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-dataset">4. Define Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#split-into-train-validation-test">5. Split into train / validation / test</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-model-and-define-the-loss">6. Build the model and define the loss</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#write-training-inference-loop">7. Write training/inference loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-model-on-test-set">8. Apply model on test set</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
 </ul>
-</li>
-</ul>
-
   </nav></div>
 
 </div></div>
@@ -1360,8 +1340,8 @@ By Anirudh Raman, Vivek Muthurangu, Javier Montalt-Tordera
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -30,7 +30,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -42,6 +43,8 @@
     <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/layers';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers.html" />
@@ -161,14 +164,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -222,7 +219,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -238,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="mesh_ops.html">im2sim.mesh_ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -268,12 +263,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -295,7 +288,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -465,14 +457,14 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.layers</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Functions</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">im2sim.layers</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-1">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-hierarchy">Layer hierarchy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torch-and-pyg-module-integration">Torch and PyG Module Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-layers">Custom Layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-custom-layers">Creating Custom Layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rasterizing-and-projecting-features">Rasterizing and Projecting Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interaction-with-configs">Interaction with <cite>configs</cite></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -563,156 +555,276 @@ document.write(`
 </div>
 </section>
 </section>
-<section id="id1">
-<h1>im2sim.layers<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<section id="module-0">
-<span id="id2"></span><h2>Classes<a class="headerlink" href="#module-0" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/ChannelDropout.html#im2sim.layers.ChannelDropout" title="im2sim.layers.ChannelDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChannelDropout</span></code></a></p></td>
-<td><p>Dropout for channels in a graph.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/ConditionedSqueezeExcite.html#im2sim.layers.ConditionedSqueezeExcite" title="im2sim.layers.ConditionedSqueezeExcite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConditionedSqueezeExcite</span></code></a></p></td>
-<td><p>Conditioned Squeeze-and-Excitation [1] (SE) layer that adaptively recalibrates channel-wise feature responses based on an additional conditioning input.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/DefaultGraphNorm.html#im2sim.layers.DefaultGraphNorm" title="im2sim.layers.DefaultGraphNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultGraphNorm</span></code></a></p></td>
-<td><p>The default normalisation for im2sim graph blocks.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/DepthwiseConv.html#im2sim.layers.DepthwiseConv" title="im2sim.layers.DepthwiseConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthwiseConv</span></code></a></p></td>
-<td><p>Depthwise convolution layer that applies a separate convolutional filter to each input channel.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/DepthwiseSeparableConv.html#im2sim.layers.DepthwiseSeparableConv" title="im2sim.layers.DepthwiseSeparableConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthwiseSeparableConv</span></code></a></p></td>
-<td><p>Depthwise separable convolution layer that consists of a depthwise convolution followed by a pointwise convolution.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/EdgeDropout.html#im2sim.layers.EdgeDropout" title="im2sim.layers.EdgeDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EdgeDropout</span></code></a></p></td>
-<td><p>Dropout for edges in a graph.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/EfficientChannelAttn.html#im2sim.layers.EfficientChannelAttn" title="im2sim.layers.EfficientChannelAttn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EfficientChannelAttn</span></code></a></p></td>
-<td><p>Efficient Channel Attention (ECA) layer that adaptively selects important channels based on global context.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/FeatureRasterizer.html#im2sim.layers.FeatureRasterizer" title="im2sim.layers.FeatureRasterizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FeatureRasterizer</span></code></a></p></td>
-<td><p>Rasterizes a point cloud graph into a 3D feature image.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GhostConv.html#im2sim.layers.GhostConv" title="im2sim.layers.GhostConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GhostConv</span></code></a></p></td>
-<td><p>Ghost convolution layer that generates more feature maps from cheap operations.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphActivation.html#im2sim.layers.GraphActivation" title="im2sim.layers.GraphActivation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphActivation</span></code></a></p></td>
-<td><p>A wrapper for activation functions to be used in graph neural networks.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></p></td>
-<td><p>A configurable image convolutional block that consists of a sequence of convolutional layers, normalization layers, dropout layers, and attention layers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphDropout.html#im2sim.layers.GraphDropout" title="im2sim.layers.GraphDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphDropout</span></code></a></p></td>
-<td><p>Dropout for graph data, including node dropout, edge dropout, and channel dropout.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphECA.html#im2sim.layers.GraphECA" title="im2sim.layers.GraphECA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphECA</span></code></a></p></td>
-<td><p>Efficient Channel Attention (ECA) for graph data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphSE.html#im2sim.layers.GraphSE" title="im2sim.layers.GraphSE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphSE</span></code></a></p></td>
-<td><p>Squeeze-and-Excitation (SE) for graph data.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/ImageConvBlock.html#im2sim.layers.ImageConvBlock" title="im2sim.layers.ImageConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageConvBlock</span></code></a></p></td>
-<td><p>A configurable image convolutional block that consists of a sequence of convolutional layers, normalization layers, dropout layers, and attention layers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/MaskRasterizer.html#im2sim.layers.MaskRasterizer" title="im2sim.layers.MaskRasterizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MaskRasterizer</span></code></a></p></td>
-<td><p>Rasterizes a point cloud graph into a 3D mask image.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/NodeDropout.html#im2sim.layers.NodeDropout" title="im2sim.layers.NodeDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeDropout</span></code></a></p></td>
-<td><p>Dropout for nodes in a graph.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/SqueezeExcite.html#im2sim.layers.SqueezeExcite" title="im2sim.layers.SqueezeExcite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SqueezeExcite</span></code></a></p></td>
-<td><p>Squeeze-and-Excitation (SE) layer that adaptively recalibrates channel-wise feature responses.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/TrilinearProjection.html#im2sim.layers.TrilinearProjection" title="im2sim.layers.TrilinearProjection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrilinearProjection</span></code></a></p></td>
-<td><p>TrilinearProjection layer projects image features onto graph coordinates using trilinear interpolation.</p></td>
-</tr>
-</tbody>
-</table>
+<section id="guide">
+<h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
+<p><cite>layers</cite> provides a collection of building blocks for constructing and customising
+deep learning models in <cite>im2sim</cite>.</p>
+<p>The module supports standard <cite>torch</cite> layers, <cite>PyTorch Geometric (PyG)</cite> layers,
+and custom layers designed specifically for image and graph processing. These
+layers can be composed into larger building blocks and complete model
+architectures.</p>
+<p>The <cite>layers</cite> module also provides utilities for:</p>
+<ul class="simple">
+<li><p>dynamically accessing image and graph layers;</p></li>
+<li><p>wrapping PyG modules for use with graph data;</p></li>
+<li><p>constructing configurable image and graph blocks; and</p></li>
+<li><p>transferring features between image and graph domains.</p></li>
+</ul>
+<section id="layer-hierarchy">
+<h2>Layer hierarchy<a class="headerlink" href="#layer-hierarchy" title="Link to this heading">#</a></h2>
+<p>The layers in this module are designed to be composed from general-purpose
+components into increasingly specialised building blocks.</p>
+<p>At the lowest level, individual layers can be accessed dynamically using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">get_image_layer()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">get_graph_layer()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_image_layer</span><span class="p">,</span> <span class="n">get_graph_layer</span>
+
+<span class="n">conv_layer</span> <span class="o">=</span> <span class="n">get_image_layer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">graph_layer</span> <span class="o">=</span> <span class="n">get_graph_layer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GATConv&quot;</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The exact arguments required by a layer depend on the registered layer type.
+For PyG layers, <cite>get_graph_layer</cite> handles the construction and wrapping
+required for use with graph data.</p>
+<p>Higher-level blocks provide configurable compositions of these layers. For
+example, an image convolutional block can be created using
+<a class="reference internal" href="layers/ImageConvBlock.html#im2sim.layers.ImageConvBlock" title="im2sim.layers.ImageConvBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageConvBlock</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ImageConvBlockConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlockConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlock</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">block</span> <span class="o">=</span> <span class="n">ImageConvBlock</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>)</p>
+<p>The configuration object controls the structure of the block, while
+<cite>in_channels</cite>, <cite>out_channels</cite>, and <cite>rank</cite> define the input/output
+dimensions and spatial dimensionality.</p>
+<p>Graph-based blocks are configured similarly using
+<a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConvBlockConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphConvBlockConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphConvBlock</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">GraphConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">graph_block</span> <span class="o">=</span> <span class="n">GraphConvBlock</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Individual layers can also be customised through the configuration object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphConvBlockConfig</span><span class="p">,</span> <span class="n">LayerConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphConvBlock</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">GraphConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+    <span class="n">conv</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GATConv&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;heads&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">graph_block</span> <span class="o">=</span> <span class="n">GraphConvBlock</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
 </div>
 </section>
-<section id="id3">
-<h2>Functions<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
+<section id="torch-and-pyg-module-integration">
+<h2>Torch and PyG Module Integration<a class="headerlink" href="#torch-and-pyg-module-integration" title="Link to this heading">#</a></h2>
+<p>The <cite>layers</cite> module integrates standard <cite>torch</cite> modules and
+<cite>PyG</cite> modules through layer registries. Image layers can be accessed through
+<cite>get_image_layer</cite> and graph layers through <cite>get_graph_layer</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_image_layer</span><span class="p">,</span> <span class="n">get_graph_layer</span>
+
+<span class="n">conv</span> <span class="o">=</span> <span class="n">get_image_layer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">gcn</span> <span class="o">=</span> <span class="n">get_graph_layer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GCNConv&quot;</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>PyG layers are wrapped internally so that they can operate within the graph
+layer interface used by <cite>im2sim</cite>.</p>
+</section>
+<section id="custom-layers">
+<h2>Custom Layers<a class="headerlink" href="#custom-layers" title="Link to this heading">#</a></h2>
+<p>In addition to standard <cite>torch</cite> and <cite>PyG</cite> modules, the <cite>layers</cite> module
+provides custom layers for image and graph processing.</p>
+<p>Examples of image-processing layers include:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="layers/DepthwiseConv.html#im2sim.layers.DepthwiseConv" title="im2sim.layers.DepthwiseConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">DepthwiseConv</span></code></a></p></li>
+<li><p><a class="reference internal" href="layers/DepthwiseSeparableConv.html#im2sim.layers.DepthwiseSeparableConv" title="im2sim.layers.DepthwiseSeparableConv"><code class="xref py py-class docutils literal notranslate"><span class="pre">DepthwiseSeparableConv</span></code></a></p></li>
+<li><p><a class="reference internal" href="layers/SqueezeExcite.html#im2sim.layers.SqueezeExcite" title="im2sim.layers.SqueezeExcite"><code class="xref py py-class docutils literal notranslate"><span class="pre">SqueezeExcite</span></code></a></p></li>
+<li><p><a class="reference internal" href="layers/EfficientChannelAttn.html#im2sim.layers.EfficientChannelAttn" title="im2sim.layers.EfficientChannelAttn"><code class="xref py py-class docutils literal notranslate"><span class="pre">EfficientChannelAttn</span></code></a></p></li>
+</ul>
+<p>Graph-processing functionality includes components such as:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></p></li>
+<li><p><a class="reference internal" href="layers/GraphDropout.html#im2sim.layers.GraphDropout" title="im2sim.layers.GraphDropout"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphDropout</span></code></a></p></li>
+<li><p><a class="reference internal" href="layers/GraphECA.html#im2sim.layers.GraphECA" title="im2sim.layers.GraphECA"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphECA</span></code></a></p></li>
+<li><p><a class="reference internal" href="layers/GraphSE.html#im2sim.layers.GraphSE" title="im2sim.layers.GraphSE"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphSE</span></code></a></p></li>
+</ul>
+<p>These components can be used independently or composed into larger
+architectures.</p>
+</section>
+<section id="creating-custom-layers">
+<h2>Creating Custom Layers<a class="headerlink" href="#creating-custom-layers" title="Link to this heading">#</a></h2>
+<p>New layers can be registered with the appropriate layer registry. A custom
+graph layer can, for example, be implemented as a <cite>torch.nn.Module</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_graph_layer</span>
+
+<span class="nd">@register_graph_layer</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;CustomGraphLayer&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomGraphLayer</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graph</span>
+</pre></div>
+</div>
+<p>Once registered, the layer can be constructed dynamically:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_graph_layer</span>
+
+<span class="n">layer</span> <span class="o">=</span> <span class="n">get_graph_layer</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CustomGraphLayer&quot;</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;in_channels&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;out_channels&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
 </div>
 </section>
-</section>
-<section id="id4">
-<h1>im2sim.layers<a class="headerlink" href="#id4" title="Link to this heading">#</a></h1>
-<section id="module-1">
-<span id="id5"></span><h2>Classes<a class="headerlink" href="#module-1" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/ChannelDropout.html#im2sim.layers.ChannelDropout" title="im2sim.layers.ChannelDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChannelDropout</span></code></a></p></td>
-<td><p>Dropout for channels in a graph.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/ConditionedSqueezeExcite.html#im2sim.layers.ConditionedSqueezeExcite" title="im2sim.layers.ConditionedSqueezeExcite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConditionedSqueezeExcite</span></code></a></p></td>
-<td><p>Conditioned Squeeze-and-Excitation [1] (SE) layer that adaptively recalibrates channel-wise feature responses based on an additional conditioning input.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/DefaultGraphNorm.html#im2sim.layers.DefaultGraphNorm" title="im2sim.layers.DefaultGraphNorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultGraphNorm</span></code></a></p></td>
-<td><p>The default normalisation for im2sim graph blocks.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/DepthwiseConv.html#im2sim.layers.DepthwiseConv" title="im2sim.layers.DepthwiseConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthwiseConv</span></code></a></p></td>
-<td><p>Depthwise convolution layer that applies a separate convolutional filter to each input channel.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/DepthwiseSeparableConv.html#im2sim.layers.DepthwiseSeparableConv" title="im2sim.layers.DepthwiseSeparableConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DepthwiseSeparableConv</span></code></a></p></td>
-<td><p>Depthwise separable convolution layer that consists of a depthwise convolution followed by a pointwise convolution.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/EdgeDropout.html#im2sim.layers.EdgeDropout" title="im2sim.layers.EdgeDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EdgeDropout</span></code></a></p></td>
-<td><p>Dropout for edges in a graph.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/EfficientChannelAttn.html#im2sim.layers.EfficientChannelAttn" title="im2sim.layers.EfficientChannelAttn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EfficientChannelAttn</span></code></a></p></td>
-<td><p>Efficient Channel Attention (ECA) layer that adaptively selects important channels based on global context.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/FeatureRasterizer.html#im2sim.layers.FeatureRasterizer" title="im2sim.layers.FeatureRasterizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FeatureRasterizer</span></code></a></p></td>
-<td><p>Rasterizes a point cloud graph into a 3D feature image.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GhostConv.html#im2sim.layers.GhostConv" title="im2sim.layers.GhostConv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GhostConv</span></code></a></p></td>
-<td><p>Ghost convolution layer that generates more feature maps from cheap operations.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphActivation.html#im2sim.layers.GraphActivation" title="im2sim.layers.GraphActivation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphActivation</span></code></a></p></td>
-<td><p>A wrapper for activation functions to be used in graph neural networks.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></p></td>
-<td><p>A configurable image convolutional block that consists of a sequence of convolutional layers, normalization layers, dropout layers, and attention layers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphDropout.html#im2sim.layers.GraphDropout" title="im2sim.layers.GraphDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphDropout</span></code></a></p></td>
-<td><p>Dropout for graph data, including node dropout, edge dropout, and channel dropout.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/GraphECA.html#im2sim.layers.GraphECA" title="im2sim.layers.GraphECA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphECA</span></code></a></p></td>
-<td><p>Efficient Channel Attention (ECA) for graph data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/GraphSE.html#im2sim.layers.GraphSE" title="im2sim.layers.GraphSE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphSE</span></code></a></p></td>
-<td><p>Squeeze-and-Excitation (SE) for graph data.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/ImageConvBlock.html#im2sim.layers.ImageConvBlock" title="im2sim.layers.ImageConvBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageConvBlock</span></code></a></p></td>
-<td><p>A configurable image convolutional block that consists of a sequence of convolutional layers, normalization layers, dropout layers, and attention layers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/MaskRasterizer.html#im2sim.layers.MaskRasterizer" title="im2sim.layers.MaskRasterizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MaskRasterizer</span></code></a></p></td>
-<td><p>Rasterizes a point cloud graph into a 3D mask image.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/NodeDropout.html#im2sim.layers.NodeDropout" title="im2sim.layers.NodeDropout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeDropout</span></code></a></p></td>
-<td><p>Dropout for nodes in a graph.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="layers/SqueezeExcite.html#im2sim.layers.SqueezeExcite" title="im2sim.layers.SqueezeExcite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SqueezeExcite</span></code></a></p></td>
-<td><p>Squeeze-and-Excitation (SE) layer that adaptively recalibrates channel-wise feature responses.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="layers/TrilinearProjection.html#im2sim.layers.TrilinearProjection" title="im2sim.layers.TrilinearProjection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrilinearProjection</span></code></a></p></td>
-<td><p>TrilinearProjection layer projects image features onto graph coordinates using trilinear interpolation.</p></td>
-</tr>
-</tbody>
-</table>
+<section id="rasterizing-and-projecting-features">
+<h2>Rasterizing and Projecting Features<a class="headerlink" href="#rasterizing-and-projecting-features" title="Link to this heading">#</a></h2>
+<p>The <cite>layers</cite> module includes utilities for transferring features between
+image and graph domains.</p>
+<p>For example, <a class="reference internal" href="layers/TrilinearProjection.html#im2sim.layers.TrilinearProjection" title="im2sim.layers.TrilinearProjection"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrilinearProjection</span></code></a> can project image features onto graph
+nodes, while <a class="reference internal" href="layers/MaskRasterizer.html#im2sim.layers.MaskRasterizer" title="im2sim.layers.MaskRasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MaskRasterizer</span></code></a> can rasterize graph geometry or features
+back into an image representation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">MaskRasterizer</span><span class="p">,</span> <span class="n">TrilinearProjection</span>
+
+<span class="n">projection</span> <span class="o">=</span> <span class="n">TrilinearProjection</span><span class="p">(</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">rasterizer</span> <span class="o">=</span> <span class="n">MaskRasterizer</span><span class="p">()</span>
+</pre></div>
 </div>
 </section>
-<section id="id6">
-<h2>Functions<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
+<section id="interaction-with-configs">
+<h2>Interaction with <cite>configs</cite><a class="headerlink" href="#interaction-with-configs" title="Link to this heading">#</a></h2>
+<p>The <cite>layers</cite> module is designed to work closely with the <cite>configs</cite> module.
+Configuration objects allow layer and block architectures to be defined
+separately from their construction.</p>
+<p>For example, an image convolutional block can be configured using
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImageConvBlockConfig</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlockConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlock</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">block</span> <span class="o">=</span> <span class="n">ImageConvBlock</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
 </div>
+<p>Individual layer properties can also be specified using <cite>LayerConfig</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlockConfig</span><span class="p">,</span> <span class="n">LayerConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageConvBlock</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">ImageConvBlockConfig</span><span class="p">(</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;ReLU&quot;</span><span class="p">,</span>
+    <span class="n">conv</span><span class="o">=</span><span class="n">LayerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Conv&quot;</span><span class="p">,</span>
+        <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;kernel_size&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;same&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">block</span> <span class="o">=</span> <span class="n">ImageConvBlock</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Configuration objects can also be modified and reused when constructing
+different models, making it possible to maintain consistent architectures
+across experiments.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>The <cite>layers</cite> module provides a flexible system for constructing deep learning
+models from reusable image and graph components. Standard <cite>torch</cite> and <cite>PyG</cite>
+layers can be accessed dynamically, while higher-level blocks such as
+<a class="reference internal" href="layers/ImageConvBlock.html#im2sim.layers.ImageConvBlock" title="im2sim.layers.ImageConvBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageConvBlock</span></code></a> and <a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a> provide configurable
+architectural building blocks.</p>
+<p>The integration with <cite>configs</cite> separates architectural configuration from
+layer construction, making layers and blocks straightforward to customise,
+reuse, and compose into larger image-to-graph models.</p>
 </section>
 </section>
 
@@ -766,14 +878,14 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.layers</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Functions</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">im2sim.layers</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-1">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-hierarchy">Layer hierarchy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torch-and-pyg-module-integration">Torch and PyG Module Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-layers">Custom Layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-custom-layers">Creating Custom Layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rasterizing-and-projecting-features">Rasterizing and Projecting Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interaction-with-configs">Interaction with <cite>configs</cite></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 </ul>
 </li>
 </ul>

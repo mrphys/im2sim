@@ -40,6 +40,11 @@ os.makedirs(os.path.join(API_DOCS_PATH, 'im2sim'), exist_ok=True)
 with open(os.path.join(TEMPLATES_PATH, 'index.rst'), 'r') as f:
   INDEX_TEMPLATE = string.Template(f.read())
 
+#  .. autosummary::
+#     :nosignatures:
+
+#     ${namespaces}
+
 im2sim_DOC_TEMPLATE = string.Template(
 """
 im2sim
@@ -50,18 +55,33 @@ im2sim
 Modules
 -------
 
-.. autosummary::
-    :nosignatures:
+.. list-table::
+   :header-rows: 1
 
-    ${namespaces}
+    * - Module
+      - Description
+    * - :py:mod:`im2sim.configs`
+      - Flexible configurations for im2sim `models` and `layers`.
+    * - :py:mod:`im2sim.models`
+      - Neural network models for imaging and simulation tasks.
+    * - :py:mod:`im2sim.layers`
+      - Building blocks for constructing image and graph neural networks.
+    * - :py:mod:`im2sim.losses`
+      - Loss functions for training neural networks.
+    * - :py:mod:`im2sim.plot`
+      - Plotting utilities for visualizing images, graphs, and training results.
+    * - :py:mod:`im2sim.data`
+      - Data loading and preprocessing utilities for imaging and simulation tasks.
+    * - :py:mod:`im2sim.transforms`
+      - Data augmentation and transformation utilities to be used alongside `im2sim.data`.
+    * - :py:mod:`im2sim.transforms.mesh_ops`
+      - Mesh operations for 3D data processing and manipulation.
 
 """)
 
 MODULE_DOC_TEMPLATE = string.Template(
 """im2sim.${module}
 =======${underline}
-
-${module_guide_text}
 
 .. automodule:: im2sim.${module}
 
@@ -84,6 +104,11 @@ Functions
     :nosignatures:
 
     ${functions}
+
+Guide
+=====
+
+${module_guide_text}
 """)
 
 
@@ -118,7 +143,7 @@ code_path = os.path.join(ROOT_PATH, "im2sim")
 namespaces = [
     name
     for name in os.listdir(code_path)
-    if os.path.isdir(os.path.join(code_path, name))
+    if os.path.isdir(os.path.join(code_path, name)) and not name.startswith("__") and not name.startswith(".")
 ]
 
 

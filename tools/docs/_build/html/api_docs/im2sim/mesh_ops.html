@@ -30,7 +30,8 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=691f4282" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" />
   
@@ -42,6 +43,8 @@
     <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api_docs/im2sim/mesh_ops';</script>
     <link rel="canonical" href="https://mrphys.github.io/im2sim/api_docs/im2sim/mesh_ops.html" />
@@ -161,14 +164,8 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/segment.html">Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/segmentation/seg_tutorial_hvsmr.html">Segmentation tutorial</a></li>
-
-
-
-
-
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">3D UNet Segmentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/seg_tutorial_hvsmr.html">3D UNet Segmentation</a></li>
 </ul>
 </details></li>
 </ul>
@@ -222,7 +219,6 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="losses.html">im2sim.losses</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="losses/AspectRatioLoss.html">im2sim.losses.AspectRatioLoss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="losses/ChamferLoss.html">im2sim.losses.ChamferLoss</a></li>
@@ -238,7 +234,6 @@
 <li class="toctree-l2"><a class="reference internal" href="losses/TverskyLoss.html">im2sim.losses.TverskyLoss</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">im2sim.mesh_ops</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="mesh_ops/cluster_pool.html">im2sim.mesh_ops.cluster_pool</a></li>
@@ -268,12 +263,10 @@
 </ul>
 </details></li>
 
-
 <li class="toctree-l1 has-children"><a class="reference internal" href="plot.html">im2sim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="plot/PointCloudPlot.html">im2sim.plot.PointCloudPlot</a></li>
 </ul>
 </details></li>
-
 
 <li class="toctree-l1 has-children"><a class="reference internal" href="transforms.html">im2sim.transforms</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="transforms/FitNormOp.html">im2sim.transforms.FitNormOp</a></li>
@@ -295,7 +288,6 @@
 </details></li>
 
 <li class="toctree-l1"><a class="reference internal" href="utils.html">im2sim.utils</a></li>
-
 
 </ul>
 
@@ -465,9 +457,9 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.mesh_ops</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-properties-and-representations">Mesh properties and representations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-mesh-structures">Working with mesh structures</a></li>
 </ul>
 </li>
 </ul>
@@ -482,29 +474,10 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="im2sim-mesh-ops">
-<h1>im2sim.mesh_ops<a class="headerlink" href="#im2sim-mesh-ops" title="Link to this heading">#</a></h1>
-<p><cite>mesh_ops</cite> is a set of utilities that allow for the manipulation of 3D meshes.
-It includes functions for computing various properties of meshes such as normals, curvature, and surface area.</p>
-<p>It is specifically compatible with Pyvista pointgrid objects and can be used to convert mesh representations between PyVista and Pytorch Geometric formats.</p>
-<p>For example if you have a PyVista mesh saved as a .vtu file, you can follow the worksflow below to convert it to a simple Pytorch Geometric mesh representation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">im2sim.mesh_ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">M</span>
-
-<span class="c1"># Load the PyVista mesh from a .vtu file</span>
-<span class="n">pv_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;example_mesh.vtu&quot;</span><span class="p">)</span>
-
-<span class="n">coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pv_mesh</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-
-<span class="n">edge_index</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_edges_tet</span><span class="p">(</span><span class="n">pv_mesh</span><span class="p">)</span>
-
-<span class="c1"># Convert the PyVista mesh to a Pytorch Geometric mesh representation</span>
-<span class="n">pyg_mesh</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">)</span>
-</pre></div>
-</div>
+  <section id="module-im2sim.mesh_ops">
+<span id="im2sim-mesh-ops"></span><h1>im2sim.mesh_ops<a class="headerlink" href="#module-im2sim.mesh_ops" title="Link to this heading">#</a></h1>
 <section id="classes">
-<span id="module-im2sim.mesh_ops"></span><h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 </tbody>
@@ -562,12 +535,37 @@ It includes functions for computing various properties of meshes such as normals
 </div>
 </section>
 </section>
-<section id="id1">
-<h1>im2sim.mesh_ops<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<p><cite>mesh_ops</cite> is a set of utilities that allow for the manipulation of 3D meshes.
-It includes functions for computing various properties of meshes such as normals, curvature, and surface area.</p>
-<p>It is specifically compatible with Pyvista pointgrid objects and can be used to convert mesh representations between PyVista and Pytorch Geometric formats.</p>
-<p>For example if you have a PyVista mesh saved as a .vtu file, you can follow the worksflow below to convert it to a simple Pytorch Geometric mesh representation:</p>
+<section id="guide">
+<h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">mesh_ops</span></code> provides utilities for manipulating and processing 3D meshes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">mesh_ops</span></code> is an optional module within <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> and requires the
+additional mesh dependencies to be installed.</p>
+<p>See the installation instructions on the <span class="xref std std-doc">../index</span> for more
+information.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mesh_ops</span></code> is not imported automatically by <code class="docutils literal notranslate"><span class="pre">im2sim</span></code>. It must be
+imported explicitly before its functions can be used.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This works</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">im2sim.mesh_ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">M</span>
+
+<span class="n">pv_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;example_mesh.vtu&quot;</span><span class="p">)</span>
+<span class="n">edge_index</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_edges_tet</span><span class="p">(</span><span class="n">pv_mesh</span><span class="p">)</span>
+
+<span class="c1"># This does not work</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">im2sim</span>
+
+<span class="n">pv_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;example_mesh.vtu&quot;</span><span class="p">)</span>
+<span class="n">edge_index</span> <span class="o">=</span> <span class="n">im2sim</span><span class="o">.</span><span class="n">mesh_ops</span><span class="o">.</span><span class="n">get_edges_tet</span><span class="p">(</span><span class="n">pv_mesh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="mesh-properties-and-representations">
+<h2>Mesh properties and representations<a class="headerlink" href="#mesh-properties-and-representations" title="Link to this heading">#</a></h2>
+<p>The module is designed to work with PyVista meshes and provides utilities for
+converting mesh representations between PyVista and PyTorch Geometric (PyG).</p>
+<p>For example, a tetrahedral mesh stored in a <cite>.vtu</cite> file can be converted to
+a simple PyG representation as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">im2sim.mesh_ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">M</span>
@@ -579,67 +577,85 @@ It includes functions for computing various properties of meshes such as normals
 
 <span class="n">edge_index</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_edges_tet</span><span class="p">(</span><span class="n">pv_mesh</span><span class="p">)</span>
 
-<span class="c1"># Convert the PyVista mesh to a Pytorch Geometric mesh representation</span>
+<span class="c1"># Convert the PyVista mesh to a PyTorch Geometric representation</span>
 <span class="n">pyg_mesh</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="module-0">
-<span id="id2"></span><h2>Classes<a class="headerlink" href="#module-0" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
+<p>Surface meshes can be converted in a similar way using
+<a class="reference internal" href="mesh_ops/get_edges_surf.html#im2sim.mesh_ops.get_edges_surf" title="im2sim.mesh_ops.get_edges_surf"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_edges_surf()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">im2sim.mesh_ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">M</span>
+
+<span class="c1"># Load the PyVista surface mesh from a .vtk file</span>
+<span class="n">pv_mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;example_mesh.vtk&quot;</span><span class="p">)</span>
+
+<span class="n">coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pv_mesh</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">edge_index</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_edges_surf</span><span class="p">(</span><span class="n">pv_mesh</span><span class="p">)</span>
+
+<span class="c1"># Convert the PyVista mesh to a PyTorch Geometric representation</span>
+<span class="n">pyg_mesh</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">)</span>
+</pre></div>
 </div>
 </section>
-<section id="id3">
-<h2>Functions<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/cluster_pool.html#im2sim.mesh_ops.cluster_pool" title="im2sim.mesh_ops.cluster_pool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cluster_pool</span></code></a></p></td>
-<td><p>Performs Graclus clustering-based pooling on a mesh graph, coarsening it by merging nodes into clusters weighted by inverse edge length.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/compute_edge_lengths.html#im2sim.mesh_ops.compute_edge_lengths" title="im2sim.mesh_ops.compute_edge_lengths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_edge_lengths</span></code></a></p></td>
-<td><p>Computes the squared Euclidean distance for each edge in a mesh.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/get_edges.html#im2sim.mesh_ops.get_edges" title="im2sim.mesh_ops.get_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edges</span></code></a></p></td>
-<td><p>Extracts edges for a single structure in a pyvista PointGrid object.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/get_edges_surf.html#im2sim.mesh_ops.get_edges_surf" title="im2sim.mesh_ops.get_edges_surf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edges_surf</span></code></a></p></td>
-<td><p>A function to get the edge index for training from a pyvista surface mesh.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/get_edges_tet.html#im2sim.mesh_ops.get_edges_tet" title="im2sim.mesh_ops.get_edges_tet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_edges_tet</span></code></a></p></td>
-<td><p>A function to get the edge index for training from a tetrahedral pyvista mesh</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/get_node_features.html#im2sim.mesh_ops.get_node_features" title="im2sim.mesh_ops.get_node_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_features</span></code></a></p></td>
-<td><p>Extracts the node features from a pyvista mesh object based on the feature names provided.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/get_structure_cells.html#im2sim.mesh_ops.get_structure_cells" title="im2sim.mesh_ops.get_structure_cells"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_structure_cells</span></code></a></p></td>
-<td><p>Extracts cells for different substructures in a pyvista PointGrid object.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/get_structure_edges.html#im2sim.mesh_ops.get_structure_edges" title="im2sim.mesh_ops.get_structure_edges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_structure_edges</span></code></a></p></td>
-<td><p>Extracts edges for different substructures in a pyvista PointGrid object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/get_structure_ids.html#im2sim.mesh_ops.get_structure_ids" title="im2sim.mesh_ops.get_structure_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_structure_ids</span></code></a></p></td>
-<td><p>Extracts node ids for different substructures in a pyvista PointGrid object.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/hard_threshold.html#im2sim.mesh_ops.hard_threshold" title="im2sim.mesh_ops.hard_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hard_threshold</span></code></a></p></td>
-<td><p>Thresholds a Tensor y according to a specified float threshold.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/make_padded_batch.html#im2sim.mesh_ops.make_padded_batch" title="im2sim.mesh_ops.make_padded_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_padded_batch</span></code></a></p></td>
-<td><p>A helper function to pad a batch of data to the same size.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/rasterize.html#im2sim.mesh_ops.rasterize" title="im2sim.mesh_ops.rasterize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rasterize</span></code></a></p></td>
-<td><p>Computes the squared Euclidean distance between voxel centroids in a grid to a pointcloud</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mesh_ops/set_attrs.html#im2sim.mesh_ops.set_attrs" title="im2sim.mesh_ops.set_attrs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_attrs</span></code></a></p></td>
-<td><p>A helper function to set multiple attributes of a PyG Data object with keys and values from a dictionary.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mesh_ops/soft_threshold.html#im2sim.mesh_ops.soft_threshold" title="im2sim.mesh_ops.soft_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">soft_threshold</span></code></a></p></td>
-<td><p>Thresholds a Tensor y according to a specified float threshold.</p></td>
-</tr>
-</tbody>
-</table>
+<section id="working-with-mesh-structures">
+<h2>Working with mesh structures<a class="headerlink" href="#working-with-mesh-structures" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mesh_ops</span></code> also provides utilities for working with labelled mesh
+substructures, such as vessel walls, inlets, and outlets. These can be used
+to identify regions of interest and provide structural information to
+downstream machine-learning models.</p>
+<p>For example, structure identifiers can be extracted from a PyVista mesh and
+stored as attributes on a PyG <code class="docutils literal notranslate"><span class="pre">Data</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">im2sim.mesh_ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">M</span>
+
+<span class="c1"># Load the PyVista mesh</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;example_mesh.vtu&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create a PyTorch Geometric Data object to hold the mesh representation</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">()</span>
+
+<span class="c1"># Set the coordinates and edge index of the mesh</span>
+<span class="n">data</span><span class="o">.</span><span class="n">coords</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">edge_index</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_edges_tet</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+<span class="c1"># Map PyVista CellEntityIds to structure names</span>
+<span class="n">structure_ids</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;wall&quot;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;inlet&quot;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;outlet&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<span class="c1"># Get the structure node indices and set them as attributes</span>
+<span class="c1"># on the PyG Data object. The resulting attributes are</span>
+<span class="c1"># &#39;wall_index&#39;, &#39;inlet_index&#39;, and &#39;outlet_index&#39;.</span>
+<span class="n">structure_ids</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_structure_ids</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">structure_ids</span><span class="p">)</span>
+<span class="n">M</span><span class="o">.</span><span class="n">set_attrs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">structure_ids</span><span class="p">)</span>
+
+<span class="c1"># Get the structure cell indices and set them as attributes</span>
+<span class="c1"># on the PyG Data object. The resulting attributes are</span>
+<span class="c1"># &#39;wall_cell_index&#39;, &#39;inlet_cell_index&#39;, and &#39;outlet_cell_index&#39;.</span>
+<span class="n">cell_ids</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_structure_cells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">structure_ids</span><span class="p">)</span>
+<span class="n">M</span><span class="o">.</span><span class="n">set_attrs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cell_ids</span><span class="p">)</span>
+
+<span class="c1"># Define the feature names to extract. These should correspond to</span>
+<span class="c1"># column names in the VTU file&#39;s point_data.</span>
+<span class="n">feature_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">]</span>
+
+<span class="c1"># Create a &#39;cfd&#39; attribute to hold the node features.</span>
+<span class="c1"># The resulting tensor has shape (num_nodes, num_features).</span>
+<span class="n">data</span><span class="o">.</span><span class="n">cfd</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">get_node_features</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">)</span>
+</pre></div>
 </div>
+<p>In addition to structure extraction, <code class="docutils literal notranslate"><span class="pre">mesh_ops</span></code> supports loading nodal data
+from VTU files and assigning attributes recursively to PyG <code class="docutils literal notranslate"><span class="pre">Data</span></code> objects.
+This is useful for constructing graph representations that combine mesh
+geometry, anatomical structures, boundary conditions, material properties,
+and simulation outputs.</p>
+<p>These utilities can therefore be used to prepare PyVista meshes for use as
+inputs or targets in machine-learning workflows based on PyTorch Geometric.</p>
 </section>
 </section>
 
@@ -693,9 +709,9 @@ It includes functions for computing various properties of meshes such as normals
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">im2sim.mesh_ops</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-0">Classes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Functions</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-properties-and-representations">Mesh properties and representations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-mesh-structures">Working with mesh structures</a></li>
 </ul>
 </li>
 </ul>

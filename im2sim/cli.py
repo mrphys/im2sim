@@ -16,6 +16,8 @@
 
 import urllib.request
 
+from packaging.version import Version
+
 
 def install_pyg():
     import subprocess
@@ -47,9 +49,10 @@ def install_pyg():
         raise
 
     pyg_version = torch_geometric.__version__
-    pyg_version = int(pyg_version.replace(".", ""))
 
-    if pyg_version >= 280:
+    pyg_version = Version(pyg_version)
+
+    if pyg_version >= Version("2.8.0"):
         print(
             "Detected PyTorch Geometric version >= 2.8.0, installing pyg-lib and torch-scatter..."
         )

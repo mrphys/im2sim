@@ -440,3 +440,27 @@ class Upsample(torch.nn.Module):
             mode=self.mode,
             align_corners=self.align_corners,
         )
+
+
+# torch.nn.PixelShuffle only shuffles the last two spatial dims, so only rank 2 is valid
+@register_with_ranks("CustomPixelShuffle", (2,))
+class CustomPixelShuffle(torch.nn.Module):
+    """
+    PixelShuffle layer that applies a depthwise conv to maintain channels
+    """
+
+    def __init__(self, in_channels, rank, upscale_factor=2, depthwise=True):
+        super().__init__()
+        self.conv = get_image_layer("Conv", rank)(
+            in_channels=in_channels,
+            out_channels=in_channels * (upscale_factor**2),
+            groups=in_channels if depthwise else 1,
+            kernel_size=1,
+        )
+
+        self.pixelshuffle = torch.nn.PixelShuffle(upscale_factor)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.pixelshuffle(x)
+        return x

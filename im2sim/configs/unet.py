@@ -199,6 +199,7 @@ class UNetConfig(Config):
     decoder_blocks_per_level: int = 1
     fusion_type: str = "concat"
     out_activation: str | None = None
+    enable_temporal: bool = False
 
     def __post_init__(self):
 

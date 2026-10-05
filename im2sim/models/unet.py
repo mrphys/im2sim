@@ -169,6 +169,7 @@ class UNet(torch.nn.Module):
                         out_channels=out_ch,
                         rank=rank,
                         cfg=cfg.encoder_block_cfg[i],
+                        temporal=cfg.enable_temporal,
                     )
                     for j in range(cfg.encoder_blocks_per_level)
                 ]
@@ -178,14 +179,18 @@ class UNet(torch.nn.Module):
 
             if i < self.L - 1:
                 skip = ImageConvBlock(
-                    in_channels=out_ch, out_channels=out_ch, rank=rank, cfg=cfg.skip_connection_cfg
+                    in_channels=out_ch,
+                    out_channels=out_ch,
+                    rank=rank,
+                    cfg=cfg.skip_connection_cfg,
+                    temporal=cfg.enable_temporal,
                 )
                 self.skip_blocks.append(skip)
 
             if i < self.L - 1:
                 # we need to pass in the in_channels and out_channels to the pooling layer, as some pooling layers (e.g., strided conv) require them
                 pool = call_with_supported_kwargs(
-                    get_image_layer(pool_cfg[i].name, rank),
+                    get_image_layer(pool_cfg[i].name, rank, temporal=cfg.enable_temporal),
                     {"in_channels": out_ch, "out_channels": out_ch, **pool_cfg[i].kwargs},
                 )
                 self.pools.append(pool)
@@ -206,7 +211,7 @@ class UNet(torch.nn.Module):
 
             # upsample layer needs to know the number of channels in the input and output, as some upsampling layers (e.g., transposed conv) require them
             up = call_with_supported_kwargs(
-                get_image_layer(upsample_cfg[i].name, rank),
+                get_image_layer(upsample_cfg[i].name, rank, temporal=cfg.enable_temporal),
                 {
                     "in_channels": filters[i + 1],
                     "out_channels": filters[i + 1],
@@ -228,6 +233,7 @@ class UNet(torch.nn.Module):
                         out_channels=out_ch,
                         rank=rank,
                         cfg=cfg.decoder_block_cfg[i],
+                        temporal=cfg.enable_temporal,
                     )
                     for j in range(cfg.decoder_blocks_per_level)
                 ]
@@ -243,6 +249,7 @@ class UNet(torch.nn.Module):
                         out_channels=out_channels,
                         rank=rank,
                         cfg=cfg.out_block_cfg,
+                        temporal=cfg.enable_temporal,
                     )
                 )
 

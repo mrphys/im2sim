@@ -87,12 +87,20 @@ class ImageConvBlock(torch.nn.Module):
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.ImageConvBlockConfig` class:
     """
 
-    def __init__(self, in_channels: int, out_channels: int, rank: int, cfg: ImageConvBlockConfig):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        rank: int,
+        cfg: ImageConvBlockConfig,
+        temporal: bool = False,
+    ):
         super().__init__()
 
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.rank = rank
+        self.temporal = temporal
         self.depth = cfg.depth
         self.activation = get_activation(cfg.activation)
         self.out_activation = get_activation(cfg.out_activation)
@@ -124,18 +132,20 @@ class ImageConvBlock(torch.nn.Module):
 
             in_channels_per_layer.append(in_channels_current)
 
-            conv = get_image_layer(self.conv_cfg.name, rank=self.rank)(
+            conv = get_image_layer(self.conv_cfg.name, rank=self.rank, temporal=self.temporal)(
                 in_channels=in_channels_per_layer[-1],
                 out_channels=out_channels,
                 **self.conv_cfg.kwargs,
             )
 
-            norm = get_image_layer(self.norm_cfg.name, rank=self.rank)(
+            norm = get_image_layer(self.norm_cfg.name, rank=self.rank, temporal=self.temporal)(
                 self.out_channels, **self.norm_cfg.kwargs
             )
 
             dropout = (
-                get_image_layer(self.dropout_cfg.name, rank=self.rank)(**self.dropout_cfg.kwargs)
+                get_image_layer(self.dropout_cfg.name, rank=self.rank, temporal=self.temporal)(
+                    **self.dropout_cfg.kwargs
+                )
                 if (i + 1) in self.dropout_position
                 else torch.nn.Identity()
             )
@@ -143,7 +153,7 @@ class ImageConvBlock(torch.nn.Module):
             pre_residual = self.attn_cfg.name is not None and (i + 1) in self.residual_connections
             no_residual_final = len(self.residual_connections.keys()) == 0 and i == self.depth - 1
             if pre_residual or no_residual_final:
-                attn = get_image_layer(self.attn_cfg.name, rank=self.rank)(
+                attn = get_image_layer(self.attn_cfg.name, rank=self.rank, temporal=self.temporal)(
                     self.out_channels, **self.attn_cfg.kwargs
                 )
             else:

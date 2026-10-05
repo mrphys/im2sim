@@ -133,9 +133,17 @@ def register_with_ranks(base_name, ranks=(1, 2, 3)):
     return decorator
 
 
-def get_image_layer(name: str, rank: int) -> torch.nn.Module:
+def get_image_layer(name: str, rank: int, temporal: bool = False) -> torch.nn.Module:
     """
-    Get a PyTorch layer by name, with optional arguments.
+    Get a PyTorch layer by name, with optional temporal factorization.
+
+    Args:
+        name: Layer name (e.g., 'Conv', 'MaxPool', 'BatchNorm')
+        rank: Spatial rank (1, 2, or 3)
+        temporal: If True, wraps the layer with TemporalFactorizer for temporal factorization
+
+    Returns:
+        Layer class or factory function
     """
 
     if name is None:
@@ -143,15 +151,47 @@ def get_image_layer(name: str, rank: int) -> torch.nn.Module:
 
     rank_name = f"{name}{rank}d"
 
+    layer_class = None
     try:
-        return IMAGE_LAYERS[rank_name]
+        layer_class = IMAGE_LAYERS[rank_name]
     except KeyError:
-        pass
+        try:
+            layer_class = IMAGE_LAYERS[name]
+        except KeyError:
+            raise ValueError(
+                f"Layer {name} with rank {rank} not found in PyTorch layers registry"
+            ) from None
 
-    try:
-        return IMAGE_LAYERS[name]
-    except KeyError:
-        ValueError(f"Layer {name} with rank {rank} not found in PyTorch layers registry")
+    if not temporal:
+        return layer_class
+
+    # For temporal factorization, return a factory function that creates and wraps the layer
+    # We need to return a callable that will be recognized by call_with_supported_kwargs
+    from im2sim.layers.temporal_factorizer import TemporalFactorizer
+
+    # Create a wrapper function that preserves the signature of the layer class
+    def make_temporal_wrapper():
+        """Create a wrapper that instantiates the layer and wraps it with TemporalFactorizer."""
+
+        class TemporalLayerWrapper:
+            """Wrapper that creates a spatial layer and factorizes it temporally."""
+
+            __wrapped_class__ = layer_class
+            __temporal_rank__ = rank
+
+            def __new__(cls, *args, **kwargs):
+                # Create the spatial layer
+                module = layer_class(*args, **kwargs)
+                # Wrap it with TemporalFactorizer
+                return TemporalFactorizer(module, rank=rank)
+
+        # Copy the signature from the original layer_class to make call_with_supported_kwargs work
+        TemporalLayerWrapper.__init__ = layer_class.__init__
+        TemporalLayerWrapper.__signature__ = inspect.signature(layer_class)
+
+        return TemporalLayerWrapper
+
+    return make_temporal_wrapper()
 
 
 def get_activation(name: str | None) -> torch.nn.Module:

@@ -42,7 +42,7 @@ class UNetConfig(Config):
 
         block_cfg (ImageConvBlockConfig):
             Configuration for convolutional blocks. Used as a default for encoder and decoder blocks.
-            Default is a standard convolutional block with `3x3` kernels, stride `1`, padding `1`, and `ReLU` activation.
+            Default is `ImageConvBlockConfig()`: a single `3x3` convolution with `"same"` padding, `InstanceNorm` and `ReLU` activation.
 
         encoder_block_cfg (list[ImageConvBlockConfig] | ImageConvBlockConfig | None):
             Configuration for encoder blocks. Can be a single ImageConvBlockConfig or a list of ImageConvBlockConfigs for each level starting with the highest resolution.
@@ -50,6 +50,7 @@ class UNetConfig(Config):
 
         decoder_block_cfg (list[ImageConvBlockConfig] | ImageConvBlockConfig | None):
             Configuration for decoder blocks. Can be a single ImageConvBlockConfig or a list of ImageConvBlockConfigs for each level starting with the lowest resolution.
+            The list must have one entry per level, but the first (lowest resolution) entry is unused since the bottleneck is the last encoder block.
             If None, uses block_cfg for all levels.
 
         skip_connection_cfg (ImageConvBlockConfig | None):
@@ -58,7 +59,7 @@ class UNetConfig(Config):
 
         out_block_cfg (ImageConvBlockConfig | None):
             Configuration for the output block. Can only be a single ImageConvBlockConfig.
-            If None, uses a single convolution operation taken from block_cfg.
+            If None, uses a single `1x1` convolution taken from block_cfg with `out_activation` as its output activation.
 
         encoder_blocks_per_level (int):
             Number of convolutional blocks per level in the encoder. Default is `1`.
@@ -71,9 +72,11 @@ class UNetConfig(Config):
 
         out_activation (str | None):
             Activation function for the output block. If None, no activation is applied.
+            Only used when `out_block_cfg` is None.
 
         enable_temporal (bool):
             If True, layers are wrapped with `TemporalFactorizer` so the model accepts inputs of shape `(N, C, T, *spatial)` with the time axis after channels.
+            Only supported for rank `2` and `3`, and only for layer types supported by `TemporalFactorizer`.
             Default is `False`.
 
     Examples:
@@ -172,10 +175,10 @@ class UNetConfig(Config):
 
         >>> cfg = UNetConfig(filters=[32, 32, 32]).to_depthwise_separable().add_input_residual()
 
-        To save the configuration to a YAML file and load it back, you can use:
+        To save the configuration to a JSON file and load it back, you can use:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = UNetConfig.load("my_config.yaml")
+        >>> cfg.save("my_config.json")
+        >>> loaded_cfg = UNetConfig.load("my_config.json")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
 
@@ -260,14 +263,15 @@ class UNetConfig(Config):
 
     def add_input_residual(self):
         """
-        Apply a residual connection to all encoder blocks in the UNet configuration.
+        Apply an input residual connection (see `ImageConvBlockConfig.add_input_residual()`) to all encoder blocks except the first,
+        and to all decoder blocks if `fusion_type` is `'add'`.
 
-        The residual connection type is set to "add" for all encoder blocks,
-        which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
+        The residual connection type is set to "add", so the input of each block is added to the output of the block.
         This can help with gradient flow and improve training stability.
 
         Note:
-            This method assumes that all encoder blocks have the same number of filters. If they do not, an assertion error will be raised.
+            This method requires all levels to have the same number of filters. If they do not, an assertion error will be raised.
+            With `'concat'` fusion the decoder blocks receive more channels than they output, so they are left unchanged.
         """
         assert all(self.filters[0] == f for f in self.filters), (
             "All filters must be the same for input residual connection"
@@ -276,16 +280,17 @@ class UNetConfig(Config):
         for e in self.encoder_block_cfg[1:]:
             e.add_input_residual()
 
-        for d in self.decoder_block_cfg:
-            d.add_input_residual()
+        if self.fusion_type.strip().lower() == "add":
+            for d in self.decoder_block_cfg:
+                d.add_input_residual()
 
         return self
 
     def add_conv1_residual(self):
         """
-        Apply a residual connection to the first convolutional layer in all encoder blocks in the UNet configuration.
+        Apply a residual connection from the first convolutional layer in all encoder and decoder blocks in the UNet configuration.
 
-        The residual connection type is set to "add" for all encoder blocks,
+        The residual connection type is set to "add" for all encoder and decoder blocks,
         which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
         This can help with gradient flow and improve training stability.
 
@@ -319,7 +324,7 @@ class UNetConfig(Config):
         """
         Apply a double bottleneck configuration to the UNet.
 
-        This change modifies the last encoder block to have two convolutional layers instead of one, which can help increase the capacity of the model.
+        This change doubles the depth (number of convolutional layers) of the last encoder block, which can help increase the capacity of the model.
         """
         self.encoder_block_cfg[-1].depth = self.encoder_block_cfg[-1].depth * 2
         return self
@@ -372,7 +377,7 @@ class UNetConfig(Config):
 
     def to_depthwise_separable(self):
         """
-        Apply a depthwise separable convolution (see `im2sim.layers.DepthwiseSeparableConv`) preset to all encoder blocks in the UNet configuration.
+        Apply a depthwise separable convolution (see `im2sim.layers.DepthwiseSeparableConv`) preset to all encoder and decoder blocks in the UNet configuration.
         """
         for e, d in zip(self.encoder_block_cfg, self.decoder_block_cfg, strict=True):
             e.conv_cfg.name = "DepthwiseSeparableConv"

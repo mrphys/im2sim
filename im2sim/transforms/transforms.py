@@ -65,7 +65,7 @@ def Norm(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a normalization transform using `im2sim.data.ops.NormOp`.
+    Factory function to create a normalization transform using `im2sim.transforms.ops.NormOp`.
 
     Args:
         keys (list): List of keys to which the normalization will be applied.
@@ -100,7 +100,7 @@ def RangeNorm(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a range normalization transform using `im2sim.data.ops.RangeNormOp`.
+    Factory function to create a range normalization transform using `im2sim.transforms.ops.RangeNormOp`.
 
     Args:
         llim (float): Lower limit of the target range for normalization.
@@ -135,7 +135,7 @@ def ZScore(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a z-score normalization transform using `im2sim.data.ops.ZScoreOp`.
+    Factory function to create a z-score normalization transform using `im2sim.transforms.ops.ZScoreOp`.
 
     Args:
         keys (list): List of keys to which the z-score normalization will be applied.
@@ -175,7 +175,7 @@ def PowerScaling(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a power scaling transform using `im2sim.data.ops.PowerScaleOp`.
+    Factory function to create a power scaling transform using `im2sim.transforms.ops.PowerScaleOp`.
 
     Args:
         exp (float): The exponent to which the input tensor will be raised.
@@ -215,7 +215,7 @@ def FitNorm(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a fit normalization transform using `im2sim.data.ops.FitNormOp`.
+    Factory function to create a fit normalization transform using `im2sim.transforms.ops.FitNormOp`.
 
     Args:
         keys (list): List of keys to which the fit normalization will be applied.
@@ -250,7 +250,7 @@ def FitRangeNorm(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a fit range normalization transform using `im2sim.data.ops.FitRangeNormOp`.
+    Factory function to create a fit range normalization transform using `im2sim.transforms.ops.FitRangeNormOp`.
 
     Args:
         llim (float): Lower limit of the target range for normalization.
@@ -285,7 +285,7 @@ def FitZScore(
     name: str = None,
 ) -> Transform:
     """
-    Factory function to create a fit z-score normalization transform using `im2sim.data.ops.FitZScoreOp`.
+    Factory function to create a fit z-score normalization transform using `im2sim.transforms.ops.FitZScoreOp`.
 
     Args:
         keys (list): List of keys to which the fit z-score normalization will be applied.

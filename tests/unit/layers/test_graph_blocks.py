@@ -703,4 +703,16 @@ def test_state_dict_round_trip(graph):
     assert torch.allclose(output1, output2)
 
 
+def test_config_add_input_residual_targets_last_layer_output(graph):
+    cfg = GraphConvBlockConfig(depth=2).add_input_residual()
 
+    assert cfg.residual_connections == {2: [0]}
+
+    block = GraphConvBlock(in_channels=16, out_channels=16, cfg=cfg)
+    assert block(graph).x.shape == (10, 16)
+
+
+def test_config_add_conv1_residual_targets_last_layer_output():
+    cfg = GraphConvBlockConfig(depth=2).add_conv1_residual()
+
+    assert cfg.residual_connections == {2: [1]}

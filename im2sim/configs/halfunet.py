@@ -28,7 +28,7 @@ class HalfUNetConfig(Config):
     """
     Configuration class for the HalfUNet model (see `im2sim.models.HalfUNet`).
 
-    For features like serialisation and saving/loading see `im2sim._internal.Config`.
+    For features like serialisation and saving/loading see `im2sim.configs.core.Config`.
 
     Args:
         hidden_channels (int):
@@ -48,11 +48,11 @@ class HalfUNetConfig(Config):
 
         block_cfg (ImageConvBlockConfig):
             Configuration for convolutional blocks. Used as a default for encoder blocks.
-            Default is a standard convolutional block with `3x3` kernels, stride `1`, padding `1`, and `ReLU` activation.
+            Default is `ImageConvBlockConfig()`: a single `3x3` convolution with `"same"` padding, `InstanceNorm` and `ReLU` activation.
 
         stem_block_cfg (ImageConvBlockConfig | None):
             Configuration for the stem block. Can only be a single ImageConvBlockConfig.
-            If None, uses block_cfg for the stem block.
+            If None, uses block_cfg reduced to a single layer with no dropout or residual connections (see `ImageConvBlockConfig.to_single_block()`).
 
         encoder_block_cfg (list[ImageConvBlockConfig] | ImageConvBlockConfig | None):
             Configuration for encoder blocks. Can be a single ImageConvBlockConfig or a list of ImageConvBlockConfigs for each level starting with the highest resolution.
@@ -60,7 +60,7 @@ class HalfUNetConfig(Config):
 
         out_block_cfg (ImageConvBlockConfig | None):
             Configuration for the output block. Can only be a single ImageConvBlockConfig.
-            If None, uses a single convolution operation taken from block_cfg.
+            If None, uses a single `1x1` convolution taken from block_cfg with `out_activation` as its output activation.
 
         encoder_blocks_per_level (int):
              Number of convolutional blocks per level in the encoder. Default is `1`.
@@ -70,9 +70,11 @@ class HalfUNetConfig(Config):
 
         out_activation (str | None):
             Activation function for the output block. If None, no activation is applied.
+            Only used when `out_block_cfg` is None.
 
         enable_temporal (bool):
             If True, layers are wrapped with `TemporalFactorizer` so the model accepts inputs of shape `(N, C, T, *spatial)` with the time axis after channels.
+            Only supported for rank `2` and `3`, and only for layer types supported by `TemporalFactorizer`.
             Default is `False`.
 
     Examples:
@@ -172,10 +174,10 @@ class HalfUNetConfig(Config):
 
         >>> cfg = HalfUNetConfig().to_depthwise_separable().add_residual()
 
-        To save the configuration to a YAML file and load it back, you can use:
+        To save the configuration to a JSON file and load it back, you can use:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = HalfUNetConfig.load("my_config.yaml")
+        >>> cfg.save("my_config.json")
+        >>> loaded_cfg = HalfUNetConfig.load("my_config.json")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
     """
@@ -245,10 +247,9 @@ class HalfUNetConfig(Config):
 
     def add_residual(self):
         """
-        Apply a residual connection to all encoder blocks in the HalfUNet configuration.
+        Apply an input residual connection (see `ImageConvBlockConfig.add_input_residual()`) to all encoder blocks except the first (highest resolution) encoder block.
 
-        The residual connection type is set to "add" for all encoder blocks,
-        which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
+        The residual connection type is set to "add", so the input of each block is added to the output of the block.
         This can help with gradient flow and improve training stability.
         """
 
@@ -273,7 +274,7 @@ class HalfUNetConfig(Config):
         """
         Apply a double bottleneck configuration to the HalfUNet.
 
-        This change modifies the last encoder block to have two convolutional layers instead of one, which can help increase the capacity of the model.
+        This change modifies the last encoder block to double the depth (number of convolutional layers), which can help increase the capacity of the model.
         """
         self.encoder_block_cfg[-1].depth = self.encoder_block_cfg[-1].depth * 2
         return self
@@ -344,6 +345,7 @@ class HalfUNetConfig(Config):
         Apply a ghost depthwise separable convolution (see `im2sim.layers.GhostConv`) preset to stem + all encoder blocks in the HalfUNet configuration.
         """
         self.stem_block_cfg.conv_cfg.name = "GhostConv"
+        self.stem_block_cfg.conv_cfg.kwargs["separable"] = True
         for e in self.encoder_block_cfg:
             e.conv_cfg.name = "GhostConv"
             e.conv_cfg.kwargs["separable"] = True

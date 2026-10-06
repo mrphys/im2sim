@@ -125,3 +125,12 @@ def test_dataloader_with_pyg():
     batch = next(iter(loader))
     assert isinstance(batch["graph"], Batch)
     assert batch["graph"].num_graphs == 2
+
+
+def test_dataset_with_transform_list():
+    from im2sim.transforms import transform_from_fn
+
+    double = transform_from_fn(lambda x: x * 2, keys="x")
+    ds = Dataset(load_fn=lambda case: {"x": torch.ones(2)}, cases=["a"], transforms=[double])
+
+    torch.testing.assert_close(ds[0]["x"], torch.full((2,), 2.0))

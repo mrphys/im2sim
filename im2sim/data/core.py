@@ -125,14 +125,31 @@ class Transform:
         op (Operation):
             Operation to wrap
 
-        keys (list[str]):
-            List of keys in the data dict for the op to operate over
+        keys (str | list[str]):
+            Key or list of keys in the data dict for the op to operate over
+
+        multikey (bool, optional):
+            If True, the values of all keys are passed to the op together as separate arguments,
+            and the op should return one output per key. If False, the op is applied to each key separately.
+            (default: False)
 
         attr (str, optional):
-            If data[key] is an object, attr is the attribute of that object to perfrom the op over.
+            If data[key] is an object, attr is the attribute of that object to perform the op over.
             If the op needs the full object, set attr to 'all'
             If data[key] is not an object attr=None
-            (default:None)
+            (default: None)
+
+        channels (int | list[int], optional):
+            Channel(s) to apply the op to. If None, the op is applied to all channels. (default: None)
+
+        per_channel (bool, optional):
+            If True, a separate copy of the op is used for each channel. (default: False)
+
+        channel_dim (int, optional):
+            Dimension of the channel axis. (default: -1)
+
+        name (str, optional):
+            Name of the transform. If None, defaults to `<OpClassName>_<keys>`. (default: None)
     """
 
     def __init__(
@@ -298,6 +315,9 @@ class Transform:
     # -----------------------------
     # Public API
     # -----------------------------
+
+    def __call__(self, data):
+        return self.forward(data)
 
     def forward(self, data):
         data = copy.deepcopy(data)
@@ -589,8 +609,8 @@ def DataLoader(dataset, **kwargs):
             of supported arguments.
 
     Returns:
-        im2sim.data.DataLoader:
-            Configured DataLoader instance.
+        torch.utils.data.DataLoader:
+            Configured DataLoader instance that collates samples with `im2sim.data.collate`.
     """
     return torch.utils.data.DataLoader(dataset, collate_fn=collate, **kwargs)
 
@@ -610,8 +630,8 @@ class Dataset(torch.utils.data.Dataset):
         cases (list[str]):
             List of case names. These names are passed to `load_fn` to load data.
 
-        transforms (list[Transform] | Pipeline):
-            Transforms or pipeline applied to each sample.
+        transforms (list[Transform] | Pipeline | None):
+            Transforms or pipeline applied to each sample. Default is None (no transforms).
 
     Examples:
 

@@ -28,8 +28,8 @@ from im2sim.utils.layer_util import (
 
 class GraphConvBlock(torch.nn.Module):
     """
-    A configurable image convolutional block that consists of a sequence of
-    convolutional layers, normalization layers, dropout layers, and attention
+    A configurable graph convolutional block that consists of a sequence of
+    graph convolutional layers, normalization layers, dropout layers, and attention
     layers. The block supports residual connections and allows for flexible
     configuration of its components.
 
@@ -173,7 +173,13 @@ class GraphConvBlock(torch.nn.Module):
             )
 
     def forward(self, in_graph: pyg.data.Data) -> pyg.data.Data:
-        """ """
+        """
+        Args:
+            in_graph (pyg.data.Data): The input graph.
+
+        Returns:
+            pyg.data.Data: A copy of the graph with updated node features `x` and the original `edge_index`.
+        """
         graph = in_graph.clone()
         outputs = [graph.x]
 

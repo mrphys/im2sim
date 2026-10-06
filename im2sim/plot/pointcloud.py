@@ -31,8 +31,8 @@ class PointCloudPlot:
         figsize (tuple, optional): Size of the figure. If None, it will be set based on nrows and ncols.
         cmap (str, optional): Colormap to use for coloring the points. Default is "Blues_r".
         norm_mode (str, optional): Normalization mode for color values. Options are 'all', 'row', 'col', or 'none'. Default is 'none'.
-        bound_mode (str, optional): Mode for setting axis bounds. Default is 'all'.
-        titles (list of str, optional): List of titles for each subplot. If None, no titles will be set.
+        bound_mode (str, optional): Currently unused. Axis bounds are always set from the last point cloud in `point_sets`. Default is 'all'.
+        titles (str or list of str, optional): A single figure title, or a list with one title per subplot. If None, no titles will be set.
         elev (float, optional): Elevation angle for the 3D view. Default is 20.
         azim (float, optional): Azimuth angle for the 3D view. Default is 90.
     """

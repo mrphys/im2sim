@@ -45,6 +45,10 @@ class ImageConvBlock(torch.nn.Module):
         cfg (ImageConvBlockConfig):
             Configuration object that defines the parameters of the block.
 
+        temporal (bool):
+            If True, each layer is wrapped with `TemporalFactorizer` so the block accepts inputs of shape
+            `(N, C, T, *spatial)`. Only supported for rank `2` and `3`. Default is `False`.
+
     Examples:
 
         To create an ImageConvBlock with a depth of 3, ReLU activation, and softmax output activation, you can use the following code:

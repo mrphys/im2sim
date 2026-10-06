@@ -83,7 +83,7 @@ class TestImageConvBlockConfig:
         result = cfg.add_input_residual()
 
         assert result is cfg
-        assert cfg.residual_connections == {2: [0]}
+        assert cfg.residual_connections == {3: [0]}
         assert cfg.residual_type == "add"
 
     def test_add_conv1_residual(self):
@@ -92,7 +92,7 @@ class TestImageConvBlockConfig:
         result = cfg.add_conv1_residual()
 
         assert result is cfg
-        assert cfg.residual_connections == {2: [1]}
+        assert cfg.residual_connections == {3: [1]}
         assert cfg.residual_type == "add"
 
     def test_add_conv1_residual_requires_depth_greater_than_one(self):
@@ -425,6 +425,17 @@ class TestImageConvBlock:
         output = model(input_tensor)
 
         assert output.shape == input_tensor.shape
+
+    def test_input_residual_depth_one_adds_input_to_output(self, input_tensor):
+        cfg = ImageConvBlockConfig(
+            depth=1,
+            norm_cfg=LayerConfig(name=None, kwargs={}),
+        )
+        plain = ImageConvBlock(in_channels=8, out_channels=8, rank=2, cfg=cfg)
+        residual = ImageConvBlock(in_channels=8, out_channels=8, rank=2, cfg=cfg.mod().add_input_residual())
+        residual.load_state_dict(plain.state_dict())
+
+        torch.testing.assert_close(residual(input_tensor), plain(input_tensor) + input_tensor)
 
     def test_conv1_residual(self, input_tensor):
         cfg = ImageConvBlockConfig(

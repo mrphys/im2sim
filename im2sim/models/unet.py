@@ -41,7 +41,8 @@ class UNet(torch.nn.Module):
             Number of output channels.
 
         rank (int):
-            Spatial rank (1D, 2D, 3D).
+            Spatial rank (1D, 2D, 3D). If `cfg.enable_temporal` is True, only ranks `2` and `3` are supported
+            and inputs have shape `(N, C, T, *spatial)`.
 
         cfg (UNetConfig):
             Configuration object for the U-Net.
@@ -118,8 +119,8 @@ class UNet(torch.nn.Module):
 
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.UNetConfig` class:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = UNetConfig.load("my_config.yaml")
+        >>> cfg.save("my_config.json")
+        >>> loaded_cfg = UNetConfig.load("my_config.json")
         >>> model = UNet(
         >>>        rank=2,
         >>>        in_channels=32,

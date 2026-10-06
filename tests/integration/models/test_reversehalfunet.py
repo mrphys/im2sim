@@ -2,6 +2,7 @@ import pytest
 import torch
 
 from im2sim.configs.core import LayerConfig
+from im2sim.configs.image_blocks import ImageConvBlockConfig
 from im2sim.models.reverse_halfunet import (
     ReverseHalfUNet,
     ReverseHalfUNetConfig,
@@ -177,24 +178,39 @@ def test_upsample_config_length_must_equal_levels_minus_one():
 
 
 def test_add_residual():
-    cfg = ReverseHalfUNetConfig(n_levels=3)
+    cfg = ReverseHalfUNetConfig(n_levels=3, fusion_type="add")
 
     result = cfg.add_residual()
 
     assert result is cfg
 
-    for decoder_cfg in cfg.decoder_block_cfg[1:]:
+    for decoder_cfg in cfg.decoder_block_cfg:
         assert decoder_cfg.residual_connections is not None
 
 
-def test_add_residual_does_not_modify_first_decoder():
-    cfg = ReverseHalfUNetConfig(n_levels=3)
-
-    original = cfg.decoder_block_cfg[0].residual_connections
+def test_add_residual_concat_only_modifies_lowest_resolution_decoder():
+    cfg = ReverseHalfUNetConfig(n_levels=3, fusion_type="concat")
 
     cfg.add_residual()
 
-    assert cfg.decoder_block_cfg[0].residual_connections == original
+    # decoder_block_cfg is stored highest resolution first
+    assert cfg.decoder_block_cfg[-1].residual_connections is not None
+    for decoder_cfg in cfg.decoder_block_cfg[:-1]:
+        assert decoder_cfg.residual_connections is None
+
+
+@pytest.mark.parametrize("fusion_type", ["add", "concat"])
+def test_add_residual_forward(fusion_type):
+    cfg = ReverseHalfUNetConfig(
+        hidden_channels=8,
+        n_levels=3,
+        fusion_type=fusion_type,
+        upsample_cfg=LayerConfig(name="Upsample", kwargs={"scale_factor": 2}),
+        block_cfg=ImageConvBlockConfig(depth=2),
+    ).add_residual()
+    model = ReverseHalfUNet(in_channels=4, out_channels=1, rank=2, cfg=cfg)
+
+    assert model(torch.randn(1, 4, 16, 16)).shape == (1, 1, 16, 16)
 
 
 def test_dilate_bottleneck():
@@ -289,6 +305,7 @@ def test_to_ghost_depthwise_separable():
 
     assert result is cfg
     assert cfg.stem_block_cfg.conv_cfg.name == "GhostConv"
+    assert cfg.stem_block_cfg.conv_cfg.kwargs["separable"] is True
 
     for decoder_cfg in cfg.decoder_block_cfg:
         assert decoder_cfg.conv_cfg.name == "GhostConv"

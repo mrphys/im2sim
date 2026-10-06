@@ -35,14 +35,14 @@ def check_graph_decoder_signature(graph_decoder: torch.nn.Module):
         "projected_features",
     ]:
         raise ValueError(
-            "Graph decoder must have a forward method with signature (graph, projected_features)"
+            "Graph decoder must have a forward method with signature (in_graph, projected_features)"
         )
 
 
 def check_projection_signature(projection: torch.nn.Module):
     if list(inspect.signature(projection.forward).parameters.keys()) != ["image_features", "graph"]:
         raise ValueError(
-            "Projection must have a forward method with signature (image_features, coords)"
+            "Projection must have a forward method with signature (image_features, graph)"
         )
 
 
@@ -58,10 +58,11 @@ class Im2SimBase(torch.nn.Module):
     A base class for the Im2Sim model that combines an image encoder, a graph decoder, and optional rasterization.
 
     Args:
-        image_shape (tuple[int, int, int]): The shape of the input image.
-        image_encoder (torch.nn.Module): The image encoder module.
-        graph_decoder (torch.nn.Module): The graph decoder module.
-        projections (torch.nn.Module | list[torch.nn.Module]): The projection module(s) that project image features onto the graph.
+        image_shape (tuple[int, int, int]): The spatial shape of the input image. Used to create the image passed to the rasterizer when no image input is given.
+        image_encoder (torch.nn.Module): The image encoder module. Must have an `in_channels` attribute if a rasterizer is used.
+        graph_decoder (torch.nn.Module): The graph decoder module, with forward signature `(in_graph, projected_features)`.
+        projections (torch.nn.Module | list[torch.nn.Module]): The projection module(s) that project image features onto the graph,
+            with forward signature `(image_features, graph)`. If a list is given, the image encoder must return a list of features, one per projection.
         rasterizer (torch.nn.Module, optional): The rasterizer module that generates an image from the graph. Default is None.
         n_iters (int, optional): The number of iterations to run the model. Default is 1.
         return_intermediate_graphs (bool, optional): Whether to return intermediate graphs after each iteration. Default is False.
@@ -108,7 +109,10 @@ class Im2SimBase(torch.nn.Module):
 
         Args:
             image_input (torch.Tensor): The input image tensor. If None, the rasterizer will be used to generate an image from the graph.
-            in_graph (pyg.data.Data): The input graph data.
+            in_graph (pyg.data.Data): The input graph data. Must have a `coords` attribute.
+
+        Returns:
+            pyg.data.Data | list[pyg.data.Data]: The output graph, or the graphs from every iteration if `return_intermediate_graphs` is True.
         """
         graph = in_graph.clone()
         # If image_input is None, use the rasteriser to generate an image from the graph
@@ -159,15 +163,17 @@ class Im2SimGen2(Im2SimBase):
     A specific implementation of the Im2Sim model that uses a HalfUNet for image encoding and a SimpleGraphDecoder for graph decoding.
 
     Args:
-        image_shape (tuple[int, int, int]): The shape of the input image.
+        image_shape (tuple[int, int, int]): The spatial shape of the input image.
         image_channels (int): The number of channels in the input image.
-        projection_channels (int): The number of channels in the projected image features.
+        projection_channels (int): The number of channels in the projected image features (the output channels of the 3D HalfUNet encoder).
         graph_channels (int): The number of channels in the input graph features.
         out_channels (int): The number of channels in the output graph features.
         encoder_cfg (HalfUNetConfig): Configuration for the HalfUNet image encoder.
         decoder_cfg (SimpleGraphDecoderConfig): Configuration for the SimpleGraphDecoder graph decoder.
         projection (torch.nn.Module): The projection module that projects image features onto the graph.
-        rasterizer (torch.nn.Module, optional): The rasterizer module that generates an image
+        rasterizer (torch.nn.Module, optional): The rasterizer module that generates an image from the graph. Default is None.
+        n_iters (int, optional): The number of iterations to run the model. Default is 1.
+        return_intermediate_graphs (bool, optional): Whether to return intermediate graphs after each iteration. Default is False.
     """
 
     def __init__(

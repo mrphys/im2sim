@@ -263,11 +263,10 @@ class GraphIdentity(torch.nn.Module):
     def forward(self, graph: pyg.data.Data) -> pyg.data.Data:
         """
         Args:
-            x (torch.Tensor): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
-            batch (torch.Tensor): The batch tensor of shape (N,) indicating the batch index for each node.
+            graph (pyg.data.Data): The input graph.
 
         Returns:
-            torch.Tensor: The same tensor as input.
+            pyg.data.Data: The same graph as input.
         """
         return graph
 

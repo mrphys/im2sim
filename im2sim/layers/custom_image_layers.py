@@ -31,7 +31,7 @@ class DepthwiseConv(torch.nn.Module):
 
     Args:
         in_channels (int): Number of input channels.
-        out_channels (int): Number of output channels (should be equal to in_channels for depthwise convolution).
+        out_channels (int): Number of output channels (must be a multiple of in_channels for depthwise convolution).
         rank (int): The rank of the convolution (`1` for 1D, `2` for 2D, `3` for 3D).
         kernel_size (int | tuple): Size of the convolving kernel. Default is `3`.
         stride (int | tuple): Stride of the convolution. Default is `1`.
@@ -161,7 +161,7 @@ class GhostConv(torch.nn.Module):
     Ghost convolution layer that generates more feature maps from cheap operations.
 
     This operation is useful for reducing the number of parameters and computational cost in convolutional neural networks.
-    The cheap operation can either be a depthwise convolution as per the original GhostNet paper[1] or a depthwise separable convolution as in the HalfUNet paper[2
+    The cheap operation can either be a depthwise convolution as per the original GhostNet paper[1] or a depthwise separable convolution as in the HalfUNet paper[2].
 
     Args:
         in_channels (int): Number of input channels.
@@ -309,7 +309,7 @@ class SqueezeExcite(torch.nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass of the Efficient Channel Attention layer.
+        Forward pass of the Squeeze-and-Excitation layer.
 
         Args:
             x (torch.Tensor): Input tensor of shape `(batch_size, channels, *spatial_dims)`.
@@ -403,7 +403,9 @@ class Upsample(torch.nn.Module):
     Args:
         rank (int): The rank of the input tensor (`1` for 1D, `2` for 2D, `3` for 3D).
         scale_factor (int | tuple): The multiplier for the spatial size. Default is `2`.
-        mode (str): The algorithm used for upsampling. Options are `"nearest"`, `"linear"`, `"bilinear"`, `"bicubic"`, `"trilinear"`. Default for 1D is `"linear"`, for 2D is `"bilinear"`, and for 3D is `"trilinear"`.
+        mode (str): The algorithm used for upsampling. Default is `"nearest"`.
+            Supported modes are `"nearest"` and the linear mode matching the rank (`"linear"` for 1D, `"bilinear"` for 2D, `"trilinear"` for 3D).
+            Any other mode (e.g. `"trilinear"` for a 2D input) is replaced by the linear mode matching the rank.
         align_corners (bool | None): If `True`, the corner pixels of the input and output tensors are aligned, and thus preserving the values at those pixels. Default is `None`.
     """
 
@@ -446,7 +448,15 @@ class Upsample(torch.nn.Module):
 @register_with_ranks("CustomPixelShuffle", (2,))
 class CustomPixelShuffle(torch.nn.Module):
     """
-    PixelShuffle layer that applies a depthwise conv to maintain channels
+    PixelShuffle layer that applies a 1x1 conv before shuffling to maintain the number of channels.
+
+    Only rank `2` is supported, since `torch.nn.PixelShuffle` only shuffles the last two spatial dims.
+
+    Args:
+        in_channels (int): Number of input (and output) channels.
+        rank (int): The rank of the input tensor. Must be `2`.
+        upscale_factor (int): Factor to increase the spatial resolution by. Default is `2`.
+        depthwise (bool): If `True`, the 1x1 conv is depthwise. Default is `True`.
     """
 
     def __init__(self, in_channels, rank, upscale_factor=2, depthwise=True):

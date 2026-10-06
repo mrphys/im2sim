@@ -321,6 +321,11 @@ def test_mesh_ops_with_fallback(no_fallback_warnings):
     assert dists[0, 0, 0] == 0
     assert dists[3, 3, 3] == 0
 
+    # Non-unit voxel sizes: centroids are at (i + 0.5) * size
+    dists = rasterize(torch.tensor([[1.0, 1.0, 1.0]]), [4, 3, 2], [2.0, 2.0, 2.0])
+    assert dists.shape == (4, 3, 2)
+    assert dists[0, 0, 0] == 0
+
     n = 6
     idx = torch.arange(n * n)
     mesh = Data(

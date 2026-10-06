@@ -23,7 +23,7 @@ import torch.nn.functional as F
 
 def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
     """
-    Computes the squared Euclidean distance for each edge in a mesh.
+    Computes the Euclidean length of each edge in a mesh.
 
     Args:
         points (torch.Tensor): Node coordinate tensor of shape (N, D) where N
@@ -34,10 +34,8 @@ def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Ten
             indices [src, dst].
 
     Returns:
-        distances (torch.Tensor): A tensor of shape (E, D) containing the
-            per-dimension squared differences between the endpoints of each
-            edge. Sum over the last dimension to get scalar squared edge
-            lengths.
+        distances (torch.Tensor): A tensor of shape (E,) containing the
+            length of each edge.
 
     Example:
 
@@ -67,14 +65,14 @@ class MeshLoss(torch.nn.Module, ABC):
     Base class for mesh loss computation.
 
     Args:
-        required_attrs (list[str] | None): List of attributes that must be present in the input graphs for loss computation. Default is `None`.
+        required_attrs (list[str] | None): List of attributes that must be present in the input graphs for loss computation. `coords` is always added. Default is `None`.
         supervised (bool): If `True`, both true and predicted graphs are required to have the specified attributes. If `False`, only the predicted graph is required to have the specified attributes. Default is `True`.
     """
 
     def __init__(self, required_attrs=None, supervised=True):
         super().__init__()
         self.supervised = supervised
-        self.required_attrs = required_attrs + ["coords"]
+        self.required_attrs = list(required_attrs or []) + ["coords"]
 
     def forward(self, true_graph, pred_graph):
         """
@@ -179,13 +177,11 @@ def edge_length_deviation_loss(gr1, gr2):
     The loss is calculated as the squared difference between the edge length deviations of the two graphs, with a ReLU activation to ensure non-negativity.
 
     Args:
-        gr1 (torch_geometric.data.Data): The ground truth graph, containing node features and edge indices.
-        gr2 (torch_geometric.data.Data): The predicted graph, containing node features and edge indices.
+        gr1 (torch_geometric.data.Data): The ground truth graph, containing `coords` and `edge_index`.
+        gr2 (torch_geometric.data.Data): The predicted graph, containing `coords` and `edge_index`.
 
-    .. note:
-        The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`).
-
-        If supervised is False, the loss is the mean edge length deviation of the predicted graph.
+    Returns:
+        torch.Tensor: `relu(ed2 - ed1) ** 2`, where `ed1` and `ed2` are the edge length deviations of `gr1` and `gr2`.
     """
     ed1 = _edge_length_deviation(gr1.coords, gr1.edge_index)
     ed2 = _edge_length_deviation(gr2.coords, gr2.edge_index)
@@ -353,7 +349,7 @@ class InversionLoss(MeshLoss):
     .. note:
         The forward() method accepts 2 PyG graphs: true graph and pred_graph (see `im2sim.losses.MeshLoss`) but only uses the pred_graph for this loss.
 
-        For the aspect ratio loss, the graph objects need to have `coords` and a cell_index attribute corresponding to `cell_key` of shape [4, n_cells] to store the ids of each tetrahedron.
+        For the inversion loss, the graph objects need to have `coords` and a cell_index attribute corresponding to `cell_key` of shape [4, n_cells] to store the ids of each tetrahedron.
         See `im2sim.mesh_ops.get_structure_cells` to generate the cell_index attribute from a tetrahedral mesh.
     """
 

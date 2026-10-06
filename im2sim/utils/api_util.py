@@ -44,7 +44,7 @@ def get_api_symbols():
 
 
 def get_submodule_names():
-    """Returns a list of TFMRI submodule names."""
+    """Returns a list of im2sim submodule names."""
     return _SUBMODULE_NAMES
 
 
@@ -180,9 +180,7 @@ def import_namespace(namespace):
     Returns:
       The imported module.
     """
-    spec = importlib.machinery.ModuleSpec(
-        f"tensorflow_mri.{namespace}", APILoader(namespace=namespace)
-    )
+    spec = importlib.machinery.ModuleSpec(f"im2sim.{namespace}", APILoader(namespace=namespace))
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)

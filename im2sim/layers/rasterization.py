@@ -52,15 +52,16 @@ def dilate_mask(mask, kernel_size=3):
 
 
 def rasterise_feats(coords, feats, domain_size):
-    x = torch.arange(0, domain_size[0])
-    y = torch.arange(0, domain_size[1])
-    z = torch.arange(0, domain_size[2])
+    device = coords.device
+    x = torch.arange(0, domain_size[0], device=device)
+    y = torch.arange(0, domain_size[1], device=device)
+    z = torch.arange(0, domain_size[2], device=device)
 
     X, Y, Z = torch.meshgrid(x, y, z, indexing="ij")
 
     img_coords = torch.stack([X.flatten(), Y.flatten(), Z.flatten()], dim=-1)
-    # create mask in global coordinates
-    mask = dilate_mask(pointcloud_to_mask(coords, domain_size, [1, 1, 1]))
+    # create mask in global coordinates, flattened to index img_coords
+    mask = dilate_mask(pointcloud_to_mask(coords, domain_size, [1, 1, 1])).flatten().bool()
 
     # interpolate only active voxels
     rasterised_features = knn_interpolate(feats, coords, img_coords[mask].to(torch.float32), k=1)
@@ -69,7 +70,6 @@ def rasterise_feats(coords, feats, domain_size):
 
     img.view(-1, feats.shape[-1])[mask] = rasterised_features.float()
 
-    # fill background with channel minima
     return img
 
 
@@ -91,8 +91,8 @@ class MaskRasterizer(torch.nn.Module):
         Rasterizes a point cloud graph into a 3D mask image.
 
         Args:
-            graph (pyg.data.Data): Input graph data containing 'coords' attribute.
-            image_input (torch.Tensor): Input image tensor to determine the shape and voxel sizes.
+            graph (pyg.data.Data): Input graph data containing 'coords' and 'batch' attributes.
+            image_input (torch.Tensor): Input image tensor of shape (B, C, D, H, W) used to determine the shape of the mask.
 
         Returns:
             torch.Tensor: Image tensor with the last channel replaced by the rasterized mask.
@@ -140,8 +140,8 @@ class FeatureRasterizer(torch.nn.Module):
         Rasterizes a point cloud graph into a 3D feature image.
 
         Args:
-            graph (pyg.data.Data): Input graph data containing 'coords' attribute.
-            image_input (torch.Tensor): Input image tensor to determine the shape and voxel sizes.
+            graph (pyg.data.Data): Input graph data containing 'coords', 'batch' and `feature_key` attributes.
+            image_input (torch.Tensor): Input image tensor used to determine the shape of the rasterized image.
 
         Returns:
             torch.Tensor: Image tensor with the last channels replaced by the rasterized features.
@@ -161,7 +161,8 @@ class FeatureRasterizer(torch.nn.Module):
             rasterised_feat = rasterise_feats(
                 graph.coords[graph.batch == b], feats[graph.batch == b], im_shape
             )
-            rasterised_feats.append(rasterised_feat.unsqueeze(0))
+            # (D, H, W, C) -> (1, C, D, H, W)
+            rasterised_feats.append(rasterised_feat.permute(3, 0, 1, 2).unsqueeze(0))
 
         rasterised_feats = torch.cat(rasterised_feats, dim=0)
 

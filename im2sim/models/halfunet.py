@@ -41,14 +41,11 @@ class HalfUNet(torch.nn.Module):
             Number of output channels.
 
         rank (int):
-            Spatial rank (1D, 2D, 3D).
+            Spatial rank (1D, 2D, 3D). If `cfg.enable_temporal` is True, only ranks `2` and `3` are supported
+            and inputs have shape `(N, C, T, *spatial)`.
 
         cfg (HalfUNetConfig):
             Configuration object for the HalfUNet.
-
-        supervision_levels (int | list[int]):
-            Levels at which to apply deep supervision. `0` corresponds to the highest resolution output, `1` to the next lower resolution, and so on.
-            Default is `0`(no deep supervision).
 
     Examples:
 
@@ -109,10 +106,10 @@ class HalfUNet(torch.nn.Module):
         >>> torch.save(model.state_dict(), "model.pth")
         >>> model.load_state_dict(torch.load("model.pth"))
 
-        Configs can also be saved and loaded using the methods provided in the `im2sim.configs.UNetConfig` class:
+        Configs can also be saved and loaded using the methods provided in the `im2sim.configs.HalfUNetConfig` class:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = HalfUNetConfig.load("my_config.yaml")
+        >>> cfg.save("my_config.json")
+        >>> loaded_cfg = HalfUNetConfig.load("my_config.json")
         >>> model = HalfUNet(
         >>>        rank=2,
         >>>        in_channels=32,
@@ -122,7 +119,7 @@ class HalfUNet(torch.nn.Module):
 
 
     References:
-        .. [1] H. Lu, Y. She, J. Tie, and S. Xu, Half-UNet: A Simplified HalfUNet Architecture for Medical Image Segmentation,
+        .. [1] H. Lu, Y. She, J. Tie, and S. Xu, Half-UNet: A Simplified U-Net Architecture for Medical Image Segmentation,
             Front. Neuroinformatics, vol. 16, Jun. 2022, doi: 10.3389/fninf.2022.911679.
 
 

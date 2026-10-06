@@ -69,8 +69,8 @@ class SpaceDistributed(nn.Module):
     Apply a module independently at each spatial location over time.
 
     Expected input: (N, C, T, *spatial)
-    Wrapped module should accept: (N_flat, C, T)
-    Output: (N, C, T_out, *spatial) if module reduces spatial dims to 1
+    Wrapped module should accept: (N * prod(spatial), C, T)
+    Output: (N, C_out, T_out, *spatial)
     """
 
     def __init__(self, module: nn.Module):
@@ -132,13 +132,18 @@ class TemporalFactorizer(nn.Module):
     per timestep using TimeDistributed, and temporal operations per spatial location
     using SpaceDistributed.
 
-    Supports any module that has parameters like kernel_size, stride, padding, dilation
-    that need splitting into (T, *spatial) format.
+    Supported modules are 2D/3D convolutions, transposed convolutions, max/average pooling,
+    batch/instance normalization, channel dropout, and upsampling (``torch.nn.Upsample`` and
+    ``im2sim.layers.custom_image_layers.Upsample``). Parameters like kernel_size, stride,
+    padding and dilation are split into (T, *spatial) components. Other modules raise a ValueError.
 
     Args:
         module: The torch.nn.Module to factorize
         rank: Spatial rank (2 or 3)
-        params_to_split: List of parameter names to split. If None, auto-detected.
+        params_to_split: List of parameter names that may be given as (T, *spatial) to set the time
+            component explicitly. Parameters not in the list apply to the spatial dims only, and the
+            time component uses its default (1 for kernel_size/stride/dilation/scale_factor/size,
+            0 for padding/output_padding). If None, auto-detected from the module type.
     """
 
     # Parameters that should be split into time/spatial components
@@ -192,7 +197,9 @@ class TemporalFactorizer(nn.Module):
     def _detect_split_params(self, module: nn.Module) -> list:
         """Auto-detect which parameters need splitting based on module type."""
         # For most modules, we split standard spatial parameters
-        if isinstance(module, (self.CONV_TYPES + self.TRANSPOSE_TYPES, self.POOL_TYPES)):
+        if isinstance(module, self.TRANSPOSE_TYPES):
+            return ["kernel_size", "stride", "padding", "dilation", "output_padding"]
+        elif isinstance(module, (self.CONV_TYPES, self.POOL_TYPES)):
             return ["kernel_size", "stride", "padding", "dilation"]
         elif isinstance(module, self.NORM_TYPES):
             return []  # BatchNorm parameters don't split; just wrap
@@ -208,7 +215,7 @@ class TemporalFactorizer(nn.Module):
         """Split parameter into time and spatial components.
 
         Scalar parameters apply to spatial dimensions only.
-        Tuple parameters can be (T, *spatial) or just (*spatial).
+        Tuple parameters can be (T, *spatial) if `name` is in `params_to_split`, otherwise just (*spatial).
         String parameters like 'same' are returned as-is for spatial dims, but time gets time_default.
 
         Args:
@@ -229,7 +236,7 @@ class TemporalFactorizer(nn.Module):
             param = int(param) if isinstance(param, float) else param
             return time_default, (param,) * self.rank
         elif isinstance(param, (tuple, list)):
-            if len(param) == self.rank + 1:
+            if len(param) == self.rank + 1 and name in self.params_to_split:
                 # Format: (T, *spatial)
                 # Convert floats to ints
                 time_val = int(param[0]) if isinstance(param[0], float) else param[0]
@@ -239,9 +246,14 @@ class TemporalFactorizer(nn.Module):
                 # Format: just spatial dims, use time_default for time
                 space_val = tuple(int(v) if isinstance(v, float) else v for v in param)
                 return time_default, space_val
-            else:
+            elif name in self.params_to_split:
                 raise ValueError(
                     f"{name} must have length {self.rank} or {self.rank + 1}, got {len(param)}"
+                )
+            else:
+                raise ValueError(
+                    f"{name} is not in params_to_split, so it must have length {self.rank}, "
+                    f"got {len(param)}"
                 )
         else:
             raise TypeError(f"{name} must be int, float, string, or tuple/list, got {type(param)}")
@@ -269,7 +281,7 @@ class TemporalFactorizer(nn.Module):
         elif isinstance(module, self.DROPOUT_TYPES):
             self._factorize_dropout(module)
         else:
-            # For unknown modules, just wrap with identity (no factorization)
+            # Unknown modules cannot be factorized
             raise ValueError(
                 f"Unsupported module type for temporal factorization: {type(module)} \n Supported modules: {self.CONV_TYPES + self.POOL_TYPES + self.NORM_TYPES + self.TRANSPOSE_TYPES + self.UPSAMPLE_TYPES + self.DROPOUT_TYPES}"
             )

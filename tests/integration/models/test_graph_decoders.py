@@ -433,3 +433,14 @@ def test_decoder_does_not_modify_input(graph):
 
     assert torch.equal(graph.x, original_x)
     assert torch.equal(graph.edge_index, original_edge_index)
+
+
+def test_does_not_modify_config():
+    block_cfg = GraphConvBlockConfig(depth=2)
+    decoder_cfg = SimpleGraphDecoderConfig(block_cfg=block_cfg)
+
+    SimpleGraphDecoder(in_channels=4, out_channels=4, cfg=decoder_cfg)
+
+    assert decoder_cfg.block_cfg.depth == 2
+    assert decoder_cfg.block_cfg.norm_cfg.name == "DefaultGraphNorm"
+    assert decoder_cfg.block_cfg.activation == "ReLU"

@@ -48,10 +48,10 @@ def inv_normtorange(x, max=None, min=None, a=0, b=1):
 
     Args:
         x (torch.Tensor) : Input tensor to be inverse normalized.
-        max (float, optional): Maximum value for inverse normalization. If None, uses the maximum of `x`.
-        min (float, optional): Minimum value for inverse normalization. If None, uses the minimum of `x`.
-        a (float, optional): Lower bound of the original range. Default is 0.
-        b (float, optional): Upper bound of the original range. Default is 1.
+        max (float, optional): Maximum value of the original range. If None, uses the maximum of `x`.
+        min (float, optional): Minimum value of the original range. If None, uses the minimum of `x`.
+        a (float, optional): Lower bound of the normalized range. Default is 0.
+        b (float, optional): Upper bound of the normalized range. Default is 1.
     """
     if min is None:
         min = x.min()
@@ -106,8 +106,8 @@ def inv_standardise(x, mean=None, std=None):
 
     Args:
         x (torch.Tensor) : Input tensor to be inverse standardized.
-        mean (float, optional): Mean value for inverse standardization. If None, uses the mean of `x`.
-        std (float, optional): Standard deviation for inverse standardization. If None, uses the standard deviation of `x`.
+        mean (float): Mean value for inverse standardization.
+        std (float): Standard deviation for inverse standardization.
     """
     return x * std + mean
 
@@ -199,11 +199,7 @@ class PowerScaleOp(InvertibleOperation):
 @register_op
 class FitNormOp(FittableOperation):
     """
-    Normalizes the input tensor to the range [0, 1] based on the fitted maximum and minimum values.
-
-    Args:
-        max (float, optional): Maximum value for normalization. If None, will be fitted from the data.
-        min (float, optional): Minimum value for normalization. If None, will be fitted from the data.
+    Normalizes the input tensor to the range [0, 1] based on the maximum and minimum values fitted from the data.
     """
 
     def __init__(self):

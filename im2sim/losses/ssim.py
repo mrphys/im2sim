@@ -81,14 +81,14 @@ class SSIMLoss(nn.Module):
 
         image_dims:
             Number of spatial dimensions used for calculating SSIM.
-            If `None`, it is inferred from `batch_dims` and the input
-            tensor rank.
+            If `None`, it is set to `rank`, or inferred from `batch_dims`
+            and the input tensor rank. If all three are `None`, it
+            defaults to `2`.
 
         rank:
             Number of spatial dimensions used by the Gaussian filter.
-            Must be `2` or `3`.
-            If `None`, it is inferred from `image_dims`. If both are
-            `None`, it defaults to `2`.
+            Must be `2` or `3`, and equal to `image_dims` if both are given.
+            If `None`, `image_dims` is used.
 
     Examples:
         Standard 2D SSIM:

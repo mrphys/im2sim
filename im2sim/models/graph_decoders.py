@@ -14,6 +14,7 @@
 # limitations under the License.
 # ==============================================================================
 
+from copy import deepcopy
 
 import torch
 import torch_geometric as pyg
@@ -25,21 +26,21 @@ from im2sim.models.gnn_wrappers import GNN_PROTOCOLS
 
 class SimpleGraphDecoder(torch.nn.Module):
     """
-    A graph decoder that takes a graph and image features and produces an updated graph.
+    A graph decoder that takes a graph and projected image features and produces an updated graph.
 
     Args:
         in_channels (int):
-            Number of input channels for the graph convolution block.
-            This should match the number of channels in `graph.x` plus the number of channels in `image_features` if they are concatenated
-            and the number of predicted/updated features if they are pred_feature_key is not `'x'`.
+            Number of input channels for the graph convolution blocks.
+            This should match the number of channels in `graph.x` plus the number of channels in `projected_features`.
+            If `cfg.pred_feature_key` is not `'x'`, `out_channels` is added automatically to account for the
+            predicted/updated features that are concatenated to the input.
 
         out_channels (int):
-            Number of output channels for the graph convolution block.
+            Number of output channels for the graph convolution blocks.
             This should match the number of channels in `graph.<pred_feature_key>` or `pred_feature_channels` if they are specified.
 
-        cfg (GraphConvBlockConfig):
-            Configuration for the graph convolution block.
-
+        cfg (SimpleGraphDecoderConfig):
+            Configuration for the graph decoder.
 
     """
 
@@ -66,7 +67,7 @@ class SimpleGraphDecoder(torch.nn.Module):
         out_conv = GraphConvBlock(
             in_channels=hidden_channels,
             out_channels=out_channels,
-            cfg=cfg.block_cfg.to_single_conv(),
+            cfg=deepcopy(cfg.block_cfg).to_single_conv(),
         )
 
         module = torch.nn.Sequential(*process_blocks, out_conv)
@@ -84,6 +85,15 @@ class SimpleGraphDecoder(torch.nn.Module):
     def forward(
         self, in_graph: pyg.data.Data, projected_features: torch.Tensor = None
     ) -> pyg.data.Data:
+        """
+        Args:
+            in_graph (pyg.data.Data): The input graph.
+            projected_features (torch.Tensor, optional): Image features projected onto the graph nodes,
+                of shape (N, C). If given, they are concatenated to `graph.x` before decoding.
+
+        Returns:
+            pyg.data.Data: The updated graph. `graph.x` keeps only its original channels.
+        """
 
         graph = in_graph.clone()
         init_channels = graph.x.shape[-1]

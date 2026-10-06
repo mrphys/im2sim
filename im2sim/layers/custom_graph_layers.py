@@ -39,11 +39,10 @@ class GraphActivation(torch.nn.Module):
     def forward(self, in_graph: pyg.data.Data) -> pyg.data.Data:
         """
         Args:
-            x (torch.Tensor): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
-            batch (torch.Tensor): The batch tensor of shape (N,) indicating the batch index for each node.
+            in_graph (pyg.data.Data): The input graph with node features `x` of shape (N, C).
 
         Returns:
-            torch.Tensor: The tensor after applying the activation function.
+            pyg.data.Data: A copy of the graph with the activation function applied to `x`.
         """
         graph = in_graph.clone()
         graph.x = self.activation(graph.x)
@@ -57,8 +56,7 @@ class DefaultGraphNorm(torch.nn.Module):
     Uses torch.nn.InstanceNorm2d applied to graph data, but all channels are normalised together.
 
     Args:
-        None
-
+        in_channels (int): The number of input channels. Unused, accepted for compatibility with the graph block interface.
     """
 
     def __init__(self, in_channels: int):
@@ -93,9 +91,9 @@ class GraphDropout(torch.nn.Module):
     Dropout for graph data, including node dropout, edge dropout, and channel dropout.
 
     Args:
-        p_node (float): The probability of dropping a node. Default is 0.0 (no dropout).
-        p_edge (float): The probability of dropping an edge. Default is 0.0 (no dropout).
-        p_channel (float): The probability of dropping a channel. Default is 0.0 (no dropout).
+        p_node (float): The probability of dropping a node. `0.0` disables node dropout.
+        p_edge (float): The probability of dropping an edge. `0.0` disables edge dropout.
+        p_channel (float): The probability of dropping a channel. `0.0` disables channel dropout.
     """
 
     def __init__(self, p_node: float, p_edge: float, p_channel: float):
@@ -110,11 +108,10 @@ class GraphDropout(torch.nn.Module):
     def forward(self, in_graph: pyg.data.Data) -> pyg.data.Data:
         """
         Args:
-            x (torch.Tensor): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
-            edge_index (torch.Tensor): The edge index tensor of shape (2, E) where E is the number of edges.
+            in_graph (pyg.data.Data): The input graph with node features `x` of shape (N, C) and `edge_index` of shape (2, E).
 
         Returns:
-            torch.Tensor: The tensor after applying dropout to nodes and edges.
+            pyg.data.Data: A copy of the graph with dropout applied to nodes, channels and edges.
         """
         graph = in_graph.clone()
 
@@ -183,7 +180,7 @@ class GraphECA(torch.nn.Module):
     Efficient Channel Attention (ECA) for graph data.
 
     Args:
-        channels (int): The number of input channels.
+        in_channels (int): The number of input channels.
     """
 
     def __init__(self, in_channels: int):
@@ -194,6 +191,8 @@ class GraphECA(torch.nn.Module):
         """
         Args:
             x (torch.Tensor): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
+            batch (torch.Tensor): The batch tensor of shape (N,) indicating the batch index for each node.
+                If None, all nodes are treated as one graph.
 
         Returns:
             torch.Tensor: The tensor after applying ECA.
@@ -217,7 +216,7 @@ class GraphSE(torch.nn.Module):
     Squeeze-and-Excitation (SE) for graph data.
 
     Args:
-        channels (int): The number of input channels.
+        in_channels (int): The number of input channels.
     """
 
     def __init__(self, in_channels: int):
@@ -228,6 +227,8 @@ class GraphSE(torch.nn.Module):
         """
         Args:
             x (torch.Tensor): The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.
+            batch (torch.Tensor): The batch tensor of shape (N,) indicating the batch index for each node.
+                If None, all nodes are treated as one graph.
 
         Returns:
             torch.Tensor: The tensor after applying SE.

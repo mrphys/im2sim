@@ -66,8 +66,8 @@ class TrilinearProjection(nn.Module):
 
     Args:
         image_dim (int):
-            The dimension of the first image input feature map (height, width, depth).
-            This is used to scale the graph coordinates to the image feature space.
+            The size of each dimension of the image the graph coordinates are defined in (i.e. the full resolution input image).
+            The coordinates are scaled by `image_features.shape[-3] / image_dim` to map them onto the image feature map.
     """
 
     def __init__(self, image_dim):
@@ -84,7 +84,10 @@ class TrilinearProjection(nn.Module):
 
             graph (pyg.data.Data):
                 A PyTorch Geometric Data object containing the graph data.
-                It must have 'coords' and 'batch' attributes.
+                It must have 'coords' and 'batch' attributes. Only the first 3 columns of 'coords' are used.
+
+        Returns:
+            torch.Tensor: The projected features of shape [num_nodes, channels].
         """
         projections = []
         coords = graph.coords
@@ -95,7 +98,7 @@ class TrilinearProjection(nn.Module):
             w = image_features[i].shape[-2]
             d = image_features[i].shape[-1]
 
-            # Last 3 coords
+            # First 3 coords
             x = coords[batch == i, 0]
             y = coords[batch == i, 1]
             z = coords[batch == i, 2]

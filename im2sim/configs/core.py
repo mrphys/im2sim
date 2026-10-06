@@ -40,7 +40,7 @@ class Config:
 
         cfg.save("config.json")
 
-        cfg2 = MyConfig().load("config.json")
+        cfg2 = MyConfig.load("config.json")
 
         ```
     """
@@ -232,8 +232,8 @@ class LayerConfig(Config):
     Configuration for a single layer/module.
 
     Args:
-        name (str):
-            The name of the layer/module. (e.g., 'Conv', 'Linear', 'BatchNorm', etc.)
+        name (str | None):
+            The name of the layer/module. (e.g., 'Conv', 'Linear', 'BatchNorm', etc.). `None` creates an identity layer.
 
         kwargs (dict[str, Any]):
             A dictionary of keyword arguments for the layer/module. (e.g. {'kernel_size': 3, 'stride': 1, 'padding': 1})

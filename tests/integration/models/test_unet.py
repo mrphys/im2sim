@@ -131,7 +131,7 @@ def test_output_block_defaults_to_single_conv():
 
 
 def test_add_input_residual():
-    cfg = UNetConfig(filters=[32, 32, 32])
+    cfg = UNetConfig(filters=[32, 32, 32], fusion_type="add")
 
     result = cfg.add_input_residual()
 
@@ -142,6 +142,27 @@ def test_add_input_residual():
 
     for block in cfg.decoder_block_cfg:
         assert block.residual_connections is not None
+
+
+def test_add_input_residual_skips_decoders_with_concat_fusion():
+    cfg = UNetConfig(filters=[8, 8, 8], fusion_type="concat")
+
+    cfg.add_input_residual()
+
+    for block in cfg.decoder_block_cfg:
+        assert block.residual_connections is None
+
+
+@pytest.mark.parametrize("fusion_type", ["add", "concat"])
+def test_add_input_residual_forward(fusion_type):
+    cfg = UNetConfig(
+        filters=[8, 8, 8],
+        fusion_type=fusion_type,
+        block_cfg=ImageConvBlockConfig(depth=2),
+    ).add_input_residual()
+    model = UNet(in_channels=8, out_channels=1, rank=2, cfg=cfg)
+
+    assert model(torch.randn(1, 8, 16, 16)).shape == (1, 1, 16, 16)
 
 
 def test_add_input_residual_requires_equal_filters():

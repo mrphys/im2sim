@@ -67,7 +67,7 @@ def get_structure_edges(mesh: PointGrid, structure_dict: dict[int, str]) -> dict
         structure_dict (Dict[int, str]): A dictionary that maps pyvista 'CellEntityIds' to structure names.
 
     Returns:
-        edges (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(2, N),
+        edges (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_edge_index': torch.Tensor(2, N),
         where N is the number of edges in the structure.
 
     Example:
@@ -123,7 +123,7 @@ def get_structure_cells(mesh: PointGrid, structure_dict: dict[int, str]) -> dict
         structure_dict (Dict[int, str]): A dictionary that maps pyvista 'CellEntityIds' to structure names.
 
     Returns:
-        cells (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_index': torch.Tensor(m, N), where m is 3 for triangles and 4 for tetrahedrons
+        cells (Dict[str, torch.Tensor]): A dictionary with items in the format 'structurename_cell_index': torch.Tensor(m, N), where m is 3 for triangles and 4 for tetrahedrons
         and N is the number of cells in the structure.
 
     Example:
@@ -332,7 +332,7 @@ def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> tuple[torch.Tenso
 
 def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
     """
-    Computes the squared Euclidean distance for each edge in a mesh.
+    Computes the Euclidean length of each edge in a mesh.
 
     Args:
         points (torch.Tensor): Node coordinate tensor of shape (N, D) where N
@@ -343,10 +343,8 @@ def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Ten
             indices [src, dst].
 
     Returns:
-        distances (torch.Tensor): A tensor of shape (E, D) containing the
-            per-dimension squared differences between the endpoints of each
-            edge. Sum over the last dimension to get scalar squared edge
-            lengths.
+        distances (torch.Tensor): A tensor of shape (E,) containing the
+            length of each edge.
 
     Example:
 
@@ -383,7 +381,8 @@ def cluster_pool(mesh: Data) -> Data:
     Args:
         mesh (torch_geometric.data.Data): A PyTorch Geometric Data object with
             the following required attributes:
-                - x (torch.Tensor): Node feature matrix of shape (N, C).
+                - x (torch.Tensor): Node coordinates of shape (N, D). These are
+                  used to compute the edge lengths and are averaged when pooling.
                 - edge_index (torch.Tensor): Edge index tensor of shape (2, E).
 
     Returns:
@@ -393,7 +392,7 @@ def cluster_pool(mesh: Data) -> Data:
             input mesh with updated x and edge_index.
 
     Notes:
-        - Edge weights are computed as 1 / (squared_length + 1e-8), where the
+        - Edge weights are computed as 1 / (length + 1e-8), where the
           epsilon prevents division by zero for degenerate zero-length edges.
         - Pooling is performed using torch_geometric.nn.avg_pool, so node
           features in each cluster are averaged.
@@ -415,15 +414,15 @@ def cluster_pool(mesh: Data) -> Data:
 
 def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float]) -> torch.Tensor:
     """
-    Computes the squared Euclidean distance between voxel centroids in a grid to a pointcloud
+    Computes the Euclidean distance from each voxel centroid in a 3D grid to the nearest point in a pointcloud.
 
     Args:
         points (torch.Tensor): Node coordinate tensor of shape (N, D) where N
             is the number of nodes and D is the spatial dimensionality
             (e.g. 3 for 3D meshes).
-        im_shape (torch.Tensor): A list of dim sizes for the image/mask corresponding
+        im_shape (list[int]): A list of dim sizes for the image/mask corresponding
             to the point cloud.
-        vox_sizes (torch.Tensor): A list of voxel sizes for each dimension
+        vox_sizes (list[float]): A list of voxel sizes for each dimension, in the same units as `points`
 
     Returns:
         distances (torch.Tensor): A tensor of shape specified by im_shape where each voxel
@@ -446,11 +445,13 @@ def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float])
 
             # distances will be a tensor of shape (128, 128, 128) containing the distance from each voxel centroid to the nearest point in the point cloud
     """
+    # voxel centroids in world coordinates
     im_coords = [
-        torch.arange(size / 2, n, size) for n, size in zip(im_shape, vox_sizes, strict=True)
+        torch.arange(n, dtype=points.dtype, device=points.device) * size + size / 2
+        for n, size in zip(im_shape, vox_sizes, strict=True)
     ]
-    grids = torch.meshgrid(*im_coords, indexing="ij")  # three [128,128,128] tensors
-    coord_tensor = torch.stack(grids, dim=-1).reshape(-1, 3)
+    grids = torch.meshgrid(*im_coords, indexing="ij")
+    coord_tensor = torch.stack(grids, dim=-1).reshape(-1, len(im_shape))
 
     nns = knn(x=points, y=coord_tensor, k=1)
     dists = torch.linalg.norm(coord_tensor - points[nns[1]], dim=-1)
@@ -475,12 +476,13 @@ def hard_threshold(y: torch.Tensor, threshold: float = 1.0) -> torch.Tensor:
 
 def soft_threshold(y, threshold=1.5, sharpness=10.0):
     """
-    Thresholds a Tensor y according to a specified float threshold. Every value less than the threshold
-    is assigned 1.0 and values greater are assigned 0.0
+    Differentiable threshold of a Tensor y, computed as `sigmoid(sharpness * (threshold - y))`.
+    Values well below the threshold approach 1.0 and values well above it approach 0.0.
 
     Args:
         y (torch.Tensor): tensor containing the raw values
-        threshold (float): threshold value
+        threshold (float): threshold value. Default is 1.5.
+        sharpness (float): steepness of the sigmoid. Higher values approach a hard threshold. Default is 10.0.
 
     Returns:
         y_thresh (torch.Tensor): thresholded input tensor

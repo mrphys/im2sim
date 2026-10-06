@@ -375,3 +375,26 @@ class TestTemporalFactorizerIntegration:
         loss.backward()
 
         assert x.grad is not None
+
+
+class TestTemporalFactorizerParamsToSplit:
+    """Test that params_to_split controls which parameters accept a time component."""
+
+    def test_unlisted_param_rejects_time_component(self):
+        factorizer = TemporalFactorizer(nn.Conv2d(3, 16, 3), rank=2, params_to_split=["stride"])
+        with pytest.raises(ValueError, match="not in params_to_split"):
+            factorizer._split_param((3, 3, 3), "kernel_size", time_default=1)
+
+    def test_unlisted_param_applies_spatially(self):
+        factorizer = TemporalFactorizer(nn.Conv2d(3, 16, 3), rank=2, params_to_split=[])
+        time_val, space_val = factorizer._split_param((5, 5), "kernel_size", time_default=1)
+        assert time_val == 1
+        assert space_val == (5, 5)
+
+    def test_convtranspose_splits_output_padding(self):
+        module = nn.ConvTranspose2d(4, 4, kernel_size=3, stride=2)
+        factorizer = TemporalFactorizer(module, rank=2)
+        assert "output_padding" in factorizer.params_to_split
+        time_val, space_val = factorizer._split_param((1, 1, 1), "output_padding")
+        assert time_val == 1
+        assert space_val == (1, 1)

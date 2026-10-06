@@ -263,6 +263,7 @@ def test_to_ghost_depthwise_separable():
 
     assert result is cfg
     assert cfg.stem_block_cfg.conv_cfg.name == "GhostConv"
+    assert cfg.stem_block_cfg.conv_cfg.kwargs["separable"] is True
 
     for encoder_cfg in cfg.encoder_block_cfg:
         assert encoder_cfg.conv_cfg.name == "GhostConv"

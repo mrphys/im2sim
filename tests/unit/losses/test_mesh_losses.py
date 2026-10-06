@@ -118,6 +118,17 @@ def test_mesh_loss_is_abstract():
         MeshLoss()
 
 
+def test_mesh_loss_default_required_attrs():
+    class DummyLoss(MeshLoss):
+        def __init__(self):
+            super().__init__()
+
+        def _compute_loss(self, true_graph, pred_graph):
+            return torch.tensor(1.0)
+
+    assert DummyLoss().required_attrs == ["coords"]
+
+
 def test_mesh_loss_requires_coords():
     class DummyLoss(MeshLoss):
         def __init__(self):

@@ -26,12 +26,13 @@ class GraphConvBlockConfig(Config):
     """
     Configuration class for defining the parameters of a graph convolutional block.
 
-    The default configuration consists of a single convolutional layer with ReLU activation, `im2sim.layers.DefaultGraphNorm` normalization, and no dropout or attention layers.
+    The default configuration consists of a single `GCNConv` layer with `im2sim.layers.DefaultGraphNorm` normalization, and no dropout or attention layers.
+    The ReLU activation is applied between layers, so it has no effect at the default depth of `1`.
 
     Attributes can either be set directly when creating an instance of the class or modified later.
     Configuration presets can be applied to quickly set up common configurations for different use cases.
 
-    The configuration can also be saved to and loaded from a YAML file.
+    The configuration can also be saved to and loaded from a JSON file.
 
     Args:
 
@@ -40,10 +41,10 @@ class GraphConvBlockConfig(Config):
 
         hidden_channels(int):
             The number of channels in the hidden layers.
-            Default is `None`, which means that the number of channels will be the same as `in_channels` for all layers except the last one, which will have `out_channels`.
+            Default is `None`, which means that the number of channels will be the same as `in_channels`. The last layer always has `out_channels`.
 
         activation (str | None):
-            The activation function to use after each convolutional layer. Default is `"ReLU"`.
+            The activation function to use after each convolutional layer except the last. Default is `"ReLU"`.
 
         out_activation (str | None):
             The activation function to use after the final layer. Default is `None`.
@@ -60,12 +61,12 @@ class GraphConvBlockConfig(Config):
             Configuration for the dropout layers. Default is no dropout.
 
         attn_cfg (LayerConfig):
-            Configuration for the attention layers. Default is no attention.
+            Configuration for the attention layers. Supported names are `"EfficientChannelAttn"`, `"SqueezeExcite"` or `None`. Default is no attention.
             Attention is applied before the residual connection if the layer is a target of a residual connection, or after the last layer if there are no residual connections.
 
         dropout_position (int | list[int]):
             Specifies the position(s) of the dropout layers within the block.
-            Dropout will be applied after the specified layer(s), where the layer numbers start from `1` and end at `depth`.
+            Dropout will be applied after the specified layer(s), where the layer numbers start from `1` and must be less than `depth`.
             If a list is provided, dropout will be applied after each specified layer.
             Default is `1`. (only applied if dropout_cfg is not `None`)
 
@@ -75,11 +76,11 @@ class GraphConvBlockConfig(Config):
             Example: `{1: [0]}` means that the input(0) to the block will be added to the output of layer 1.
 
         residual_type (str):
-            The type of residual connection to use (e.g., `"add"`, `"concat"`, `"average"`). Default is `"average"`.
+            The type of residual connection to use (`"add"`, `"concat"`, `"multiply"` or `"average"`). Default is `"average"`.
 
     Examples:
 
-        To create a highly customised configuration for an image convolutional block, you can specify all attributes of the configuration:
+        To create a highly customised configuration for a graph convolutional block, you can specify all attributes of the configuration:
 
         .. code-block:: python
 
@@ -130,12 +131,12 @@ class GraphConvBlockConfig(Config):
             cfg = cfg.to_single_conv()
             cfg = cfg.add_input_residual()
 
-        To save the configuration to a YAML file and load it back, you can use:
+        To save the configuration to a JSON file and load it back, you can use:
 
         .. code-block:: python
 
-            cfg.save("my_config.yaml")
-            loaded_cfg = GraphConvBlockConfig.load("my_config.yaml")
+            cfg.save("my_config.json")
+            loaded_cfg = GraphConvBlockConfig.load("my_config.json")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
 
@@ -157,7 +158,7 @@ class GraphConvBlockConfig(Config):
 
     def to_single_conv(self):
         """
-        Converts the blcok into a single convolutional layer with no normalization, dropout, or residual connections.
+        Converts the block into a single convolutional layer with no activation, normalization, dropout, attention, or residual connections.
         """
         self.depth = 1
         self.norm_cfg = LayerConfig(name=None, kwargs={})
@@ -180,7 +181,7 @@ class GraphConvBlockConfig(Config):
         """
         Configures the block to have a residual connection from the input to the output of the last layer.
         """
-        self.residual_connections = {self.depth - 1: [0]}
+        self.residual_connections = {self.depth: [0]}
         self.residual_type = "add"
         return self
 
@@ -189,13 +190,15 @@ class GraphConvBlockConfig(Config):
         Configures the block to have a residual connection from the output of the first layer to the output of the last layer.
         """
         assert self.depth > 1, "Depth must be greater than 1 for 1-residual connections"
-        self.residual_connections = {self.depth - 1: [1]}
+        self.residual_connections = {self.depth: [1]}
         self.residual_type = "add"
         return self
 
     def add_input_concat_residual(self):
         """
-        Configures the block to have a residual connection from the input to the output of the last layer, using concatenation instead of addition.
+        Configures the block to have a residual connection from the input to the input of the last layer, using concatenation instead of addition.
+
+        The input is concatenated before the last layer rather than after it, so the output keeps `out_channels` channels.
         """
         self.residual_connections = {self.depth - 1: [0]}
         self.residual_type = "concat"
@@ -217,7 +220,7 @@ class GraphConvBlockConfig(Config):
 
     def nullify(self):
         """
-        Configures the block to have no normalization, dropout, or attention layers.
+        Configures the block to be a no-op: removes the convolution, activations, normalization, dropout, attention, and residual connections.
         """
         self.conv_cfg = LayerConfig(name=None, kwargs={})
         self.norm_cfg = LayerConfig(name=None, kwargs={})

@@ -30,6 +30,10 @@ def _get_selected_nodes(
         graph (pyg.data.Data): The input graph data.
         include_ids (list[str], optional): List of keys in the graph to include. If provided, only nodes corresponding to these keys will be selected.
         exclude_ids (list[str], optional): List of keys in the graph to exclude. If provided, nodes corresponding to these keys will be excluded.
+            Ignored when ``include_ids`` is provided.
+
+    Returns:
+        torch.Tensor: Indices of the selected nodes.
     """
 
     def get_ids_from_keys(keys):
@@ -185,13 +189,21 @@ class GraphUpdater(_GraphFeatureWrapper):
 
     The update is:
 
-        graph.<pred_feature_key>[:, pred_feature_channels] += module(graph)
+        graph.<pred_feature_key>[selected_nodes, pred_feature_channels] += module(graph).x[selected_nodes]
 
-    If ``pred_feature_key`` does not exist, it is initialized to zeros.
+    If ``pred_feature_key`` does not exist, it is initialized to zeros. If ``pred_feature_key`` is not
+    ``'x'``, the current values of the updated channels are concatenated to ``graph.x`` before it is
+    passed to the module.
 
     Args:
         module:
-            Graph convolutional block used to generate the update.
+            Graph module used to generate the update. Must take and return a graph.
+
+        in_channels:
+            Number of input channels of the module.
+
+        out_channels:
+            Number of output channels of the module.
 
         pred_feature_key:
             Graph attribute containing the features to update.
@@ -230,13 +242,21 @@ class GraphPredictor(_GraphFeatureWrapper):
 
     The prediction is:
 
-        graph.<pred_feature_key>[:, pred_feature_channels] = module(graph)
+        graph.<pred_feature_key>[selected_nodes, pred_feature_channels] = module(graph).x[selected_nodes]
 
-    If ``pred_feature_key`` does not exist, it is initialized to zeros.
+    If ``pred_feature_key`` does not exist, it is initialized to zeros. If ``pred_feature_key`` is not
+    ``'x'``, the current values of the predicted channels are concatenated to ``graph.x`` before it is
+    passed to the module.
 
     Args:
         module:
-            Graph convolutional block used to predict the features.
+            Graph module used to predict the features. Must take and return a graph.
+
+        in_channels:
+            Number of input channels of the module.
+
+        out_channels:
+            Number of output channels of the module.
 
         pred_feature_key:
             Graph attribute containing the features to predict.

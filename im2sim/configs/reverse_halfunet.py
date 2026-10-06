@@ -28,14 +28,14 @@ class ReverseHalfUNetConfig(Config):
     """
     Configuration class for the ReverseHalfUNet model (see `im2sim.models.ReverseHalfUNet`).
 
-    For features like serialisation and saving/loading see `im2sim._internal.Config`.
+    For features like serialisation and saving/loading see `im2sim.configs.core.Config`.
 
     Args:
         hidden_channels (int):
             Number of hidden channels. Default is `64`.
 
         n_levels (int):
-            Number of levels in the Reverse ReverseHalfUNet. Default is `3`.
+            Number of levels in the ReverseHalfUNet. Default is `3`.
 
         pool_cfg (LayerConfig | list[LayerConfig]):
             Configuration for pooling layers. Can be a single LayerConfig or a list of LayerConfigs for each level starting with the highest resolution.
@@ -48,11 +48,11 @@ class ReverseHalfUNetConfig(Config):
 
         block_cfg (ImageConvBlockConfig):
             Configuration for convolutional blocks. Used as a default for decoder blocks.
-            Default is a standard convolutional block with `3x3` kernels, stride `1`, padding `1`, and `ReLU` activation.
+            Default is `ImageConvBlockConfig()`: a single `3x3` convolution with `"same"` padding, `InstanceNorm` and `ReLU` activation.
 
         stem_block_cfg (ImageConvBlockConfig | None):
             Configuration for the stem block. Can only be a single ImageConvBlockConfig.
-            If None, uses block_cfg for the stem block.
+            If None, uses block_cfg reduced to a single layer with no dropout or residual connections (see `ImageConvBlockConfig.to_single_block()`).
 
         decoder_block_cfg (list[ImageConvBlockConfig] | ImageConvBlockConfig | None):
             Configuration for decoder blocks. Can be a single ImageConvBlockConfig or a list of ImageConvBlockConfigs for each level starting with the lowest resolution.
@@ -60,19 +60,21 @@ class ReverseHalfUNetConfig(Config):
 
         out_block_cfg (ImageConvBlockConfig | None):
             Configuration for the output block. Can only be a single ImageConvBlockConfig.
-            If None, uses a single convolution operation taken from block_cfg.
+            If None, uses a single `1x1` convolution taken from block_cfg with `out_activation` as its output activation.
 
         decoder_blocks_per_level (int):
-            Number of convolutional blocks per level in the decoder.
+            Number of convolutional blocks per level in the decoder. Default is `1`.
 
         fusion_type (str):
             Type of residual connection for skip connections. Options are `'add'` or `'concat'`. Default is `'add'`.
 
         out_activation (str | None):
             Activation function for the output block. If None, no activation is applied.
+            Only used when `out_block_cfg` is None.
 
         enable_temporal (bool):
             If True, layers are wrapped with `TemporalFactorizer` so the model accepts inputs of shape `(N, C, T, *spatial)` with the time axis after channels.
+            Only supported for rank `2` and `3`, and only for layer types supported by `TemporalFactorizer`.
             Default is `False`.
 
     Examples:
@@ -172,10 +174,10 @@ class ReverseHalfUNetConfig(Config):
 
         >>> cfg = ReverseHalfUNetConfig().to_depthwise_separable().add_residual()
 
-        To save the configuration to a YAML file and load it back, you can use:
+        To save the configuration to a JSON file and load it back, you can use:
 
-        >>> cfg.save("my_config.yaml")
-        >>> loaded_cfg = ReverseHalfUNetConfig.load("my_config.yaml")
+        >>> cfg.save("my_config.json")
+        >>> loaded_cfg = ReverseHalfUNetConfig.load("my_config.json")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
     """
@@ -247,14 +249,23 @@ class ReverseHalfUNetConfig(Config):
 
     def add_residual(self):
         """
-        Apply a residual connection to all decoder blocks in the ReverseHalfUNet configuration.
+        Apply an input residual connection (see `ImageConvBlockConfig.add_input_residual()`) to the decoder blocks.
 
-        The residual connection type is set to "add" for all decoder blocks,
-        which means that the output of the first convolutional layer in each block will be added to the output of the last convolutional layer in that block.
+        The residual connection type is set to "add", so the input of each block is added to the output of the block.
         This can help with gradient flow and improve training stability.
+
+        Note:
+            With `'add'` fusion all decoder blocks are modified. With `'concat'` fusion only the first (lowest resolution) decoder block is modified,
+            since the other decoder blocks receive more channels than they output.
         """
 
-        for d in self.decoder_block_cfg[1:]:
+        if self.fusion_type.strip().lower() == "add":
+            decoder_blocks = self.decoder_block_cfg
+        else:
+            # decoder_block_cfg is stored highest resolution first
+            decoder_blocks = self.decoder_block_cfg[-1:]
+
+        for d in decoder_blocks:
             d.add_input_residual()
 
         return self
@@ -275,7 +286,7 @@ class ReverseHalfUNetConfig(Config):
         """
         Apply a double bottleneck configuration to the ReverseHalfUNet.
 
-        This change modifies the first decoder block to have two convolutional layers instead of one, which can help increase the capacity of the model.
+        This change modifies the first decoder block to double the depth (number of convolutional layers), which can help increase the capacity of the model.
         """
         self.decoder_block_cfg[-1].depth = self.decoder_block_cfg[-1].depth * 2
         return self
@@ -346,6 +357,7 @@ class ReverseHalfUNetConfig(Config):
         Apply a ghost depthwise separable convolution (see `im2sim.layers.GhostConv`) preset to stem + all decoder blocks in the ReverseHalfUNet configuration.
         """
         self.stem_block_cfg.conv_cfg.name = "GhostConv"
+        self.stem_block_cfg.conv_cfg.kwargs["separable"] = True
         for d in self.decoder_block_cfg:
             d.conv_cfg.name = "GhostConv"
             d.conv_cfg.kwargs["separable"] = True

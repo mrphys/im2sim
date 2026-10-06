@@ -21,6 +21,8 @@ from pyvista.core.pointset import PointGrid
 from torch_geometric.data import Data
 from torch_geometric.utils import to_undirected
 
+from im2sim.utils.pyg_ops import graclus, knn
+
 
 class InputMeshError(ValueError):
     pass
@@ -406,7 +408,7 @@ def cluster_pool(mesh: Data) -> Data:
     """
     distances = compute_edge_lengths(mesh.x, mesh.edge_index)
     weights = 1 / (distances + 1e-8)
-    clusters = gnn.graclus(mesh.edge_index, weights, mesh.x.shape[0])
+    clusters = graclus(mesh.edge_index, weights, mesh.x.shape[0])
     pooled_mesh = gnn.avg_pool(clusters, mesh)
     return pooled_mesh
 
@@ -450,7 +452,7 @@ def rasterize(points: torch.Tensor, im_shape: list[int], vox_sizes: list[float])
     grids = torch.meshgrid(*im_coords, indexing="ij")  # three [128,128,128] tensors
     coord_tensor = torch.stack(grids, dim=-1).reshape(-1, 3)
 
-    nns = gnn.pool.knn(x=points, y=coord_tensor, k=1)
+    nns = knn(x=points, y=coord_tensor, k=1)
     dists = torch.linalg.norm(coord_tensor - points[nns[1]], dim=-1)
     return dists.reshape(im_shape)
 

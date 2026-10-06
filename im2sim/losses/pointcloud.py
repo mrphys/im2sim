@@ -17,18 +17,18 @@
 import logging
 
 import torch
-import torch_geometric.nn as gnn
 
 from im2sim.losses.mesh import MeshLoss
+from im2sim.utils.pyg_ops import knn
 
 logger = logging.getLogger(__name__)
 
 
 def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
     if b1 is None:
-        b1 = torch.zeros(y1.shape[0])
+        b1 = torch.zeros(y1.shape[0], dtype=torch.long, device=y1.device)
     if b2 is None:
-        b2 = torch.zeros(y2.shape[0])
+        b2 = torch.zeros(y2.shape[0], dtype=torch.long, device=y2.device)
     logger.debug(
         "shapes - y1:%s, y2:%s, b1:%s, b2%s",
         tuple(y1.shape),
@@ -36,13 +36,13 @@ def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
         tuple(b1.shape),
         tuple(b2.shape),
     )
-    nns1 = gnn.pool.knn(x=y2, y=y1, batch_x=b2, batch_y=b1, k=1)
+    nns1 = knn(x=y2, y=y1, batch_x=b2, batch_y=b1, k=1)
     logger.debug("nn shape: %s", nns1.shape)
     if nns1.shape[-1] == 0:
         return (y2 * 0).sum()
 
     d1 = torch.linalg.norm(y1 - y2[nns1[1]], dim=-1).mean()
-    nns2 = gnn.pool.knn(x=y1, y=y2, batch_x=b1, batch_y=b2, k=1)
+    nns2 = knn(x=y1, y=y2, batch_x=b1, batch_y=b2, k=1)
 
     if nns2.shape[-1] == 0:
         return (y2 * 0).sum()

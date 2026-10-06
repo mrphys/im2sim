@@ -16,7 +16,8 @@
 
 import torch
 import torch.nn.functional as F
-from torch_geometric.nn import knn_interpolate
+
+from im2sim.utils.pyg_ops import knn_interpolate
 
 
 class KnnFeatureLoss(torch.nn.Module):

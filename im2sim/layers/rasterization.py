@@ -17,7 +17,8 @@
 
 import torch
 import torch.nn.functional as F
-import torch_geometric.nn as gnn
+
+from im2sim.utils.pyg_ops import knn_interpolate
 
 
 def pointcloud_to_mask(points, im_shape, vox_sizes):
@@ -62,9 +63,7 @@ def rasterise_feats(coords, feats, domain_size):
     mask = dilate_mask(pointcloud_to_mask(coords, domain_size, [1, 1, 1]))
 
     # interpolate only active voxels
-    rasterised_features = gnn.knn_interpolate(
-        feats, coords, img_coords[mask].to(torch.float32), k=1
-    )
+    rasterised_features = knn_interpolate(feats, coords, img_coords[mask].to(torch.float32), k=1)
 
     img = torch.zeros((*domain_size, feats.shape[-1]), device=feats.device, dtype=torch.float32)
 

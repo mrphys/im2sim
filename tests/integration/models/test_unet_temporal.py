@@ -17,9 +17,9 @@
 import pytest
 import torch
 
+from im2sim.configs.core import LayerConfig
 from im2sim.configs.image_blocks import ImageConvBlockConfig
 from im2sim.configs.unet import UNetConfig
-from im2sim.configs.core import LayerConfig
 from im2sim.models.unet import UNet
 
 
@@ -164,6 +164,61 @@ class TestUNetTemporal3D:
         loss.backward()
 
         assert x.grad is not None
+
+    @pytest.mark.parametrize("spatial", [(15, 17, 13), (9, 16, 11)])
+    def test_unet_temporal_3d_odd_spatial_sizes(self, spatial):
+        """Test skip connections are aligned when pooling doesn't divide the volume evenly."""
+        cfg = UNetConfig(filters=[8, 16, 32], enable_temporal=True)
+        model = UNet(in_channels=1, out_channels=2, rank=3, cfg=cfg)
+
+        x = torch.randn(1, 1, 3, *spatial)
+        y = model(x)
+
+        # Spatial size should match the equivalent non-temporal 3D UNet, time is unchanged
+        model_3d = UNet(in_channels=1, out_channels=2, rank=3, cfg=cfg.mod(enable_temporal=False))
+        expected_spatial = model_3d(torch.randn(1, 1, *spatial)).shape[2:]
+        assert y.shape == (1, 2, 3, *expected_spatial)
+
+    def test_unet_temporal_3d_odd_time_with_temporal_pooling(self):
+        """Test skip connections are aligned when pooling over an odd number of time steps."""
+        cfg = UNetConfig(
+            filters=[8, 16],
+            pool_cfg=LayerConfig(name="MaxPool", kwargs={"kernel_size": (2, 2, 2, 2)}),
+            upsample_cfg=LayerConfig(
+                name="Upsample", kwargs={"scale_factor": (2, 2, 2, 2), "mode": "trilinear"}
+            ),
+            enable_temporal=True,
+        )
+        model = UNet(in_channels=1, out_channels=1, rank=3, cfg=cfg)
+
+        # T=5 is pooled to 2 and upsampled to 4, so the T=5 skip connection must be resized
+        x = torch.randn(1, 1, 5, 16, 16, 16)
+        y = model(x)
+
+        assert y.shape == (1, 1, 4, 16, 16, 16)
+
+    def test_unet_temporal_3d_deep_supervision(self):
+        """Test deep supervision outputs are upsampled to the full resolution for 3D+time."""
+        cfg = UNetConfig(filters=[8, 16, 32], enable_temporal=True)
+        model = UNet(
+            in_channels=1,
+            out_channels=2,
+            rank=3,
+            cfg=cfg,
+            supervision_levels=[0, 1],
+        )
+
+        x = torch.randn(2, 1, 3, 16, 16, 16, requires_grad=True)
+        outputs = model(x)
+
+        assert isinstance(outputs, list)
+        assert len(outputs) == 2
+        for out in outputs:
+            assert out.shape == (2, 2, 3, 16, 16, 16)
+
+        sum(out.sum() for out in outputs).backward()
+        assert x.grad is not None
+        assert torch.isfinite(x.grad).all()
 
 
 class TestUNetTemporalAdvanced:

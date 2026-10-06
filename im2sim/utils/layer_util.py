@@ -334,6 +334,37 @@ def apply_residual_connection(*inputs, connection_type: str = "add"):
         raise ValueError(f"Unsupported residual connection type: {connection_type}")
 
 
+def resize_nearest(x: torch.Tensor, size) -> torch.Tensor:
+    """
+    Nearest-neighbour resize of all dimensions after (N, C) to `size`.
+
+    Equivalent to `torch.nn.functional.interpolate(x, size=size)`, which only supports up to 3
+    spatial dimensions, but also works for inputs with more, e.g. (N, C, T, D, H, W) inputs of
+    temporal 3D models.
+
+    Args:
+        x (torch.Tensor): Input of shape (N, C, *dims).
+        size (Sequence[int]): Output size of the dimensions after (N, C).
+
+    Returns:
+        torch.Tensor: Resized tensor of shape (N, C, *size).
+    """
+    size = tuple(size)
+    if x.ndim <= 5:
+        return torch.nn.functional.interpolate(x, size=size)
+
+    # Nearest interpolation is separable, so resize one dim at a time using the same index rule
+    # as PyTorch: min(floor(i * in / out), in - 1), computed in float32.
+    for dim, (in_size, out_size) in enumerate(zip(x.shape[2:], size, strict=True), start=2):
+        if in_size == out_size:
+            continue
+        scale = torch.tensor(in_size / out_size, dtype=torch.float32)
+        idx = torch.arange(out_size, dtype=torch.float32) * scale
+        idx = idx.floor().long().clamp(max=in_size - 1).to(x.device)
+        x = x.index_select(dim, idx)
+    return x
+
+
 def call_with_supported_kwargs(fn, kwargs):
     sig = inspect.signature(fn)
     supported = {k: v for k, v in kwargs.items() if k in sig.parameters}

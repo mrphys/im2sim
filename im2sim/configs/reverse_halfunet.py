@@ -71,6 +71,10 @@ class ReverseHalfUNetConfig(Config):
         out_activation (str | None):
             Activation function for the output block. If None, no activation is applied.
 
+        enable_temporal (bool):
+            If True, layers are wrapped with `TemporalFactorizer` so the model accepts inputs of shape `(N, C, T, *spatial)` with the time axis after channels.
+            Default is `False`.
+
     Examples:
 
         To create a customised configuration for a ReverseHalfUNet, you can create a preferred ImageConvBlockConfig and use it for the decoder blocks:
@@ -199,6 +203,7 @@ class ReverseHalfUNetConfig(Config):
 
     fusion_type: str = "add"
     out_activation: str | None = None
+    enable_temporal: bool = False
 
     def __post_init__(self):
 

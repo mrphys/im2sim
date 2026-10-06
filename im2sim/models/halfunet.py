@@ -25,6 +25,7 @@ from im2sim.utils.layer_util import (
     apply_residual_connection,
     call_with_supported_kwargs,
     get_image_layer,
+    resize_nearest,
 )
 
 
@@ -151,6 +152,7 @@ class HalfUNet(torch.nn.Module):
             out_channels=self.hidden_channels,
             rank=rank,
             cfg=cfg.stem_block_cfg,
+            temporal=cfg.enable_temporal,
         )
 
         # ---- encoder ----
@@ -163,6 +165,7 @@ class HalfUNet(torch.nn.Module):
                         out_channels=self.hidden_channels,
                         rank=rank,
                         cfg=cfg.encoder_block_cfg[i],
+                        temporal=cfg.enable_temporal,
                     )
                     for _ in range(cfg.encoder_blocks_per_level)
                 ]
@@ -173,7 +176,7 @@ class HalfUNet(torch.nn.Module):
             if i < self.n_levels - 1:
                 # we need to pass in the in_channels and out_channels to the pooling layer, as some pooling layers (e.g., strided conv) require them
                 pool = call_with_supported_kwargs(
-                    get_image_layer(pool_cfg[i].name, rank),
+                    get_image_layer(pool_cfg[i].name, rank, temporal=cfg.enable_temporal),
                     {
                         "in_channels": self.hidden_channels,
                         "out_channels": self.hidden_channels,
@@ -190,7 +193,7 @@ class HalfUNet(torch.nn.Module):
                 else self.hidden_channels * (self.n_levels - i - 1)
             )
             up = call_with_supported_kwargs(
-                get_image_layer(upsample_cfg[i].name, rank),
+                get_image_layer(upsample_cfg[i].name, rank, temporal=cfg.enable_temporal),
                 {"in_channels": channels, "out_channels": channels, **upsample_cfg[i].kwargs},
             )
             self.ups.append(up)
@@ -205,6 +208,7 @@ class HalfUNet(torch.nn.Module):
             out_channels=out_channels,
             rank=rank,
             cfg=cfg.out_block_cfg,
+            temporal=cfg.enable_temporal,
         )
 
     def forward(self, x):
@@ -224,6 +228,11 @@ class HalfUNet(torch.nn.Module):
         # ---- fusion ----
         for up, enc in zip(self.ups, reversed(enc_outputs[:-1]), strict=True):
             x = up(x)
+
+            # dynamic shape alignment
+            if x.shape[2:] != enc.shape[2:]:
+                enc = resize_nearest(enc, x.shape[2:])
+
             x = apply_residual_connection(x, enc, connection_type=self.fusion_type)
 
         output = self.out_block(x)

@@ -25,6 +25,7 @@ from im2sim.utils.layer_util import (
     apply_residual_connection,
     call_with_supported_kwargs,
     get_image_layer,
+    resize_nearest,
 )
 
 
@@ -278,7 +279,7 @@ class UNet(torch.nn.Module):
 
             # dynamic shape alignment
             if x.shape[2:] != skip.shape[2:]:
-                skip = torch.nn.functional.interpolate(skip, size=x.shape[2:])
+                skip = resize_nearest(skip, x.shape[2:])
 
             x = apply_residual_connection(x, skip, connection_type=self.fusion_type)
             x = dec(x)
@@ -291,9 +292,7 @@ class UNet(torch.nn.Module):
         out_shape = decoder_outputs[-1].shape[2:]
         for i in range(len(decoder_outputs)):
             if decoder_outputs[i].shape[2:] != out_shape:
-                decoder_outputs[i] = torch.nn.functional.interpolate(
-                    decoder_outputs[i], size=out_shape
-                )
+                decoder_outputs[i] = resize_nearest(decoder_outputs[i], out_shape)
 
         if len(decoder_outputs) > 1:
             return decoder_outputs

@@ -24,6 +24,7 @@ from im2sim.utils.layer_util import (
     apply_residual_connection,
     call_with_supported_kwargs,
     get_image_layer,
+    resize_nearest,
 )
 
 
@@ -166,13 +167,14 @@ class ReverseHalfUNet(torch.nn.Module):
             out_channels=self.hidden_channels,
             rank=rank,
             cfg=cfg.stem_block_cfg,
+            temporal=cfg.enable_temporal,
         )
 
         # ---- pooling ----
         for i in range(self.n_levels - 1):
             # we need to pass in the in_channels and out_channels to the pooling layer, as some pooling layers (e.g., strided conv) require them
             pool = call_with_supported_kwargs(
-                get_image_layer(pool_cfg[i].name, rank),
+                get_image_layer(pool_cfg[i].name, rank, temporal=cfg.enable_temporal),
                 {
                     "in_channels": self.hidden_channels,
                     "out_channels": self.hidden_channels,
@@ -204,7 +206,7 @@ class ReverseHalfUNet(torch.nn.Module):
             # upsample layer needs to know the number of channels in the input and output, as some upsampling layers (e.g., transposed conv) require them
             if i > 0:
                 up = call_with_supported_kwargs(
-                    get_image_layer(upsample_cfg[i - 1].name, rank),
+                    get_image_layer(upsample_cfg[i - 1].name, rank, temporal=cfg.enable_temporal),
                     {
                         "in_channels": self.hidden_channels,
                         "out_channels": self.hidden_channels,
@@ -220,6 +222,7 @@ class ReverseHalfUNet(torch.nn.Module):
                         out_channels=self.hidden_channels,
                         rank=rank,
                         cfg=cfg.decoder_block_cfg[i],
+                        temporal=cfg.enable_temporal,
                     )
                     for j in range(cfg.decoder_blocks_per_level)
                 ]
@@ -235,6 +238,7 @@ class ReverseHalfUNet(torch.nn.Module):
                         out_channels=out_channels,
                         rank=rank,
                         cfg=cfg.out_block_cfg,
+                        temporal=cfg.enable_temporal,
                     )
                 )
 
@@ -266,7 +270,7 @@ class ReverseHalfUNet(torch.nn.Module):
 
             # dynamic shape alignment
             if x.shape[2:] != inp.shape[2:]:
-                inp = torch.nn.functional.interpolate(inp, size=x.shape[2:])
+                inp = resize_nearest(inp, x.shape[2:])
 
             x = apply_residual_connection(x, inp, connection_type=self.fusion_type)
             x = dec(x)
@@ -278,9 +282,7 @@ class ReverseHalfUNet(torch.nn.Module):
         out_shape = decoder_outputs[-1].shape[2:]
         for i in range(len(decoder_outputs)):
             if decoder_outputs[i].shape[2:] != out_shape:
-                decoder_outputs[i] = torch.nn.functional.interpolate(
-                    decoder_outputs[i], size=out_shape
-                )
+                decoder_outputs[i] = resize_nearest(decoder_outputs[i], out_shape)
 
         if len(decoder_outputs) > 1:
             return decoder_outputs

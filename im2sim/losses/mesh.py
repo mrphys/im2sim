@@ -20,7 +20,46 @@ from itertools import combinations
 import torch
 import torch.nn.functional as F
 
-from im2sim.mesh_ops import compute_edge_lengths
+
+def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
+    """
+    Computes the squared Euclidean distance for each edge in a mesh.
+
+    Args:
+        points (torch.Tensor): Node coordinate tensor of shape (N, D) where N
+            is the number of nodes and D is the spatial dimensionality
+            (e.g. 3 for 3D meshes).
+        edges (torch.Tensor): Edge index tensor of shape (2, E) where E is the
+            number of edges. Each column represents an edge as a pair of node
+            indices [src, dst].
+
+    Returns:
+        distances (torch.Tensor): A tensor of shape (E, D) containing the
+            per-dimension squared differences between the endpoints of each
+            edge. Sum over the last dimension to get scalar squared edge
+            lengths.
+
+    Example:
+
+        .. code-block:: python
+
+            # 4 nodes in 3D space
+            points = torch.tensor([[0.0, 0.0, 0.0],
+                                   [1.0, 0.0, 0.0],
+                                   [1.0, 1.0, 0.0],
+                                   [0.0, 1.0, 1.0]])
+
+            # 3 edges connecting the nodes
+            edges = torch.tensor([[0, 1, 2],
+                                  [1, 2, 3]])
+
+            distances = compute_edge_lengths(points, edges)
+
+            # distances will be a tensor of shape (3,) containing the lengths of the edges
+    """
+    coords = points[edges]
+    distances = torch.linalg.norm(coords[0] - coords[1], dim=-1)
+    return distances
 
 
 class MeshLoss(torch.nn.Module, ABC):
@@ -376,4 +415,3 @@ if __name__ == "__main__":
     inv_loss = EdgeLengthDeviationLoss(supervised=True)
     loss_value = inv_loss(graph, pred_graph=pred_graph)
 
-    print(loss_value)

@@ -42,7 +42,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "torch>=2.3,<3",
+    "torch>=2.3,<=2.14.0",
     "torch-geometric",
     "numpy",
     "matplotlib",

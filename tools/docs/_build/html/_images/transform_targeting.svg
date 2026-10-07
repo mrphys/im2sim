@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 436" width="780" height="436" role="img" aria-labelledby="t">
+<title id="t">How keys, attr, channels and per_channel select the values a transform operates on</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.mb{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px;font-weight:600}
+.b{font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.3}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.2}
+.gr{fill:#d1fae5;stroke:#047857;stroke-width:1.2}
+.dim{fill:#f8fafc;stroke:#cbd5e1;stroke-width:1}
+.sel{fill:#fde68a;stroke:#b45309;stroke-width:1}
+.cell{fill:#fff;stroke:#cbd5e1;stroke-width:1}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.br{stroke:#b45309;stroke-width:1.6;fill:none}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<rect class="card" x="0.5" y="0.5" width="779" height="435" rx="10"/>
+<text class="mb" x="20" y="32">FitZScore(keys=["graph"], attr="x", channels=[0, 1, 2], per_channel=...)</text>
+<rect class="neu" x="20" y="60" width="180" height="166" rx="6"/><text class="b" x="32" y="80">sample</text>
+<rect class="dim" x="32" y="94" width="156" height="26" rx="4"/><text class="ms" x="42" y="111" style="fill:#94a3b8" xml:space="preserve">"image"  Tensor</text>
+<rect class="gr" x="32" y="128" width="156" height="26" rx="4" style="stroke-width:2"/><text class="ms" x="42" y="145" style="fill:#0f172a" xml:space="preserve">"graph"  Data</text>
+<rect class="dim" x="32" y="162" width="156" height="26" rx="4"/><text class="ms" x="42" y="179" style="fill:#94a3b8" xml:space="preserve">"target" Data</text>
+<path class="ln" d="M200 141 H250" marker-end="url(#a)"/><text class="ms" x="225" y="132" text-anchor="middle">keys</text>
+<rect class="gr" x="252" y="60" width="180" height="166" rx="6"/><text class="b" x="264" y="80">graph (Data)</text>
+<rect class="sel" x="264" y="94" width="156" height="26" rx="4" style="stroke-width:2"/><text class="ms" x="274" y="111" style="fill:#0f172a" xml:space="preserve">x           [N, 4]</text>
+<rect class="dim" x="264" y="128" width="156" height="26" rx="4"/><text class="ms" x="274" y="145" style="fill:#94a3b8" xml:space="preserve">coords      [N, 3]</text>
+<rect class="dim" x="264" y="162" width="156" height="26" rx="4"/><text class="ms" x="274" y="179" style="fill:#94a3b8" xml:space="preserve">edge_index  [2, E]</text>
+<path class="ln" d="M432 107 H482" marker-end="url(#a)"/><text class="ms" x="457" y="98" text-anchor="middle">attr</text>
+<rect class="neu" x="484" y="60" width="276" height="166" rx="6"/><text class="b" x="496" y="80">graph.x</text><text class="s" x="560" y="80">channel_dim=-1 → columns</text>
+<text class="ms" x="562.0" y="98" text-anchor="middle">0</text>
+<text class="ms" x="606.0" y="98" text-anchor="middle">1</text>
+<text class="ms" x="650.0" y="98" text-anchor="middle">2</text>
+<text class="ms" x="694.0" y="98" text-anchor="middle">3</text>
+<rect class="sel" x="540" y="104" width="44" height="16"/>
+<rect class="sel" x="584" y="104" width="44" height="16"/>
+<rect class="sel" x="628" y="104" width="44" height="16"/>
+<rect class="cell" x="672" y="104" width="44" height="16"/>
+<rect class="sel" x="540" y="120" width="44" height="16"/>
+<rect class="sel" x="584" y="120" width="44" height="16"/>
+<rect class="sel" x="628" y="120" width="44" height="16"/>
+<rect class="cell" x="672" y="120" width="44" height="16"/>
+<rect class="sel" x="540" y="136" width="44" height="16"/>
+<rect class="sel" x="584" y="136" width="44" height="16"/>
+<rect class="sel" x="628" y="136" width="44" height="16"/>
+<rect class="cell" x="672" y="136" width="44" height="16"/>
+<rect class="sel" x="540" y="152" width="44" height="16"/>
+<rect class="sel" x="584" y="152" width="44" height="16"/>
+<rect class="sel" x="628" y="152" width="44" height="16"/>
+<rect class="cell" x="672" y="152" width="44" height="16"/>
+<rect class="sel" x="540" y="168" width="44" height="16"/>
+<rect class="sel" x="584" y="168" width="44" height="16"/>
+<rect class="sel" x="628" y="168" width="44" height="16"/>
+<rect class="cell" x="672" y="168" width="44" height="16"/>
+<rect class="sel" x="540" y="184" width="44" height="16"/>
+<rect class="sel" x="584" y="184" width="44" height="16"/>
+<rect class="sel" x="628" y="184" width="44" height="16"/>
+<rect class="cell" x="672" y="184" width="44" height="16"/>
+<text class="ms" x="532" y="156" text-anchor="end">N</text>
+<text class="s" x="540" y="218">channels=[0, 1, 2]; channel 3 untouched</text>
+<line x1="20" y1="246" x2="760" y2="246" stroke="#e2e8f0"/>
+<text class="mb" x="20" y="274">per_channel=False</text><text class="s" x="20" y="292">one operation over all selected channels</text>
+<rect class="sel" x="60" y="324" width="36" height="14"/>
+<rect class="sel" x="96" y="324" width="36" height="14"/>
+<rect class="sel" x="132" y="324" width="36" height="14"/>
+<rect class="sel" x="60" y="338" width="36" height="14"/>
+<rect class="sel" x="96" y="338" width="36" height="14"/>
+<rect class="sel" x="132" y="338" width="36" height="14"/>
+<rect class="sel" x="60" y="352" width="36" height="14"/>
+<rect class="sel" x="96" y="352" width="36" height="14"/>
+<rect class="sel" x="132" y="352" width="36" height="14"/>
+<rect class="sel" x="60" y="366" width="36" height="14"/>
+<rect class="sel" x="96" y="366" width="36" height="14"/>
+<rect class="sel" x="132" y="366" width="36" height="14"/>
+<path class="br" d="M60 316 V310 H168 V316"/>
+<text class="ms" x="114" y="304" text-anchor="middle" style="fill:#b45309">op</text><text class="s" x="190" y="348">one mean and std, shared</text><text class="s" x="190" y="364">by channels 0, 1 and 2</text>
+<line x1="390" y1="262" x2="390" y2="384" stroke="#e2e8f0"/>
+<text class="mb" x="410" y="274">per_channel=True</text><text class="s" x="410" y="292">a separate copy of the operation per channel</text>
+<rect class="sel" x="450" y="324" width="36" height="14"/>
+<rect class="sel" x="486" y="324" width="36" height="14"/>
+<rect class="sel" x="522" y="324" width="36" height="14"/>
+<rect class="sel" x="450" y="338" width="36" height="14"/>
+<rect class="sel" x="486" y="338" width="36" height="14"/>
+<rect class="sel" x="522" y="338" width="36" height="14"/>
+<rect class="sel" x="450" y="352" width="36" height="14"/>
+<rect class="sel" x="486" y="352" width="36" height="14"/>
+<rect class="sel" x="522" y="352" width="36" height="14"/>
+<rect class="sel" x="450" y="366" width="36" height="14"/>
+<rect class="sel" x="486" y="366" width="36" height="14"/>
+<rect class="sel" x="522" y="366" width="36" height="14"/>
+<path class="br" d="M453 316 V310 H483 V316"/><text class="ms" x="468" y="304" text-anchor="middle" style="fill:#b45309">op₀</text>
+<path class="br" d="M489 316 V310 H519 V316"/><text class="ms" x="504" y="304" text-anchor="middle" style="fill:#b45309">op₁</text>
+<path class="br" d="M525 316 V310 H555 V316"/><text class="ms" x="540" y="304" text-anchor="middle" style="fill:#b45309">op₂</text>
+<text class="s" x="580" y="342">three means and stds,</text><text class="s" x="580" y="358">one fitted per channel; use when</text><text class="s" x="580" y="374">channels are different quantities</text>
+<text class="s" x="20" y="420">Multiple keys apply the same operation (and the same fitted statistics) to each key in turn.</text>
+</svg>

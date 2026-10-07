@@ -468,17 +468,17 @@ document.write(`
 <h1>im2sim.mesh_ops.rasterize<a class="headerlink" href="#im2sim-mesh-ops-rasterize" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="im2sim.mesh_ops.rasterize">
-<span class="sig-name descname"><span class="pre">rasterize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_sizes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L414-L455"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.rasterize" title="Link to this definition">#</a></dt>
-<dd><p>Computes the squared Euclidean distance between voxel centroids in a grid to a pointcloud</p>
+<span class="sig-name descname"><span class="pre">rasterize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_sizes</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L415-L458"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.rasterize" title="Link to this definition">#</a></dt>
+<dd><p>Computes the Euclidean distance from each voxel centroid in a 3D grid to the nearest point in a pointcloud.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>points</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>) – Node coordinate tensor of shape (N, D) where N
 is the number of nodes and D is the spatial dimensionality
 (e.g. 3 for 3D meshes).</p></li>
-<li><p><strong>im_shape</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>) – A list of dim sizes for the image/mask corresponding
+<li><p><strong>im_shape</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – A list of dim sizes for the image/mask corresponding
 to the point cloud.</p></li>
-<li><p><strong>vox_sizes</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>) – A list of voxel sizes for each dimension</p></li>
+<li><p><strong>vox_sizes</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – A list of voxel sizes for each dimension, in the same units as <code class="docutils literal notranslate"><span class="pre">points</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

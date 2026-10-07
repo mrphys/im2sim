@@ -458,24 +458,13 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-model-construction">Image model construction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-decoder-protocols">Graph decoder protocols</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#update-protocol"><cite>update</cite> protocol</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#predict-protocol"><cite>predict</cite> protocol</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-the-predicted-feature">Selecting the predicted feature</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#predicting-selected-channels">Predicting selected channels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-node-selection">Using node selection</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#existing-prediction-features-as-inputs">Existing prediction features as inputs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-to-graph-models">Image-to-graph models</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2simgen2"><code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rasterisation-and-image-feedback">Rasterisation and image feedback</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iterative-graph-updates">Iterative graph updates</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-graph-states">Intermediate graph states</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-graph-features">Using graph features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-to-graph-prediction">Image-to-graph prediction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-custom-image-to-graph-models-with-im2simbase">Building custom image-to-graph models with <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading-models">Saving and loading models</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-an-image-model">Building an image model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-graph-decoder">The graph decoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-to-graph-models">Image-to-graph models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-architectures">Custom architectures</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading">Saving and loading</a></li>
 </ul>
 </li>
 </ul>
@@ -509,7 +498,7 @@ document.write(`
 <td><p>A flexible implementation of a 'Reverse HalfUNet', which is inspired by a HalfUNet[1] architecture but where the HalfUNet does away with the decoders of a conventional UNet[2], this model instead removes the encoders.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="models/SimpleGraphDecoder.html#im2sim.models.SimpleGraphDecoder" title="im2sim.models.SimpleGraphDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleGraphDecoder</span></code></a></p></td>
-<td><p>A graph decoder that takes a graph and image features and produces an updated graph.</p></td>
+<td><p>A graph decoder that takes a graph and projected image features and produces an updated graph.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="models/UNet.html#im2sim.models.UNet" title="im2sim.models.UNet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNet</span></code></a></p></td>
 <td><p>A flexible U-Net [1] implementation for image segmentation and reconstruction tasks.</p></td>
@@ -529,332 +518,129 @@ document.write(`
 </section>
 <section id="guide">
 <h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">models</span></code> provides complete neural network architectures for building
-machine-learning models in <code class="docutils literal notranslate"><span class="pre">im2sim</span></code>.</p>
-<p>Models are composed from the reusable building blocks in
-<code class="docutils literal notranslate"><span class="pre">im2sim.layers</span></code> and configured using objects from <code class="docutils literal notranslate"><span class="pre">im2sim.configs</span></code>. This
-separation allows architectures to be customised without directly
-constructing the underlying PyTorch modules.</p>
-<p>The models module supports both conventional image-processing architectures
-and models that couple image and graph representations. The latter provide
-the basis for using <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> as a framework for learning image-to-geometry
-and image-to-physics mappings.</p>
-<section id="image-model-construction">
-<h2>Image model construction<a class="headerlink" href="#image-model-construction" title="Link to this heading">#</a></h2>
-<p>Models in <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> are constructed by combining a model class with a
-configuration object.</p>
-<p>For example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">models</span></code> contains complete networks built from the blocks in <a class="reference internal" href="layers.html"><span class="doc">im2sim.layers</span></a> and configured with
+the classes in <a class="reference internal" href="configs.html"><span class="doc">im2sim.configs</span></a>. There are two families:</p>
+<ul class="simple">
+<li><p><strong>Image models</strong>: <a class="reference internal" href="models/UNet.html#im2sim.models.UNet" title="im2sim.models.UNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">UNet</span></code></a>, <a class="reference internal" href="models/HalfUNet.html#im2sim.models.HalfUNet" title="im2sim.models.HalfUNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">HalfUNet</span></code></a> and <a class="reference internal" href="models/ReverseHalfUNet.html#im2sim.models.ReverseHalfUNet" title="im2sim.models.ReverseHalfUNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReverseHalfUNet</span></code></a>. These map an
+image to an image and can also serve as image encoders.</p></li>
+<li><p><strong>Image-to-graph models</strong>: <a class="reference internal" href="models/SimpleGraphDecoder.html#im2sim.models.SimpleGraphDecoder" title="im2sim.models.SimpleGraphDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleGraphDecoder</span></code></a>, <a class="reference internal" href="models/Im2SimBase.html#im2sim.models.Im2SimBase" title="im2sim.models.Im2SimBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimBase</span></code></a> and
+<a class="reference internal" href="models/Im2SimGen2.html#im2sim.models.Im2SimGen2" title="im2sim.models.Im2SimGen2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a>. These combine an image with a graph, such as a template mesh, and predict
+new graph features or node positions.</p></li>
+</ul>
+<section id="building-an-image-model">
+<h2>Building an image model<a class="headerlink" href="#building-an-image-model" title="Link to this heading">#</a></h2>
+<p>Every model takes its input and output channels and its spatial <code class="docutils literal notranslate"><span class="pre">rank</span></code> as arguments, and
+everything else from its config. The same config can build a 2D or a 3D model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNetConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNet</span>
 
-<span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span>
-    <span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">],</span>
-<span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span><span class="o">.</span><span class="n">single_class_segmentation_mode</span><span class="p">()</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">UNet</span><span class="p">(</span>
-    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNet</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The model is the blueprint for the assembly of the model while the
-configuration object defines the specific parameters and components of the architecture.</p>
-<p>This separation means that the same model type can be reused with
-different configurations.</p>
+<p><a class="reference internal" href="models/HalfUNet.html#im2sim.models.HalfUNet" title="im2sim.models.HalfUNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">HalfUNet</span></code></a> fuses its levels by addition instead of using a full decoder, which makes it a
+light image encoder. <code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code> uses it for that role. <a class="reference internal" href="models/ReverseHalfUNet.html#im2sim.models.ReverseHalfUNet" title="im2sim.models.ReverseHalfUNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReverseHalfUNet</span></code></a> keeps the
+decoders and drops the encoders, and supports deep supervision.</p>
 </section>
-<section id="graph-decoder-protocols">
-<h2>Graph decoder protocols<a class="headerlink" href="#graph-decoder-protocols" title="Link to this heading">#</a></h2>
-<p>The graph decoder provides a common interface for applying graph neural
-networks to an input graph while controlling how the predicted values are
-written back to the graph.</p>
-<p><a class="reference internal" href="models/SimpleGraphDecoder.html#im2sim.models.SimpleGraphDecoder" title="im2sim.models.SimpleGraphDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleGraphDecoder</span></code></a> combines:</p>
-<ul class="simple">
-<li><p>a sequence of <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConvBlock</span></code> instances;</p></li>
-<li><p>optional image features projected onto graph nodes;</p></li>
-<li><p>a prediction feature stored on the graph; and</p></li>
-<li><p>a configurable graph protocol controlling how the prediction is applied.</p></li>
-</ul>
-<p>The decoder supports two protocols:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌───────────────────┐
-│   Input graph     │
-│                   │
-│ x + image features│
-└─────────┬─────────┘
-          │
-          ▼
-  GraphConvBlock(s)
-          │
-          ▼
-  Graph prediction
-          │
-    ┌─────┴─────┐
-    │           │
-    ▼           ▼
-update      predict
-    │           │
-    ▼           ▼
-add to       replace
-existing      existing
-value         value
-    │           │
-    └─────┬─────┘
-          ▼
-     Output graph
-</pre></div>
-</div>
-</section>
-<section id="update-protocol">
-<h2><cite>update</cite> protocol<a class="headerlink" href="#update-protocol" title="Link to this heading">#</a></h2>
-<p>The <cite>update</cite> protocol treats the graph decoder output as an increment to an
-existing graph feature.</p>
-<p>The update is:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>graph.feature ← graph.feature + decoder(graph)
-</pre></div>
-</div>
-<p>For example, suppose a graph already contains a three-channel prediction
-feature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
+<section id="the-graph-decoder">
+<h2>The graph decoder<a class="headerlink" href="#the-graph-decoder" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="models/SimpleGraphDecoder.html#im2sim.models.SimpleGraphDecoder" title="im2sim.models.SimpleGraphDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleGraphDecoder</span></code></a> is the graph half of every image-to-graph model. It takes a graph,
+optionally with image features already sampled at its nodes, runs a stack of
+<a class="reference internal" href="layers/GraphConvBlock.html#im2sim.layers.GraphConvBlock" title="im2sim.layers.GraphConvBlock"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a> layers, and writes the result into one feature of the
+graph.</p>
+<figure class="align-default">
+<img alt="graph.x, projected image features and, optionally, the current prediction feature are concatenated, passed through n_blocks GraphConvBlocks and a single-convolution output block, and the output is written into graph.&lt;pred_feature_key&gt; with += or =." src="../../_images/graph_decoder.svg" />
+</figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphConvBlockConfig</span><span class="p">,</span> <span class="n">SimpleGraphDecoderConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleGraphDecoder</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
+    <span class="n">n_blocks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
     <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">,</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
+    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;coords&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="c1"># graph.x has 32 channels and the projected image features have 64.</span>
 <span class="n">decoder</span> <span class="o">=</span> <span class="n">SimpleGraphDecoder</span><span class="p">(</span>
-    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>The decoder produces a three-channel update which is added to
-<cite>graph.prediction</cite>.</p>
-<p>This makes the protocol useful for iterative refinement. For example, a
-model can start from an initial geometry and repeatedly predict corrections:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Initial graph
-    │
-    ▼
-decoder update
-    │
-    ▼
-graph + Δgraph
-    │
-    ▼
-decoder update
-    │
-    ▼
-graph + Δgraph
-    │
-    ▼
-refined graph
-</pre></div>
-</div>
-<p>This is particularly useful when a model is intended to learn a deformation
-rather than directly predict the final value.</p>
-</section>
-<section id="predict-protocol">
-<h2><cite>predict</cite> protocol<a class="headerlink" href="#predict-protocol" title="Link to this heading">#</a></h2>
-<p>The <cite>predict</cite> protocol treats the graph decoder output as the new value of a
-graph feature.</p>
-<p>The prediction is:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<p>graph.feature ← decoder(graph)</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span> <span class="o">+</span> <span class="mi">64</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span> <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span>
 <span class="p">)</span>
 
-<span class="n">decoder</span> <span class="o">=</span> <span class="n">SimpleGraphDecoder</span><span class="p">(</span>
-    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">decoder</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">projected_features</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The decoder output replaces the selected channels of
-<cite>graph.pressure</cite>.</p>
-<p>This protocol is therefore appropriate when the graph contains the input
-geometry and features required to make a prediction, but the target feature
-itself should be predicted directly.</p>
-</section>
-<section id="selecting-the-predicted-feature">
-<h2>Selecting the predicted feature<a class="headerlink" href="#selecting-the-predicted-feature" title="Link to this heading">#</a></h2>
-<p>The feature being updated or predicted is selected using
-<cite>pred_feature_key</cite>.</p>
-<p>The default is <cite>“x”</cite>, meaning that the graph’s main node feature tensor is
-the prediction target.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
-<span class="p">)</span>
-
-<span class="n">decoder</span> <span class="o">=</span> <span class="n">SimpleGraphDecoder</span><span class="p">(</span>
-    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>When the specified graph feature does not already exist, it is initialised to
-zeros with the required number of output channels.</p>
-</section>
-<section id="predicting-selected-channels">
-<h2>Predicting selected channels<a class="headerlink" href="#predicting-selected-channels" title="Link to this heading">#</a></h2>
-<p>Specific channels of the prediction feature can be selected using
-<cite>pred_feature_channels</cite>.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
+<p>The configuration answers three questions.</p>
+<dl>
+<dt>Which feature is written? (<code class="docutils literal notranslate"><span class="pre">pred_feature_key</span></code>)</dt><dd><p>The graph attribute to write. The default is <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>. Any other key, such as <code class="docutils literal notranslate"><span class="pre">&quot;coords&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;pressure&quot;</span></code>, is created as zeros if it is missing. Its current value is also appended to
+the decoder input, so the decoder can see the state it is changing. The extra
+<code class="docutils literal notranslate"><span class="pre">out_channels</span></code> input channels are added automatically, so <code class="docutils literal notranslate"><span class="pre">in_channels</span></code> is only
+<code class="docutils literal notranslate"><span class="pre">graph.x</span></code> plus the projected features. Since the decoder does not write <code class="docutils literal notranslate"><span class="pre">graph.x</span></code>, a small
+MLP maps <code class="docutils literal notranslate"><span class="pre">graph.x</span></code> plus the projected features back to <code class="docutils literal notranslate"><span class="pre">graph_channels</span></code> channels, so
+<code class="docutils literal notranslate"><span class="pre">graph.x</span></code> keeps its width from one iteration to the next. Pass <code class="docutils literal notranslate"><span class="pre">graph_channels</span></code> (the
+width of <code class="docutils literal notranslate"><span class="pre">graph.x</span></code>) whenever projected features are used.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, the output is written into the first channels of <code class="docutils literal notranslate"><span class="pre">graph.x</span></code> and the projected
+features are then dropped, so the written channels must lie within the original
+<code class="docutils literal notranslate"><span class="pre">graph.x</span></code>.</p>
+</dd>
+<dt>How is it written? (<code class="docutils literal notranslate"><span class="pre">protocol</span></code>)</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;update&quot;</span></code> adds the output to the existing value (<code class="docutils literal notranslate"><span class="pre">feature</span> <span class="pre">+=</span> <span class="pre">output</span></code>), so the decoder
+learns a correction or a displacement. This suits iterative refinement and mesh deformation.
+<code class="docutils literal notranslate"><span class="pre">&quot;predict&quot;</span></code> overwrites the value (<code class="docutils literal notranslate"><span class="pre">feature</span> <span class="pre">=</span> <span class="pre">output</span></code>), so the decoder predicts the
+quantity directly, for example a pressure field on a fixed mesh.</p>
+</dd>
+<dt>Where is it written? (<code class="docutils literal notranslate"><span class="pre">pred_feature_channels</span></code>, <code class="docutils literal notranslate"><span class="pre">include_ids</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude_ids</span></code>)</dt><dd><p>Restricts the write to some channels and some nodes. <code class="docutils literal notranslate"><span class="pre">include_ids</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_ids</span></code> name
+graph attributes that hold node indices, such as the <code class="docutils literal notranslate"><span class="pre">inlet_index</span></code> attributes created by
+<a class="reference internal" href="mesh_ops.html"><span class="doc">im2sim.mesh_ops</span></a>.</p>
+</dd>
+</dl>
+<figure class="align-default">
+<img alt="An 8-node by 3-channel velocity feature in which only rows for inlet and outlet nodes and columns 0 and 2 are written from a 2-channel decoder output." src="../../_images/node_channel_selection.svg" />
+</figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update only the x and z velocity of the inlet and outlet nodes.</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
     <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
     <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span>
     <span class="n">pred_feature_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
+    <span class="n">include_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inlet_index&quot;</span><span class="p">,</span> <span class="s2">&quot;outlet_index&quot;</span><span class="p">],</span>
 <span class="p">)</span>
-
 <span class="n">decoder</span> <span class="o">=</span> <span class="n">SimpleGraphDecoder</span><span class="p">(</span>
-    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span> <span class="o">+</span> <span class="mi">64</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span> <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>In this case, the decoder operates only on channels <cite>0</cite> and <cite>2</cite> of
-<cite>graph.velocity</cite>.</p>
-<p>This allows different model components to operate on different parts of a
-larger graph feature without replacing the entire feature tensor.</p>
-</section>
-<section id="using-node-selection">
-<h2>Using node selection<a class="headerlink" href="#using-node-selection" title="Link to this heading">#</a></h2>
-<p>The decoder can also restrict its operation to a subset of graph nodes.</p>
-<p>Nodes can be selected using <code class="docutils literal notranslate"><span class="pre">include_ids</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;displacement&quot;</span><span class="p">,</span>
-    <span class="n">include_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;inlet_nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;outlet_nodes&quot;</span><span class="p">],</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>Only nodes associated with the specified graph attributes are updated.</p>
-<p>Alternatively, nodes can be excluded using <code class="docutils literal notranslate"><span class="pre">exclude_ids</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;displacement&quot;</span><span class="p">,</span>
-    <span class="n">exclude_ids</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fixed_nodes&quot;</span><span class="p">],</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>All nodes except those associated with <code class="docutils literal notranslate"><span class="pre">fixed_nodes</span></code> are then updated.</p>
-<p>If both are provided, <code class="docutils literal notranslate"><span class="pre">include_ids</span></code> takes precedence.</p>
-<p>The graph therefore acts as both the input representation and a convenient
-mechanism for specifying which subsets of the graph are trainable or
-predictable.</p>
-</section>
-<section id="existing-prediction-features-as-inputs">
-<h2>Existing prediction features as inputs<a class="headerlink" href="#existing-prediction-features-as-inputs" title="Link to this heading">#</a></h2>
-<p>When <code class="docutils literal notranslate"><span class="pre">pred_feature_key</span></code> is not <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, the existing prediction feature is
-also made available to the graph network.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;displacement&quot;</span><span class="p">,</span>
-    <span class="n">pred_feature_channels</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>If <code class="docutils literal notranslate"><span class="pre">graph.displacement</span></code> already contains the current displacement, those
-selected channels are concatenated with <code class="docutils literal notranslate"><span class="pre">graph.x</span></code> before the graph network
-is applied.</p>
-<p>This is particularly useful for iterative updates because the decoder can use
-the current state when predicting the next correction:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>graph features
-    +
-current prediction
-    │
-    ▼
-GNN
-    │
-    ▼
-update
-    │
-    ▼
-updated prediction
-</pre></div>
-</div>
+<p><code class="docutils literal notranslate"><span class="pre">out_channels</span></code> must equal the number of channels written: <code class="docutils literal notranslate"><span class="pre">len(pred_feature_channels)</span></code>, or the
+width of the feature when no channels are selected. The selection limits only the write.
+Message passing still runs over every node, so nodes that are not written still pass
+information to the nodes that are.</p>
 </section>
 <section id="image-to-graph-models">
 <h2>Image-to-graph models<a class="headerlink" href="#image-to-graph-models" title="Link to this heading">#</a></h2>
-<p>A central purpose of <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> is to connect image-based information with
-graph-based representations.</p>
-<p>An image-to-graph model can contain several stages:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Image
-│
-▼
-Image encoder
-│
-▼
-Image features
-│
-▼
-Image → graph projection
-│
-▼
-Graph processing
-│
-▼
-Graph prediction
-│
-▼
-Updated geometry / physical quantities
-</pre></div>
-</div>
-<p>The image encoder extracts spatial features from the input image. A
-projection transfers those features onto graph nodes, allowing graph
-processing layers to combine image-derived information with existing graph
-features and connectivity.</p>
-<p>The resulting graph representation can then be used to predict geometry,
-graph features, or other quantities associated with the underlying system.</p>
-</section>
-<section id="im2simgen2">
-<h2><code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code><a class="headerlink" href="#im2simgen2" title="Link to this heading">#</a></h2>
-<p><a class="reference internal" href="models/Im2SimGen2.html#im2sim.models.Im2SimGen2" title="im2sim.models.Im2SimGen2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a> provides a complete image-to-graph architecture built from
-these components.</p>
-<p>It combines an image encoder, image-to-graph projection, graph processing,
-and optional rasterisation into a single model:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                  ┌─────────────────┐
-                  │   Input image   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │ Image encoder   │
-                  └────────┬────────┘
-                           │
-                           ▼
-                  ┌─────────────────┐
-                  │   Projection    │
-                  └────────┬────────┘
-                           │
-                           ▼
-┌──────────────┐  ┌─────────────────┐
-│ Input graph  ├─►│  Graph decoder  │
-└──────────────┘  └────────┬────────┘
-                           │
-                           ▼
-                      Output graph
-</pre></div>
-</div>
-<p>A complete <code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code> model can be constructed by specifying the image
-and graph channel dimensions together with the encoder, graph decoder,
-projection, and rasterisation components:</p>
+<p><a class="reference internal" href="models/Im2SimBase.html#im2sim.models.Im2SimBase" title="im2sim.models.Im2SimBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimBase</span></code></a> connects four components:</p>
+<ul class="simple">
+<li><p>an <strong>image encoder</strong>, <code class="docutils literal notranslate"><span class="pre">image</span> <span class="pre">-&gt;</span> <span class="pre">image_features</span></code>;</p></li>
+<li><p>one or more <strong>projections</strong>, <code class="docutils literal notranslate"><span class="pre">(image_features,</span> <span class="pre">graph)</span> <span class="pre">-&gt;</span> <span class="pre">[N,</span> <span class="pre">C]</span></code> features per node;</p></li>
+<li><p>a <strong>graph decoder</strong>, <code class="docutils literal notranslate"><span class="pre">(graph,</span> <span class="pre">projected_features)</span> <span class="pre">-&gt;</span> <span class="pre">graph</span></code>;</p></li>
+<li><p>an optional <strong>rasterizer</strong>, <code class="docutils literal notranslate"><span class="pre">(graph,</span> <span class="pre">image)</span> <span class="pre">-&gt;</span> <span class="pre">image</span></code>, which writes the current graph back
+into the image.</p></li>
+</ul>
+<p>Calling the model runs the loop below <code class="docutils literal notranslate"><span class="pre">n_iters</span></code> times and returns the final graph, or a list
+with the graph after every iteration when <code class="docutils literal notranslate"><span class="pre">return_intermediate_graphs=True</span></code>.</p>
+<figure class="align-default">
+<img alt="The image is encoded, the features are sampled at graph.coords by the projection, and the graph decoder updates the graph. The updated graph feeds the next iteration. If a rasterizer is given, it writes the graph into the image, which is encoded again." src="../../_images/im2sim_forward.svg" />
+</figure>
+<p>Two details of the loop matter in practice:</p>
+<ul class="simple">
+<li><p>The projection samples features at <code class="docutils literal notranslate"><span class="pre">graph.coords</span></code>. A decoder with
+<code class="docutils literal notranslate"><span class="pre">pred_feature_key=&quot;coords&quot;</span></code> and the <code class="docutils literal notranslate"><span class="pre">&quot;update&quot;</span></code> protocol moves the nodes, so each iteration
+samples the image at the new node positions.</p></li>
+<li><p>Without a rasterizer, the image is encoded once. With one, the rasterizer overwrites the last
+channel(s) of the image with the current graph and the encoder runs again on every iteration.
+Reserve a channel for it, for example <code class="docutils literal notranslate"><span class="pre">image_channels=2</span></code> for one intensity channel plus one
+mask channel.</p></li>
+</ul>
+<p><a class="reference internal" href="models/Im2SimGen2.html#im2sim.models.Im2SimGen2" title="im2sim.models.Im2SimGen2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a> is <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> with a <a class="reference internal" href="models/HalfUNet.html#im2sim.models.HalfUNet" title="im2sim.models.HalfUNet"><code class="xref py py-class docutils literal notranslate"><span class="pre">HalfUNet</span></code></a> encoder and a
+<a class="reference internal" href="models/SimpleGraphDecoder.html#im2sim.models.SimpleGraphDecoder" title="im2sim.models.SimpleGraphDecoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleGraphDecoder</span></code></a>, built from their configs:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">GraphConvBlockConfig</span><span class="p">,</span>
     <span class="n">HalfUNetConfig</span><span class="p">,</span>
@@ -863,281 +649,96 @@ projection, and rasterisation components:</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">MaskRasterizer</span><span class="p">,</span> <span class="n">TrilinearProjection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Im2SimGen2</span>
 
-<span class="n">encoder_cfg</span> <span class="o">=</span> <span class="n">HalfUNetConfig</span><span class="p">(</span>
-    <span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">hidden_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">decoder_cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(),</span>
-<span class="p">)</span>
-
 <span class="n">model</span> <span class="o">=</span> <span class="n">Im2SimGen2</span><span class="p">(</span>
-    <span class="n">image_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">projection_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">encoder_cfg</span><span class="o">=</span><span class="n">encoder_cfg</span><span class="p">,</span>
-    <span class="n">decoder_cfg</span><span class="o">=</span><span class="n">decoder_cfg</span><span class="p">,</span>
-    <span class="n">projection</span><span class="o">=</span><span class="n">TrilinearProjection</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
-    <span class="n">rasterizer</span><span class="o">=</span><span class="n">MaskRasterizer</span><span class="p">(),</span>
-    <span class="n">n_iters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="rasterisation-and-image-feedback">
-<h2>Rasterisation and image feedback<a class="headerlink" href="#rasterisation-and-image-feedback" title="Link to this heading">#</a></h2>
-<p>The optional rasteriser provides the connection back from the graph domain to
-the image domain.</p>
-<p>This is particularly useful for iterative architectures, where an updated
-graph can be rasterised into an image representation and used during a later
-iteration.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rasterizer</span> <span class="o">=</span> <span class="n">MaskRasterizer</span><span class="p">()</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">Im2SimGen2</span><span class="p">(</span>
-    <span class="n">image_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">projection_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">encoder_cfg</span><span class="o">=</span><span class="n">encoder_cfg</span><span class="p">,</span>
-    <span class="n">decoder_cfg</span><span class="o">=</span><span class="n">decoder_cfg</span><span class="p">,</span>
-    <span class="n">projection</span><span class="o">=</span><span class="n">TrilinearProjection</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
-    <span class="n">rasterizer</span><span class="o">=</span><span class="n">rasterizer</span><span class="p">,</span>
-    <span class="n">n_iters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>The projection and rasterisation modules therefore define the interface
-between the dense image representation and the graph representation.</p>
-</section>
-<section id="iterative-graph-updates">
-<h2>Iterative graph updates<a class="headerlink" href="#iterative-graph-updates" title="Link to this heading">#</a></h2>
-<p>A defining feature of <cite>Im2SimGen2</cite> is its ability to refine the graph
-iteratively.</p>
-<p>Rather than predicting the complete graph state in a single step, the model
-can repeatedly update the graph representation:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Image features
-    │
-    ▼
-Graph update
-    │
-    ▼
-Updated geometry
-    │
-    ▼
-Rasterisation
-    │
-    ▼
-Next iteration
-</pre></div>
-</div>
-<p>The number of refinement steps is controlled using <code class="docutils literal notranslate"><span class="pre">n_iters</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Im2SimGen2</span><span class="p">(</span>
-    <span class="n">image_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">projection_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">encoder_cfg</span><span class="o">=</span><span class="n">encoder_cfg</span><span class="p">,</span>
-    <span class="n">decoder_cfg</span><span class="o">=</span><span class="n">decoder_cfg</span><span class="p">,</span>
-    <span class="n">projection</span><span class="o">=</span><span class="n">TrilinearProjection</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
-    <span class="n">rasterizer</span><span class="o">=</span><span class="n">MaskRasterizer</span><span class="p">(),</span>
-    <span class="n">n_iters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>A model can therefore learn a sequence of geometry updates rather than a
-single direct mapping.</p>
-</section>
-<section id="intermediate-graph-states">
-<h2>Intermediate graph states<a class="headerlink" href="#intermediate-graph-states" title="Link to this heading">#</a></h2>
-<p>Intermediate graph states can optionally be returned during the iterative
-forward pass:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Im2SimGen2</span><span class="p">(</span>
-    <span class="n">image_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">projection_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-    <span class="n">encoder_cfg</span><span class="o">=</span><span class="n">encoder_cfg</span><span class="p">,</span>
-    <span class="n">decoder_cfg</span><span class="o">=</span><span class="n">decoder_cfg</span><span class="p">,</span>
-    <span class="n">projection</span><span class="o">=</span><span class="n">TrilinearProjection</span><span class="p">(</span><span class="mi">128</span><span class="p">),</span>
-    <span class="n">rasterizer</span><span class="o">=</span><span class="n">MaskRasterizer</span><span class="p">(),</span>
-    <span class="n">n_iters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">return_intermediate_graphs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>This can be useful when intermediate geometries are required for visualisation
-or when losses are applied at multiple stages of the refinement process.</p>
-</section>
-<section id="using-graph-features">
-<h2>Using graph features<a class="headerlink" href="#using-graph-features" title="Link to this heading">#</a></h2>
-<p>The graph representation can contain both geometric and non-geometric
-features.</p>
-<p>For example, a PyTorch Geometric graph can contain node features, coordinates,
-and connectivity:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torch_geometric.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
-
-<span class="n">graph</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="n">node_features</span><span class="p">,</span>
-    <span class="n">pos</span><span class="o">=</span><span class="n">node_coordinates</span><span class="p">,</span>
-    <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>This allows image information to be combined with an existing graph
-representation rather than requiring the image to be converted entirely into
-a graph before processing.</p>
-<p>The resulting model can therefore use:</p>
-<ul class="simple">
-<li><p>image-derived features;</p></li>
-<li><p>node coordinates;</p></li>
-<li><p>existing node features; and</p></li>
-<li><p>graph connectivity.</p></li>
-</ul>
-</section>
-<section id="image-to-graph-prediction">
-<h2>Image-to-graph prediction<a class="headerlink" href="#image-to-graph-prediction" title="Link to this heading">#</a></h2>
-<p>The simplest use of <cite>Im2SimGen2</cite> is to combine an image with an existing
-graph and predict an updated graph.</p>
-<p>Conceptually:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Medical image + input graph
-            │
-            ▼
-    Im2SimGen2
-            │
-            ▼
-    predicted graph
-</pre></div>
-</div>
-<p>The input graph may represent a template, approximate geometry, or other
-structured representation that can be refined using information from the
-image.</p>
-</section>
-<section id="building-custom-image-to-graph-models-with-im2simbase">
-<h2>Building custom image-to-graph models with <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code><a class="headerlink" href="#building-custom-image-to-graph-models-with-im2simbase" title="Link to this heading">#</a></h2>
-<p>While <a class="reference internal" href="models/Im2SimGen2.html#im2sim.models.Im2SimGen2" title="im2sim.models.Im2SimGen2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a> provides a complete image-to-graph architecture,
-<a class="reference internal" href="models/Im2SimBase.html#im2sim.models.Im2SimBase" title="im2sim.models.Im2SimBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimBase</span></code></a> provides a more flexible foundation for building custom
-models.</p>
-<p>Rather than prescribing a particular encoder, decoder, or graph-processing
-architecture, <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> allows the individual components of an
-image-to-graph model to be assembled independently.</p>
-<p>Conceptually, the base model provides the structure:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Image
-│
-▼
-Image encoder
-│
-▼
-Projection
-│
-▼
-Graph processing
-│
-▼
-Graph output
-</pre></div>
-</div>
-<p>Optional components can then be added around this structure, such as graph
-rasterisation or iterative updates.</p>
-<p>This makes <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> useful when the standard <code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code> architecture
-does not provide the required level of control.</p>
-<p>For example, the individual components can be constructed independently:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.configs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">GraphConvBlockConfig</span><span class="p">,</span>
-    <span class="n">HalfUNetConfig</span><span class="p">,</span>
-    <span class="n">SimpleGraphDecoderConfig</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">MaskRasterizer</span><span class="p">,</span> <span class="n">TrilinearProjection</span>
-
-<span class="n">encoder_cfg</span> <span class="o">=</span> <span class="n">HalfUNetConfig</span><span class="p">(</span>
-    <span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">hidden_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">decoder_cfg</span> <span class="o">=</span> <span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
-    <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(</span>
-        <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="n">image_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>        <span class="c1"># intensity + the mask written by the rasterizer</span>
+    <span class="n">projection_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># encoder output channels sampled at each node</span>
+    <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>       <span class="c1"># channels of graph.x</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>          <span class="c1"># channels written by the decoder</span>
+    <span class="n">encoder_cfg</span><span class="o">=</span><span class="n">HalfUNetConfig</span><span class="p">(</span><span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">hidden_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">),</span>
+    <span class="n">decoder_cfg</span><span class="o">=</span><span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span>
+        <span class="n">block_cfg</span><span class="o">=</span><span class="n">GraphConvBlockConfig</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;coords&quot;</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="n">projection</span><span class="o">=</span><span class="n">TrilinearProjection</span><span class="p">(</span><span class="n">image_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+    <span class="n">rasterizer</span><span class="o">=</span><span class="n">MaskRasterizer</span><span class="p">(),</span>
+    <span class="n">n_iters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">projection</span> <span class="o">=</span> <span class="n">TrilinearProjection</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
-
-<span class="n">rasterizer</span> <span class="o">=</span> <span class="n">MaskRasterizer</span><span class="p">()</span>
+<span class="n">out_graph</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>These components can then be combined using <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> to define a
-custom image-to-graph architecture.</p>
-<p>The important distinction is that <code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code> provides a predefined
-architecture, whereas <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> is intended as an architectural
-framework. The latter is therefore the appropriate starting point when a
-model requires custom:</p>
-<ul class="simple">
-<li><p>image encoders;</p></li>
-<li><p>graph processing modules;</p></li>
-<li><p>image-to-graph projections;</p></li>
-<li><p>graph-to-image rasterisers;</p></li>
-<li><p>iterative update schemes; or</p></li>
-<li><p>combinations of these components.</p></li>
-</ul>
-<p>This also makes it possible to reuse the same image encoder or graph
-processing module across different model architectures without rewriting the
-overall image-to-graph framework.</p>
-</section>
-<section id="saving-and-loading-models">
-<h2>Saving and loading models<a class="headerlink" href="#saving-and-loading-models" title="Link to this heading">#</a></h2>
-<p>Models are standard PyTorch modules and can therefore use the normal PyTorch
-<code class="docutils literal notranslate"><span class="pre">state_dict</span></code> interface:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<p>The graph must have <code class="docutils literal notranslate"><span class="pre">coords</span></code>, and <code class="docutils literal notranslate"><span class="pre">batch</span></code> for the projection and rasterizer. Graphs batched
+by the <code class="docutils literal notranslate"><span class="pre">DataLoader</span></code> in <a class="reference internal" href="data.html"><span class="doc">im2sim.data</span></a> already have <code class="docutils literal notranslate"><span class="pre">batch</span></code>. For a single graph, set
+<code class="docutils literal notranslate"><span class="pre">graph.batch</span> <span class="pre">=</span> <span class="pre">torch.zeros(graph.num_nodes,</span> <span class="pre">dtype=torch.long)</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">image_input</span></code> may be <code class="docutils literal notranslate"><span class="pre">None</span></code> when a rasterizer is given. The model then starts from an empty
+image of shape <code class="docutils literal notranslate"><span class="pre">image_shape</span></code> and rasterizes the input graph into it.</p>
+<section id="custom-architectures">
+<h3>Custom architectures<a class="headerlink" href="#custom-architectures" title="Link to this heading">#</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> directly to swap in your own components:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">HalfUNet</span><span class="p">,</span> <span class="n">Im2SimBase</span><span class="p">,</span> <span class="n">SimpleGraphDecoder</span>
 
-<span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;model.pth&quot;</span><span class="p">)</span>
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">HalfUNet</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">HalfUNetConfig</span><span class="p">(</span><span class="n">n_levels</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">decoder</span> <span class="o">=</span> <span class="n">SimpleGraphDecoder</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span> <span class="o">+</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">out_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">cfg</span><span class="o">=</span><span class="n">SimpleGraphDecoderConfig</span><span class="p">(</span><span class="n">pred_feature_key</span><span class="o">=</span><span class="s2">&quot;coords&quot;</span><span class="p">),</span>
+    <span class="n">graph_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>  <span class="c1"># channels of graph.x, restored after each iteration</span>
+<span class="p">)</span>
 
-<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
-    <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.pth&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Im2SimBase</span><span class="p">(</span>
+    <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="n">image_encoder</span><span class="o">=</span><span class="n">encoder</span><span class="p">,</span>
+    <span class="n">graph_decoder</span><span class="o">=</span><span class="n">decoder</span><span class="p">,</span>
+    <span class="n">projections</span><span class="o">=</span><span class="n">TrilinearProjection</span><span class="p">(</span><span class="n">image_dim</span><span class="o">=</span><span class="mi">128</span><span class="p">),</span>
+    <span class="n">rasterizer</span><span class="o">=</span><span class="n">MaskRasterizer</span><span class="p">(),</span>
+    <span class="n">n_iters</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Model configurations should be saved alongside the learned parameters so
-that the architecture can be reproduced:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;model_config.yaml&quot;</span><span class="p">)</span>
-</pre></div>
+<p><code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code> checks the argument <strong>names</strong> of each component’s <code class="docutils literal notranslate"><span class="pre">forward</span></code> when it is built, and
+raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if they differ:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Required <code class="docutils literal notranslate"><span class="pre">forward</span></code> signature</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>graph decoder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forward(self,</span> <span class="pre">in_graph,</span> <span class="pre">projected_features)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>projection</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forward(self,</span> <span class="pre">image_features,</span> <span class="pre">graph)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>rasterizer</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forward(self,</span> <span class="pre">graph,</span> <span class="pre">image_input)</span></code></p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>A model can then be reconstructed from the saved configuration before loading
-its parameters.</p>
+<p>To sample several encoder levels, pass a list of projections. The encoder must then return a list
+of feature maps with one entry per projection, and the decoder receives a list of projected
+features. <code class="docutils literal notranslate"><span class="pre">SimpleGraphDecoder</span></code> expects a single tensor, so this needs a custom decoder.</p>
 </section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">models</span></code> module provides configurable neural network architectures for
-<code class="docutils literal notranslate"><span class="pre">im2sim</span></code>.</p>
-<p>The models range from reusable image-processing networks to image-to-graph
-architectures that combine dense image features with structured graph
-representations.</p>
-<p>The main image-to-graph workflow is:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Image
-│
-▼
-Image encoder
-│
-▼
-Image features
-│
-▼
-Image ↔ graph interface
-│
-▼
-Graph processing
-│
-▼
-Graph prediction
+</section>
+<section id="saving-and-loading">
+<h2>Saving and loading<a class="headerlink" href="#saving-and-loading" title="Link to this heading">#</a></h2>
+<p>Models are ordinary <code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code> objects. Save the weights with <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> and the
+architecture with the config’s <code class="docutils literal notranslate"><span class="pre">save()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="s2">&quot;unet.pt&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;unet.json&quot;</span><span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">UNetConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;unet.json&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNet</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;unet.pt&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="models/Im2SimGen2.html#im2sim.models.Im2SimGen2" title="im2sim.models.Im2SimGen2"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a> provides a complete implementation of this workflow with
-iterative graph refinement, projection, and optional rasterisation.</p>
-<p><a class="reference internal" href="models/Im2SimBase.html#im2sim.models.Im2SimBase" title="im2sim.models.Im2SimBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">Im2SimBase</span></code></a> provides a more general framework for constructing custom
-image-to-graph architectures from independently selected components.</p>
-<p>Together, these models provide both a ready-to-use architecture and a
-flexible foundation for developing new image-based digital twin models.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code>, save <code class="docutils literal notranslate"><span class="pre">encoder_cfg</span></code> and <code class="docutils literal notranslate"><span class="pre">decoder_cfg.block_cfg</span></code> this way.
+<code class="docutils literal notranslate"><span class="pre">SimpleGraphDecoderConfig</span></code> has no <code class="docutils literal notranslate"><span class="pre">save()</span></code> (see <a class="reference internal" href="configs.html"><span class="doc">im2sim.configs</span></a>), so store its remaining fields,
+and the constructor arguments, alongside them.</p>
 </section>
 </section>
 
@@ -1192,24 +793,13 @@ flexible foundation for developing new image-based digital twin models.</p>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-model-construction">Image model construction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-decoder-protocols">Graph decoder protocols</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#update-protocol"><cite>update</cite> protocol</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#predict-protocol"><cite>predict</cite> protocol</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-the-predicted-feature">Selecting the predicted feature</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#predicting-selected-channels">Predicting selected channels</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-node-selection">Using node selection</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#existing-prediction-features-as-inputs">Existing prediction features as inputs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-to-graph-models">Image-to-graph models</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2simgen2"><code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rasterisation-and-image-feedback">Rasterisation and image feedback</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#iterative-graph-updates">Iterative graph updates</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-graph-states">Intermediate graph states</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-graph-features">Using graph features</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-to-graph-prediction">Image-to-graph prediction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-custom-image-to-graph-models-with-im2simbase">Building custom image-to-graph models with <code class="docutils literal notranslate"><span class="pre">Im2SimBase</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading-models">Saving and loading models</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-an-image-model">Building an image model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-graph-decoder">The graph decoder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-to-graph-models">Image-to-graph models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-architectures">Custom architectures</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-and-loading">Saving and loading</a></li>
 </ul>
 </li>
 </ul>

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" width="760" height="340" role="img" aria-labelledby="t">
+<title id="t">Only the selected nodes and channels of the prediction feature are written by the graph decoder</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.w{fill:#fde68a;stroke:#b45309;stroke-width:1}
+.u{fill:#fff;stroke:#cbd5e1;stroke-width:1}
+.d{fill:#f1f5f9;stroke:#cbd5e1;stroke-width:1}
+.k{fill:#fef3c7;stroke:#cbd5e1;stroke-width:1}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<rect class="card" x="0.5" y="0.5" width="759" height="339" rx="10"/>
+<text class="h" x="20" y="30">Only the selected nodes and channels are written</text>
+<text class="ms" x="20" y="50">pred_feature_key="velocity", pred_feature_channels=[0, 2],</text>
+<text class="ms" x="20" y="65">include_ids=["inlet_index", "outlet_index"]</text>
+<text class="s" x="150" y="126" text-anchor="end">node 0 · inlet</text>
+<rect class="k" x="165" y="110" width="34" height="24"/>
+<rect class="k" x="199" y="110" width="34" height="24"/>
+<rect class="w" x="420" y="110" width="34" height="24"/>
+<rect class="u" x="454" y="110" width="34" height="24"/>
+<rect class="w" x="488" y="110" width="34" height="24"/>
+<text class="s" x="150" y="150" text-anchor="end">node 1 · inlet</text>
+<rect class="k" x="165" y="134" width="34" height="24"/>
+<rect class="k" x="199" y="134" width="34" height="24"/>
+<rect class="w" x="420" y="134" width="34" height="24"/>
+<rect class="u" x="454" y="134" width="34" height="24"/>
+<rect class="w" x="488" y="134" width="34" height="24"/>
+<text class="s" x="150" y="174" text-anchor="end">node 2</text>
+<rect class="d" x="165" y="158" width="34" height="24"/>
+<rect class="d" x="199" y="158" width="34" height="24"/>
+<rect class="u" x="420" y="158" width="34" height="24"/>
+<rect class="u" x="454" y="158" width="34" height="24"/>
+<rect class="u" x="488" y="158" width="34" height="24"/>
+<text class="s" x="150" y="198" text-anchor="end">node 3</text>
+<rect class="d" x="165" y="182" width="34" height="24"/>
+<rect class="d" x="199" y="182" width="34" height="24"/>
+<rect class="u" x="420" y="182" width="34" height="24"/>
+<rect class="u" x="454" y="182" width="34" height="24"/>
+<rect class="u" x="488" y="182" width="34" height="24"/>
+<text class="s" x="150" y="222" text-anchor="end">node 4</text>
+<rect class="d" x="165" y="206" width="34" height="24"/>
+<rect class="d" x="199" y="206" width="34" height="24"/>
+<rect class="u" x="420" y="206" width="34" height="24"/>
+<rect class="u" x="454" y="206" width="34" height="24"/>
+<rect class="u" x="488" y="206" width="34" height="24"/>
+<text class="s" x="150" y="246" text-anchor="end">node 5</text>
+<rect class="d" x="165" y="230" width="34" height="24"/>
+<rect class="d" x="199" y="230" width="34" height="24"/>
+<rect class="u" x="420" y="230" width="34" height="24"/>
+<rect class="u" x="454" y="230" width="34" height="24"/>
+<rect class="u" x="488" y="230" width="34" height="24"/>
+<text class="s" x="150" y="270" text-anchor="end">node 6 · outlet</text>
+<rect class="k" x="165" y="254" width="34" height="24"/>
+<rect class="k" x="199" y="254" width="34" height="24"/>
+<rect class="w" x="420" y="254" width="34" height="24"/>
+<rect class="u" x="454" y="254" width="34" height="24"/>
+<rect class="w" x="488" y="254" width="34" height="24"/>
+<text class="s" x="150" y="294" text-anchor="end">node 7 · outlet</text>
+<rect class="k" x="165" y="278" width="34" height="24"/>
+<rect class="k" x="199" y="278" width="34" height="24"/>
+<rect class="w" x="420" y="278" width="34" height="24"/>
+<rect class="u" x="454" y="278" width="34" height="24"/>
+<rect class="w" x="488" y="278" width="34" height="24"/>
+<text class="b" x="199" y="84" text-anchor="middle">output</text>
+<text class="ms" x="182" y="104" text-anchor="middle">0</text><text class="ms" x="216" y="104" text-anchor="middle">1</text>
+<text class="b" x="471" y="84" text-anchor="middle">graph.velocity</text>
+<text class="ms" x="437" y="104" text-anchor="middle">0</text>
+<text class="ms" x="471" y="104" text-anchor="middle">1</text>
+<text class="ms" x="505" y="104" text-anchor="middle">2</text>
+<path class="ln" d="M246 206 H408" marker-end="url(#a)"/>
+<text class="m" x="327" y="194" text-anchor="middle">+= or =</text>
+<text class="ms" x="327" y="226" text-anchor="middle">output[:, 0] → ch 0</text>
+<text class="ms" x="327" y="242" text-anchor="middle">output[:, 1] → ch 2</text>
+<rect class="w" x="560" y="118" width="16" height="16" rx="2"/><text class="s" x="584" y="130.5">written</text>
+<rect class="u" x="560" y="142" width="16" height="16" rx="2"/><text class="s" x="584" y="154.5">left unchanged</text>
+<rect class="d" x="560" y="166" width="16" height="16" rx="2"/><text class="s" x="584" y="178.5">computed, then discarded</text>
+<text class="s" x="560" y="214">The GNN still runs on every node,</text>
+<text class="s" x="560" y="230">so unselected nodes still pass</text>
+<text class="s" x="560" y="246">messages to selected ones.</text>
+<text class="s" x="20" y="324">exclude_ids works the other way round: every node except the listed ones is written. include_ids wins if both are set.</text>
+</svg>

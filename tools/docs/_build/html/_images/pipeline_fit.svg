@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 790 390" width="790" height="390" role="img" aria-labelledby="t">
+<title id="t">Which transforms run during Pipeline.fit, forward and inverse</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.mb{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px;font-weight:600}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.run{fill:#f1f5f9;stroke:#64748b;stroke-width:1.3}
+.fit{fill:#fef3c7;stroke:#b45309;stroke-width:1.5}
+.inv{fill:#dbeafe;stroke:#2563eb;stroke-width:1.3}
+.idle{fill:#fff;stroke:#cbd5e1;stroke-width:1.2;stroke-dasharray:4 3}
+.ln{stroke:#475569;stroke-width:1.3;fill:none}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<rect class="card" x="0.5" y="0.5" width="789" height="389" rx="10"/>
+<text class="h" x="20" y="30">Pipeline([A, B, C, D]): what runs when</text>
+<text class="b" x="190" y="62" style="font-size:12px">A  Operation</text><text class="ms" x="190" y="78">transform_from_fn</text>
+<text class="b" x="338" y="62" style="font-size:12px">B  FittableOperation</text><text class="ms" x="338" y="78">FitZScore</text>
+<text class="b" x="486" y="62" style="font-size:12px">C  InvertibleOperation</text><text class="ms" x="486" y="78">PowerScaling</text>
+<text class="b" x="634" y="62" style="font-size:12px">D  FittableOperation</text><text class="ms" x="634" y="78">FitNorm</text>
+<text class="b" x="20" y="116">fit(), first pass</text><text class="s" x="20" y="133">fit B on A(sample)</text>
+<rect class="run" x="190" y="96" width="130" height="46" rx="6"/>
+<text class="s" x="200" y="124">forward</text>
+<path class="ln" d="M321 119.0 H337" marker-end="url(#a)"/>
+<rect class="fit" x="338" y="96" width="130" height="46" rx="6"/>
+<text class="s" x="348" y="115" style="fill:#92400e">fit_step per sample,</text><text class="s" x="348" y="131" style="fill:#92400e">then complete_fit()</text>
+<rect class="idle" x="486" y="96" width="130" height="46" rx="6"/>
+<text class="s" x="496" y="124" style="fill:#94a3b8">not run yet</text>
+<rect class="idle" x="634" y="96" width="130" height="46" rx="6"/>
+<text class="s" x="644" y="124" style="fill:#94a3b8">not run yet</text>
+<text class="b" x="20" y="180">fit(), second pass</text><text class="s" x="20" y="197">fit D on C(B(A(sample)))</text>
+<rect class="run" x="190" y="160" width="130" height="46" rx="6"/>
+<text class="s" x="200" y="188">forward</text>
+<path class="ln" d="M321 183.0 H337" marker-end="url(#a)"/>
+<rect class="run" x="338" y="160" width="130" height="46" rx="6"/>
+<text class="s" x="348" y="188">forward</text>
+<path class="ln" d="M469 183.0 H485" marker-end="url(#a)"/>
+<rect class="run" x="486" y="160" width="130" height="46" rx="6"/>
+<text class="s" x="496" y="188">forward</text>
+<path class="ln" d="M617 183.0 H633" marker-end="url(#a)"/>
+<rect class="fit" x="634" y="160" width="130" height="46" rx="6"/>
+<text class="s" x="644" y="179" style="fill:#92400e">fit_step per sample,</text><text class="s" x="644" y="195" style="fill:#92400e">then complete_fit()</text>
+<text class="b" x="20" y="244">pipeline(sample)</text><text class="s" x="20" y="261">forward, in order</text>
+<rect class="run" x="190" y="224" width="130" height="46" rx="6"/>
+<text class="s" x="200" y="252">forward</text>
+<path class="ln" d="M321 247.0 H337" marker-end="url(#a)"/>
+<rect class="run" x="338" y="224" width="130" height="46" rx="6"/>
+<text class="s" x="348" y="252">forward</text>
+<path class="ln" d="M469 247.0 H485" marker-end="url(#a)"/>
+<rect class="run" x="486" y="224" width="130" height="46" rx="6"/>
+<text class="s" x="496" y="252">forward</text>
+<path class="ln" d="M617 247.0 H633" marker-end="url(#a)"/>
+<rect class="run" x="634" y="224" width="130" height="46" rx="6"/>
+<text class="s" x="644" y="252">forward</text>
+<text class="b" x="20" y="308">pipeline.inverse(out)</text><text class="s" x="20" y="325">reverse order</text>
+<rect class="idle" x="190" y="288" width="130" height="46" rx="6"/>
+<text class="s" x="200" y="316" style="fill:#94a3b8">not invertible, skipped</text>
+<rect class="inv" x="338" y="288" width="130" height="46" rx="6"/>
+<text class="s" x="348" y="316">inverse</text>
+<path class="ln" d="M485 311.0 H469" marker-end="url(#a)"/>
+<rect class="inv" x="486" y="288" width="130" height="46" rx="6"/>
+<text class="s" x="496" y="316">inverse</text>
+<path class="ln" d="M633 311.0 H617" marker-end="url(#a)"/>
+<rect class="inv" x="634" y="288" width="130" height="46" rx="6"/>
+<text class="s" x="644" y="316">inverse</text>
+<text class="s" x="20" y="360">A fittable transform is fitted on samples that have already passed through every transform before it,</text>
+<text class="s" x="20" y="376">so its statistics describe exactly what it will receive at run time. Fit on the training set only.</text>
+</svg>

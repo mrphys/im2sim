@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 370" width="800" height="370" role="img" aria-labelledby="t">
+<title id="t">Data flow through SimpleGraphDecoder and how its output is written back to the graph</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.5}
+.gr{fill:#d1fae5;stroke:#047857;stroke-width:1.5}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}
+.op{fill:#fef3c7;stroke:#b45309;stroke-width:1.5}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.dash{stroke-dasharray:5 4}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<rect class="card" x="0.5" y="0.5" width="799" height="369" rx="10"/>
+<text class="h" x="20" y="30">SimpleGraphDecoder: what goes in and what gets written</text>
+
+<!-- Inputs -->
+<rect class="gr" x="20" y="56" width="190" height="46" rx="6"/>
+<text class="m" x="32" y="76">graph.x</text>
+<text class="s" x="32" y="93">[N, C_x] node features</text>
+<rect class="img" x="20" y="114" width="190" height="46" rx="6"/>
+<text class="m" x="32" y="134">projected_features</text>
+<text class="s" x="32" y="151">[N, C_p] sampled from the image</text>
+<rect class="gr dash" x="20" y="172" width="190" height="46" rx="6"/>
+<text class="ms" x="32" y="192">graph.&lt;key&gt;[:, channels]</text>
+<text class="s" x="32" y="209">only if pred_feature_key ≠ "x"</text>
+
+<path class="ln" d="M210 79 H222 Q230 79 230 87 V129 Q230 137 238 137 H246" marker-end="url(#a)"/>
+<path class="ln" d="M210 137 H246" marker-end="url(#a)"/>
+<path class="ln" d="M210 195 H222 Q230 195 230 187 V145 Q230 137 238 137" />
+
+<!-- Processing -->
+<rect class="neu" x="248" y="116" width="74" height="42" rx="21"/>
+<text x="285" y="141" text-anchor="middle">concat</text>
+<path class="ln" d="M322 137 H344" marker-end="url(#a)"/>
+<rect class="gr" x="346" y="108" width="156" height="58" rx="6"/>
+<text class="b" x="358" y="130">GraphConvBlock</text>
+<text class="s" x="358" y="148">× n_blocks (block_cfg)</text>
+<path class="ln" d="M502 137 H522" marker-end="url(#a)"/>
+<rect class="gr" x="524" y="108" width="130" height="58" rx="6"/>
+<text class="b" x="536" y="130">output block</text>
+<text class="s" x="536" y="148">one conv → C_out</text>
+<path class="ln" d="M654 137 H674" marker-end="url(#a)"/>
+<rect class="neu" x="676" y="114" width="104" height="46" rx="23"/>
+<text x="728" y="134" text-anchor="middle">output</text>
+<text class="s" x="728" y="150" text-anchor="middle">[N, C_out]</text>
+
+<text class="s" x="248" y="194">Message passing runs over every node and edge.</text>
+<text class="s" x="248" y="210">Pass in_channels = C_x + C_p; the decoder adds C_out itself when key ≠ "x".</text>
+
+<!-- Write step -->
+<path class="ln" d="M728 160 V254" marker-end="url(#a)"/>
+<rect class="op" x="300" y="256" width="480" height="92" rx="6"/>
+<text class="b" x="314" y="278">Write into graph.&lt;pred_feature_key&gt;</text>
+<text class="m" x="314" y="303" xml:space="preserve">update:  graph.&lt;key&gt;[nodes, ch] += output[nodes]</text>
+<text class="m" x="314" y="327" xml:space="preserve">predict: graph.&lt;key&gt;[nodes, ch]  = output[nodes]</text>
+
+<text class="ms" x="20" y="272">nodes</text>
+<text class="s" x="70" y="272">include_ids / exclude_ids</text>
+<text class="s" x="70" y="288">(default: all nodes)</text>
+<text class="ms" x="20" y="312">ch</text>
+<text class="s" x="70" y="312">pred_feature_channels</text>
+<text class="s" x="70" y="328">(default: all C_out channels)</text>
+<text class="s" x="20" y="346">A missing &lt;key&gt; starts as zeros.</text>
+</svg>

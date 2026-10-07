@@ -513,13 +513,13 @@ If <a class="reference external" href="https://docs.python.org/3/library/constan
 tensor rank.</p>
 </p></li>
 <li><p><strong>image_dims</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – <p>Number of spatial dimensions used for calculating SSIM.
-If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, it is inferred from <code class="docutils literal notranslate"><span class="pre">batch_dims</span></code> and the input
-tensor rank.</p>
+If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, it is set to <code class="docutils literal notranslate"><span class="pre">rank</span></code>, or inferred from <code class="docutils literal notranslate"><span class="pre">batch_dims</span></code>
+and the input tensor rank. If all three are <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, it
+defaults to <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
 </p></li>
 <li><p><strong>rank</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – <p>Number of spatial dimensions used by the Gaussian filter.
-Must be <code class="docutils literal notranslate"><span class="pre">2</span></code> or <code class="docutils literal notranslate"><span class="pre">3</span></code>.
-If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, it is inferred from <code class="docutils literal notranslate"><span class="pre">image_dims</span></code>. If both are
-<a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, it defaults to <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+Must be <code class="docutils literal notranslate"><span class="pre">2</span></code> or <code class="docutils literal notranslate"><span class="pre">3</span></code>, and equal to <code class="docutils literal notranslate"><span class="pre">image_dims</span></code> if both are given.
+If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, <code class="docutils literal notranslate"><span class="pre">image_dims</span></code> is used.</p>
 </p></li>
 </ul>
 </dd>

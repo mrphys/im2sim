@@ -203,7 +203,10 @@ class Im2SimGen2(Im2SimBase):
         #         in_graph_channels += out_channels
 
         graph_decoder = SimpleGraphDecoder(
-            in_channels=in_graph_channels, out_channels=out_channels, cfg=decoder_cfg
+            in_channels=in_graph_channels,
+            out_channels=out_channels,
+            cfg=decoder_cfg,
+            graph_channels=graph_channels,
         )
         # projection = get_image_layer(projection_cfg.name, rank=0)(**projection_cfg.kwargs)
         # rasterizer = get_image_layer(rasterizer_cfg.name, rank=0)(**rasterizer_cfg.kwargs) if rasterizer_cfg is not None else None

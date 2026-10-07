@@ -89,9 +89,9 @@ class TrilinearProjection(nn.Module):
         Returns:
             torch.Tensor: The projected features of shape [num_nodes, channels].
         """
-        projections = []
         coords = graph.coords
         batch = graph.batch
+        projections = image_features.new_zeros(coords.shape[0], image_features.shape[1])
         for i in torch.unique(batch).to(torch.int16):
             # TensorFlow tf.shape equivalents
             h = image_features[i].shape[-3]
@@ -109,13 +109,26 @@ class TrilinearProjection(nn.Module):
             y = y / factor
             z = z / factor
 
-            # floor / ceil with clamp
-            x1 = torch.minimum(torch.floor(x), torch.tensor(h - 1, dtype=x.dtype, device=x.device))
-            x2 = torch.minimum(torch.ceil(x), torch.tensor(h - 1, dtype=x.dtype, device=x.device))
-            y1 = torch.minimum(torch.floor(y), torch.tensor(w - 1, dtype=x.dtype, device=x.device))
-            y2 = torch.minimum(torch.ceil(y), torch.tensor(w - 1, dtype=x.dtype, device=x.device))
-            z1 = torch.minimum(torch.floor(z), torch.tensor(d - 1, dtype=x.dtype, device=x.device))
-            z2 = torch.minimum(torch.ceil(z), torch.tensor(d - 1, dtype=x.dtype, device=x.device))
+            # Lower corner is floor(coord) and upper corner is lower + 1, both clamped to the grid.
+            # Using ceil for the upper corner would give x1 == x2 for integer coordinates and
+            # zero interpolation weights.
+            def corners(c, size):
+                c = torch.clamp(c, 0, size - 1)
+                c1 = torch.floor(c)
+                c2 = torch.clamp(c1 + 1, max=size - 1)
+                return c, c1, c2
+
+            x, x1, x2 = corners(x, h)
+            y, y1, y2 = corners(y, w)
+            z, z1, z2 = corners(z, d)
+
+            # interpolation weights (computed before casting the corners to int)
+            wx = (x - x1).unsqueeze(0)
+            wx2 = 1 - wx
+            wy = (y - y1).unsqueeze(0)
+            wy2 = 1 - wy
+            wz = (z - z1).unsqueeze(0)
+            wz2 = 1 - wz
 
             # cast to int for indexing
             x1 = x1.long()
@@ -137,14 +150,8 @@ class TrilinearProjection(nn.Module):
             q12 = gather(img0, x1, y2, z1)
             q22 = gather(img0, x2, y2, z1)
 
-            wx = (x - x1.float()).unsqueeze(0)
-            wx2 = (x2.float() - x).unsqueeze(0)
-
             lerp_x1 = q21 * wx + q11 * wx2
             lerp_x2 = q22 * wx + q12 * wx2
-
-            wy = (y - y1.float()).unsqueeze(0)
-            wy2 = (y2.float() - y).unsqueeze(0)
 
             lerp_y1 = lerp_x2 * wy + lerp_x1 * wy2
 
@@ -160,11 +167,8 @@ class TrilinearProjection(nn.Module):
             lerp_y2 = lerp_x2 * wy + lerp_x1 * wy2
 
             # --- z interpolation ---
-            wz = (z - z1.float()).unsqueeze(0)
-            wz2 = (z2.float() - z).unsqueeze(0)
-
             lerp_z = lerp_y2 * wz + lerp_y1 * wz2
-            projections.append(lerp_z)
+            # [C, N_i] -> [N_i, C], written back to this graph's nodes
+            projections[batch == i] = lerp_z.permute(1, 0)
 
-        projections = torch.cat(projections, dim=0).permute(1, 0)
         return projections

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="800" height="420" role="img" aria-labelledby="t">
+<title id="t">How get_image_layer and get_graph_layer resolve a layer name</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.mb{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12.5px;font-weight:600}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.err{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#b91c1c}
+.b{font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.5}
+.gr{fill:#d1fae5;stroke:#047857;stroke-width:1.5}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}
+.op{fill:#fef3c7;stroke:#b45309;stroke-width:1.5}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.lr{stroke:#b91c1c;stroke-width:1.2;fill:none}
+</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker>
+<marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b91c1c"/></marker>
+</defs>
+<rect class="card" x="0.5" y="0.5" width="799" height="419" rx="10"/>
+
+<!-- Image lane -->
+<text class="mb" x="20" y="32">get_image_layer("Conv", rank=3)</text>
+<text class="s" x="300" y="32">returns a class; you construct it</text>
+<rect class="img" x="20" y="48" width="270" height="44" rx="6"/>
+<text class="m" x="32" y="67">IMAGE_LAYERS["Conv3d"]</text>
+<text class="s" x="32" y="83">name + rank suffix</text>
+<rect class="img" x="20" y="116" width="270" height="44" rx="6"/>
+<text class="m" x="32" y="135">IMAGE_LAYERS["Conv"]</text>
+<text class="s" x="32" y="151">fallback for rank-free layers</text>
+<path class="ln" d="M155 92 V114" marker-end="url(#a)"/>
+<text class="s" x="163" y="107">not found</text>
+<path class="lr" d="M155 160 V176" marker-end="url(#e)"/>
+<text class="err" x="163" y="174">ValueError</text>
+
+<path class="ln" d="M290 70 H358" marker-end="url(#a)"/>
+<path class="ln" d="M290 138 H320 Q328 138 328 130 V78 Q328 70 336 70 H358"/>
+<text class="s" x="298" y="62">found</text>
+<rect class="neu" x="360" y="48" width="200" height="44" rx="6"/>
+<text class="s" x="372" y="66">the class itself</text>
+<text class="m" x="372" y="83">torch.nn.Conv3d</text>
+<path class="ln" d="M560 70 H598" marker-end="url(#a)"/>
+<rect class="op" x="600" y="48" width="180" height="44" rx="6"/>
+<text class="s" x="612" y="66">you instantiate it</text>
+<text class="m" x="612" y="83">Conv3d(16, 32, 3)</text>
+<text class="s" x="360" y="118">IMAGE_LAYERS = torch.nn layers whose names contain</text>
+<text class="s" x="360" y="134">Conv, Pool, Norm, Upsample, PixelShuffle or Dropout,</text>
+<text class="s" x="360" y="150">plus the im2sim image layers (DepthwiseConv3d, ...)</text>
+
+<line x1="20" y1="198" x2="780" y2="198" stroke="#e2e8f0"/>
+
+<!-- Graph lane -->
+<text class="mb" x="20" y="228">get_graph_layer("GATConv", kwargs={...})</text>
+<text class="s" x="372" y="228">returns a module that maps graph → graph</text>
+<rect class="gr" x="20" y="244" width="270" height="52" rx="6"/>
+<text class="m" x="32" y="264">GRAPH_LAYERS</text>
+<text class="s" x="32" y="282">im2sim modules that already take a graph</text>
+<rect class="gr" x="20" y="322" width="270" height="52" rx="6"/>
+<text class="m" x="32" y="342">PYG_LAYERS</text>
+<text class="s" x="32" y="360">torch_geometric.nn layers (+ im2sim's)</text>
+<path class="ln" d="M155 296 V320" marker-end="url(#a)"/>
+<text class="s" x="163" y="312">not found</text>
+<path class="lr" d="M155 374 V390" marker-end="url(#e)"/>
+<text class="err" x="163" y="388">ValueError</text>
+
+<path class="ln" d="M290 270 H358" marker-end="url(#a)"/>
+<text class="s" x="298" y="262">found</text>
+<rect class="neu" x="360" y="248" width="200" height="44" rx="6"/>
+<text class="m" x="372" y="275">cls(*args, **kwargs)</text>
+<path class="ln" d="M290 348 H358" marker-end="url(#a)"/>
+<text class="s" x="298" y="340">found</text>
+<rect class="neu" x="360" y="326" width="200" height="44" rx="6"/>
+<text class="m" x="372" y="344">PyG_Wrapper(</text>
+<text class="m" x="372" y="360" xml:space="preserve">  cls(*args, **kwargs))</text>
+
+<path class="ln" d="M560 270 H580 Q588 270 588 278 V302 Q588 310 596 310 H598" marker-end="url(#a)"/>
+<path class="ln" d="M560 348 H580 Q588 348 588 340 V318 Q588 310 596 310"/>
+<rect class="op" x="600" y="284" width="180" height="52" rx="6"/>
+<text class="m" x="612" y="305">layer(graph)</text>
+<text class="s" x="612" y="323">→ graph with new x</text>
+
+<text class="s" x="360" y="394">The wrapper passes the graph attributes named in the PyG layer's</text>
+<text class="s" x="360" y="410">forward() (x, edge_index, ...) and stores the result in graph.x.</text>
+</svg>

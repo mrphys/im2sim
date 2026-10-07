@@ -79,6 +79,8 @@ class DataProcessor:
 
     Examples
     --------
-    >>> obj = MyClass(param1=10, param2="test")
-    >>> obj.method()
-    42"""
+    .. code-block:: python
+
+        obj = MyClass(param1=10, param2="test")
+        obj.method()  # 42
+    """

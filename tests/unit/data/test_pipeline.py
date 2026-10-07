@@ -290,3 +290,26 @@ def test_empty_pipeline():
 def test_no_keys_transform():
     with pytest.raises(ValueError):
         Transform(DummyOp(), keys=[])
+
+
+@pytest.mark.parametrize("channels", [None, [0, 2]])
+def test_per_channel_pipeline_save_load(tmp_path, channels):
+    from im2sim.data.core import load_pipeline, save_pipeline
+    from im2sim.transforms import FitZScore
+
+    data = [{"a": torch.randn(10, 3) * torch.tensor([1.0, 5.0, 10.0])} for _ in range(4)]
+
+    class Loader:
+        def __iter__(self):
+            return iter(copy.deepcopy(data))
+
+    t = FitZScore(keys=["a"], channels=channels, per_channel=True)
+    t.fit(Loader())
+    p = Pipeline([t])
+
+    path = tmp_path / "pipeline.pt"
+    save_pipeline(p, path)
+    p2 = load_pipeline(path)
+
+    sample = {"a": torch.randn(10, 3)}
+    assert torch.allclose(p(sample)["a"], p2(sample)["a"])

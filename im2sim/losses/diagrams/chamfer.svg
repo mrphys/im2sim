@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 340" width="780" height="340" role="img" aria-labelledby="t">
+<title id="t">ChamferLoss averages nearest-neighbour distances in both directions between two point sets</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.tg{fill:#d1fae5;stroke:#047857;stroke-width:1.5}
+.pr{fill:#dbeafe;stroke:#1d4ed8;stroke-width:1.5}
+</style>
+<defs>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#047857"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d4ed8"/></marker>
+</defs>
+<rect class="card" x="0.5" y="0.5" width="779" height="339" rx="10"/>
+<text class="h" x="20" y="30">ChamferLoss: nearest-neighbour distance, both ways</text>
+<text class="b" x="20" y="60">each target → nearest prediction</text>
+<line x1="42.9" y1="186.4" x2="61.7" y2="227.7" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="84.4" y1="152.9" x2="117.9" y2="193.6" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="120.3" y1="126.9" x2="122.7" y2="191.7" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="161.9" y1="108.2" x2="178.9" y2="170.2" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="198.4" y1="101.8" x2="182.8" y2="170.1" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="239.9" y1="108.5" x2="239.1" y2="169.9" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="276.0" y1="125.6" x2="243.6" y2="171.4" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="317.2" y1="153.9" x2="300.2" y2="192.4" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<line x1="359.4" y1="187.0" x2="355.7" y2="227.0" stroke="#047857" stroke-width="1.4" marker-end="url(#g)"/>
+<circle class="tg" cx="40.0" cy="180.0" r="6"/>
+<circle class="tg" cx="80.0" cy="147.5" r="6"/>
+<circle class="tg" cx="120.0" cy="119.9" r="6"/>
+<circle class="tg" cx="160.0" cy="101.5" r="6"/>
+<circle class="tg" cx="200.0" cy="95.0" r="6"/>
+<circle class="tg" cx="240.0" cy="101.5" r="6"/>
+<circle class="tg" cx="280.0" cy="119.9" r="6"/>
+<circle class="tg" cx="320.0" cy="147.5" r="6"/>
+<circle class="tg" cx="360.0" cy="180.0" r="6"/>
+<rect class="pr" x="59.5" y="229.5" width="11" height="11"/>
+<rect class="pr" x="117.5" y="194.2" width="11" height="11"/>
+<rect class="pr" x="175.5" y="172.4" width="11" height="11"/>
+<rect class="pr" x="233.5" y="172.4" width="11" height="11"/>
+<rect class="pr" x="291.5" y="194.2" width="11" height="11"/>
+<rect class="pr" x="349.5" y="229.5" width="11" height="11"/>
+<text class="b" x="400" y="60">each prediction → nearest target</text>
+<line x1="442.1" y1="228.6" x2="423.3" y2="187.3" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#b)"/>
+<line x1="498.6" y1="194.3" x2="465.1" y2="153.6" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#b)"/>
+<line x1="559.1" y1="171.2" x2="542.1" y2="109.2" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#b)"/>
+<line x1="623.0" y1="172.2" x2="655.4" y2="126.4" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#b)"/>
+<line x1="679.8" y1="193.3" x2="696.8" y2="154.8" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#b)"/>
+<line x1="735.6" y1="228.0" x2="739.3" y2="188.0" stroke="#1d4ed8" stroke-width="1.4" marker-end="url(#b)"/>
+<circle class="tg" cx="420.0" cy="180.0" r="6"/>
+<circle class="tg" cx="460.0" cy="147.5" r="6"/>
+<circle class="tg" cx="500.0" cy="119.9" r="6"/>
+<circle class="tg" cx="540.0" cy="101.5" r="6"/>
+<circle class="tg" cx="580.0" cy="95.0" r="6"/>
+<circle class="tg" cx="620.0" cy="101.5" r="6"/>
+<circle class="tg" cx="660.0" cy="119.9" r="6"/>
+<circle class="tg" cx="700.0" cy="147.5" r="6"/>
+<circle class="tg" cx="740.0" cy="180.0" r="6"/>
+<rect class="pr" x="439.5" y="229.5" width="11" height="11"/>
+<rect class="pr" x="497.5" y="194.2" width="11" height="11"/>
+<rect class="pr" x="555.5" y="172.4" width="11" height="11"/>
+<rect class="pr" x="613.5" y="172.4" width="11" height="11"/>
+<rect class="pr" x="671.5" y="194.2" width="11" height="11"/>
+<rect class="pr" x="729.5" y="229.5" width="11" height="11"/>
+<circle class="tg" cx="26" cy="256" r="6"/><text class="s" x="38" y="260">target (9 points)</text>
+<rect class="pr" x="150.5" y="250.5" width="11" height="11"/><text class="s" x="168" y="260">prediction (6 points)</text>
+<text class="m" x="20" y="290">ChamferLoss = mean(green lengths) + mean(blue lengths)</text>
+<text class="s" x="20" y="312">Plain Euclidean distances. The two sets may have different sizes, and neighbours are only searched within the same</text>
+<text class="s" x="20" y="328">sample of the batch. With id_key, only the nodes listed in graph.&lt;id_key&gt; take part on either side.</text>
+</svg>

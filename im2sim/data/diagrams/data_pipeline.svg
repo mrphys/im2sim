@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" width="800" height="330" role="img" aria-labelledby="t">
+<title id="t">How a case identifier becomes a batched model input</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px}
+.mg{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#94a3b8}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.2}
+.gr{fill:#d1fae5;stroke:#047857;stroke-width:1.2}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}
+.op{fill:#fef3c7;stroke:#b45309;stroke-width:1.5}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.frame{fill:none;stroke:#94a3b8;stroke-width:1.2;stroke-dasharray:5 4}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<rect class="card" x="0.5" y="0.5" width="799" height="329" rx="10"/>
+
+<!-- cases -->
+<rect class="neu" x="20" y="72" width="128" height="76" rx="6"/>
+<text class="b" x="32" y="92">cases</text>
+<text class="ms" x="32" y="110">"case1"</text>
+<text class="ms" x="32" y="125">"case2"</text>
+<text class="ms" x="32" y="140">...</text>
+<path class="ln" d="M148 110 H184" marker-end="url(#a)"/>
+
+<!-- __getitem__ frame -->
+<rect class="frame" x="166" y="40" width="616" height="140" rx="8"/>
+<text class="ms" x="178" y="34" style="fill:#475569">dataset[i]</text>
+
+<rect class="op" x="186" y="88" width="118" height="44" rx="6"/>
+<text class="m" x="198" y="107">load_fn(case)</text>
+<text class="s" x="198" y="123">your function</text>
+<path class="ln" d="M304 110 H324" marker-end="url(#a)"/>
+
+<rect class="neu" x="326" y="56" width="222" height="108" rx="6"/>
+<text class="b" x="338" y="76">sample dict</text>
+<text class="ms" x="338" y="100">"image"</text>
+<rect class="img" x="392" y="88" width="148" height="18" rx="3"/>
+<text class="ms" x="399" y="101">Tensor [C, D, H, W]</text>
+<text class="ms" x="338" y="126">"graph"</text>
+<rect class="gr" x="392" y="114" width="148" height="18" rx="3"/>
+<text class="ms" x="399" y="127">Data(x, coords, …)</text>
+<text class="s" x="338" y="152">any keys, any mix</text>
+<path class="ln" d="M548 110 H562" marker-end="url(#a)"/>
+
+<rect class="neu" x="564" y="56" width="212" height="108" rx="6"/>
+<text class="b" x="576" y="76">Pipeline, in order</text>
+<text class="ms" x="576" y="100">T1  keys="image"</text>
+<text class="ms" x="758" y="100" style="fill:#047857">✓</text>
+<text class="ms" x="576" y="120">T2  keys="graph", attr="x"</text>
+<text class="ms" x="758" y="120" style="fill:#047857">✓</text>
+<text class="mg" x="576" y="140">T3  keys="mask"</text>
+<line x1="576" y1="136" x2="682" y2="136" stroke="#94a3b8"/>
+<text class="s" x="690" y="140">skipped</text>
+<text class="s" x="576" y="157">no "mask" in this sample</text>
+
+<!-- to row 2 -->
+<path class="ln" d="M670 180 V196 Q670 204 662 204 H92 Q84 204 84 212 V222" marker-end="url(#a)"/>
+
+<rect class="neu" x="20" y="224" width="128" height="60" rx="6"/>
+<text class="b" x="32" y="246">processed</text>
+<text class="b" x="32" y="263">sample</text>
+<path class="ln" d="M148 254 H196" marker-end="url(#a)"/>
+<rect class="op" x="198" y="224" width="210" height="60" rx="6"/>
+<text class="m" x="210" y="246">DataLoader(dataset, ...)</text>
+<text class="s" x="210" y="264">collate: per key, by type</text>
+<path class="ln" d="M408 254 H440" marker-end="url(#a)"/>
+
+<rect class="neu" x="442" y="216" width="338" height="96" rx="6"/>
+<text class="b" x="454" y="236">batch</text>
+<text class="ms" x="454" y="260">"image"</text>
+<rect class="img" x="512" y="248" width="134" height="18" rx="3"/>
+<text class="ms" x="518" y="261">[B, C, D, H, W]</text>
+<text class="s" x="654" y="261">stacked on dim 0</text>
+<text class="ms" x="454" y="290">"graph"</text>
+<rect class="gr" x="512" y="278" width="134" height="18" rx="3"/>
+<text class="ms" x="518" y="291">PyG Batch</text>
+<text class="s" x="654" y="291">nodes joined,</text>
+<text class="s" x="654" y="305">.batch says whose</text>
+</svg>

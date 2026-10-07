@@ -55,40 +55,46 @@ class ImageConvBlock(torch.nn.Module):
 
         To create an ImageConvBlock with a depth of 3, ReLU activation, and softmax output activation, you can use the following code:
 
-        >>> cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
-        >>> model = ImageConvBlock(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
+        .. code-block:: python
+
+            cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
+            model = ImageConvBlock(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
 
         Since the configs are rankless, you could use the same config for a 1D, 2D, or 3D convolutional block by changing the rank parameter when creating the ImageConvBlock instance.
 
-        >>> cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
-        >>> model1D = ImageConvBlock(
-        >>>        rank=1,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model2D = ImageConvBlock(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model3D = ImageConvBlock(
-        >>>        rank=3,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
+        .. code-block:: python
+
+            cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
+            model1D = ImageConvBlock(
+                rank=1,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
+            model2D = ImageConvBlock(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
+            model3D = ImageConvBlock(
+                rank=3,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
 
         Models can be saved and loaded using the standard PyTorch methods:
 
-        >>> torch.save(model.state_dict(), "model.pth")
-        >>> model.load_state_dict(torch.load("model.pth"))
+        .. code-block:: python
+
+            torch.save(model.state_dict(), "model.pth")
+            model.load_state_dict(torch.load("model.pth"))
 
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.ImageConvBlockConfig` class:
     """

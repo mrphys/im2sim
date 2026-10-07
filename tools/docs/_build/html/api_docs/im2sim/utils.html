@@ -456,7 +456,11 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-registries-im2sim-utils-layer-util">Layer registries (<code class="docutils literal notranslate"><span class="pre">im2sim.utils.layer_util</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyg-operations-without-compiled-extras-im2sim-utils-pyg-ops">PyG operations without compiled extras (<code class="docutils literal notranslate"><span class="pre">im2sim.utils.pyg_ops</span></code>)</a></li>
+</ul>
+</li>
 </ul>
 
             </nav>
@@ -490,6 +494,73 @@ document.write(`
 </section>
 <section id="guide">
 <h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">utils</span></code> holds the internals that other modules are built on. It exports nothing at package
+level, so import from its submodules. Most users only need it to register custom layers.</p>
+<section id="layer-registries-im2sim-utils-layer-util">
+<h2>Layer registries (<code class="docutils literal notranslate"><span class="pre">im2sim.utils.layer_util</span></code>)<a class="headerlink" href="#layer-registries-im2sim-utils-layer-util" title="Link to this heading">#</a></h2>
+<p>Every <code class="docutils literal notranslate"><span class="pre">LayerConfig</span></code> name in <a class="reference internal" href="configs.html"><span class="doc">im2sim.configs</span></a> is resolved through one of these registries. The
+lookup order is shown in <a class="reference internal" href="layers.html"><span class="doc">im2sim.layers</span></a>.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 42.0%" />
+<col style="width: 36.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Registry</p></th>
+<th class="head"><p>Filled with</p></th>
+<th class="head"><p>Look up / extend with</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IMAGE_LAYERS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">torch.nn</span></code> layers whose names contain <code class="docutils literal notranslate"><span class="pre">Conv</span></code>, <code class="docutils literal notranslate"><span class="pre">Pool</span></code>, <code class="docutils literal notranslate"><span class="pre">Norm</span></code>, <code class="docutils literal notranslate"><span class="pre">Upsample</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PixelShuffle</span></code> or <code class="docutils literal notranslate"><span class="pre">Dropout</span></code>, plus the im2sim image layers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_image_layer(name,</span> <span class="pre">rank)</span></code>, <code class="docutils literal notranslate"><span class="pre">register_image_layer</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GRAPH_LAYERS</span></code></p></td>
+<td><p>im2sim layers that take and return a graph (<code class="docutils literal notranslate"><span class="pre">GraphDropout</span></code>, <code class="docutils literal notranslate"><span class="pre">EdgeDropout</span></code>, …)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_graph_layer(name,</span> <span class="pre">args,</span> <span class="pre">kwargs)</span></code>, <code class="docutils literal notranslate"><span class="pre">register_graph_layer</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PYG_LAYERS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">torch_geometric.nn</span></code> layers whose names contain <code class="docutils literal notranslate"><span class="pre">Conv</span></code>, <code class="docutils literal notranslate"><span class="pre">Pool</span></code>, <code class="docutils literal notranslate"><span class="pre">Norm</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Dropout</span></code>, plus a few im2sim layers written in the PyG style</p></td>
+<td><p>looked up by <code class="docutils literal notranslate"><span class="pre">get_graph_layer</span></code>, <code class="docutils literal notranslate"><span class="pre">register_pyg_layer</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ACTIVATIONS</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">torch.nn</span></code> activations (<code class="docutils literal notranslate"><span class="pre">ReLU</span></code>, <code class="docutils literal notranslate"><span class="pre">GELU</span></code>, <code class="docutils literal notranslate"><span class="pre">Softmax</span></code>, …)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_activation(name)</span></code>, <code class="docutils literal notranslate"><span class="pre">register_activation</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">get_image_layer</span></code> returns a <strong>class</strong> and leaves construction to the caller.
+<code class="docutils literal notranslate"><span class="pre">get_graph_layer</span></code> returns a constructed <strong>module</strong> that maps a graph to a graph. Names are
+matched without regard to case, spaces or underscores.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">register_*</span></code> functions are decorators. They take an optional <code class="docutils literal notranslate"><span class="pre">name</span></code> and default to the
+class name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.utils.layer_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_activation</span>
+
+<span class="nd">@register_activation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Swish&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Swish</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To register an image layer under <code class="docutils literal notranslate"><span class="pre">&quot;&lt;Name&gt;1d&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;&lt;Name&gt;2d&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;&lt;Name&gt;3d&quot;</span></code> at once, give
+its <code class="docutils literal notranslate"><span class="pre">__init__</span></code> a <code class="docutils literal notranslate"><span class="pre">rank</span></code> argument and decorate the class with <code class="docutils literal notranslate"><span class="pre">register_with_ranks(&quot;&lt;Name&gt;&quot;)</span></code>.
+The im2sim depthwise, ghost and attention layers are registered this way.</p>
+</section>
+<section id="pyg-operations-without-compiled-extras-im2sim-utils-pyg-ops">
+<h2>PyG operations without compiled extras (<code class="docutils literal notranslate"><span class="pre">im2sim.utils.pyg_ops</span></code>)<a class="headerlink" href="#pyg-operations-without-compiled-extras-im2sim-utils-pyg-ops" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">knn</span></code>, <code class="docutils literal notranslate"><span class="pre">knn_interpolate</span></code> and <code class="docutils literal notranslate"><span class="pre">graclus</span></code> are drop-in replacements for the PyTorch Geometric
+functions of the same names. PyG runs these through optional compiled packages (<code class="docutils literal notranslate"><span class="pre">pyg-lib</span></code> or
+<code class="docutils literal notranslate"><span class="pre">torch_cluster</span></code>) that are not available for every PyTorch version. The wrappers use the
+compiled backend when PyG can find one and otherwise fall back to a pure-PyTorch version with a
+one-time warning. The losses, <code class="docutils literal notranslate"><span class="pre">FeatureRasterizer</span></code> and <code class="docutils literal notranslate"><span class="pre">mesh_ops</span></code> use these wrappers, so <code class="docutils literal notranslate"><span class="pre">im2sim</span></code> runs either way.
+The compiled backends are faster; install them with the <code class="docutils literal notranslate"><span class="pre">im2sim-install-pyg-addons</span></code> command.</p>
+</section>
 </section>
 
 
@@ -533,7 +604,11 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-registries-im2sim-utils-layer-util">Layer registries (<code class="docutils literal notranslate"><span class="pre">im2sim.utils.layer_util</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyg-operations-without-compiled-extras-im2sim-utils-pyg-ops">PyG operations without compiled extras (<code class="docutils literal notranslate"><span class="pre">im2sim.utils.pyg_ops</span></code>)</a></li>
+</ul>
+</li>
 </ul>
 
   </nav></div>

@@ -617,3 +617,28 @@ def test_deep_supervision_outputs_have_matching_spatial_shapes():
     spatial_shapes = [output.shape[2:] for output in outputs]
 
     assert spatial_shapes[0] == spatial_shapes[1]
+
+def _depths(cfgs):
+    return [c.depth for c in cfgs]
+
+
+def test_decoder_and_upsample_order_survives_mod_and_save_load(tmp_path):
+    decoder_block_cfg = [ImageConvBlockConfig(depth=d) for d in (1, 2, 3)]
+    upsample_cfg = [
+        LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "nearest"}),
+        LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "trilinear"}),
+    ]
+    cfg = UNetConfig(
+        filters=[8, 16, 32], decoder_block_cfg=decoder_block_cfg, upsample_cfg=upsample_cfg
+    )
+    expected_depths = _depths(cfg.decoder_block_cfg)
+    expected_modes = [u.kwargs["mode"] for u in cfg.upsample_cfg]
+
+    modded = cfg.mod(out_activation="sigmoid").mod(fusion_type="add")
+    path = tmp_path / "cfg.json"
+    modded.save(path)
+    loaded = UNetConfig.load(path)
+
+    for c in (modded, loaded, loaded.mod()):
+        assert _depths(c.decoder_block_cfg) == expected_depths
+        assert [u.kwargs["mode"] for u in c.upsample_cfg] == expected_modes

@@ -358,13 +358,14 @@ class Transform:
     # Serialization
     # -----------------------------
 
+    def _base_op(self):
+        return self.op[0] if isinstance(self.op, list) else self.op
+
     def config(self):
         return {
             "type": self.__class__.__name__,
-            "op": self.op.__class__.__name__
-            if not self.per_channel
-            else self.op[0].__class__.__name__,
-            "op_args": self.op.call_args if not self.per_channel else self.op[0].call_args,
+            "op": self._base_op().__class__.__name__,
+            "op_args": self._base_op().call_args,
             "name": self.name,
             "keys": self.keys,
             "attr": self.attr,
@@ -375,6 +376,9 @@ class Transform:
 
     def state_dict(self):
         if self.per_channel:
+            # Per-channel ops that were never expanded (never used or fit) have no state yet
+            if not isinstance(self.op, list):
+                return []
             return [op.state_dict() for op in self.op]
 
         if hasattr(self.op, "state_dict"):
@@ -384,6 +388,10 @@ class Transform:
     def load_state_dict(self, state):
 
         if self.per_channel:
+            if not isinstance(self.op, list):
+                if len(state) == 0:
+                    return
+                self.op = [copy.deepcopy(self.op) for _ in state]
             for op, s in zip(self.op, state, strict=True):
                 op.load_state_dict(s)
         else:
@@ -392,7 +400,7 @@ class Transform:
         self.fitted = True
 
     def to(self, device):
-        if self.per_channel:
+        if self.per_channel and isinstance(self.op, list):
             for op in self.op:
                 op.to(device)
         else:
@@ -463,6 +471,9 @@ class Pipeline:
     # -----------------------------
     # Serialization
     # -----------------------------
+    def _base_op(self):
+        return self.op[0] if isinstance(self.op, list) else self.op
+
     def config(self):
         return {"transforms": [t.config() for t in self.transforms]}
 
@@ -481,9 +492,11 @@ class Pipeline:
             op_cls = TRANSFORM_REGISTRY[tconf["op"]]
             op_args = tconf["op_args"]
 
+            # Per-channel ops with no listed channels are created from a single op once the
+            # number of channels is known (in load_state_dict or on first use).
             op = (
                 op_cls(*op_args["args"], **op_args["kwargs"])
-                if not tconf["per_channel"]
+                if not tconf["per_channel"] or tconf["channels"] is None
                 else [
                     op_cls(*op_args["args"], **op_args["kwargs"])
                     for _ in range(len(tconf["channels"]))
@@ -636,17 +649,19 @@ class Dataset(torch.utils.data.Dataset):
     Examples:
 
 
-        >>> import torch
-        >>>
-        >>> cases = ['case1', 'case2', 'case3', 'case4']
-        >>>
-        >>> def load(case):
-        ...     img = torch.load(f'images/{case}.pt')
-        ...     graph = torch.load(f'graphs/{case}.pt')
-        ...     template = torch.load(f'template/{case}.pt')
-        ...     return {'image': img, 'template': template, 'out_graph': graph}
-        >>>
-        >>> dataset = im2sim.data.Dataset(load_fn=load, cases=cases)
+        .. code-block:: python
+
+            import torch
+
+            cases = ['case1', 'case2', 'case3', 'case4']
+
+            def load(case):
+                img = torch.load(f'images/{case}.pt')
+                graph = torch.load(f'graphs/{case}.pt')
+                template = torch.load(f'template/{case}.pt')
+                return {'image': img, 'template': template, 'out_graph': graph}
+
+            dataset = im2sim.data.Dataset(load_fn=load, cases=cases)
     """
 
     def __init__(

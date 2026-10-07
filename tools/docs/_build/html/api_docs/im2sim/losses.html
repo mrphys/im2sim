@@ -460,24 +460,15 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-reconstruction">Image reconstruction</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-considerations">Training considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation">Segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-reconstruction">Image reconstruction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fields-on-graphs">Fields on graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-positions">Point positions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-quality">Mesh quality</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supervised-and-unsupervised">Supervised and unsupervised</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-and-field-prediction">Graph and field prediction</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Training considerations</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-cloud-geometry">Point cloud geometry</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Training considerations</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-quality-and-validity">Mesh quality and validity</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supervised-and-unsupervised-mesh-losses">Supervised and unsupervised mesh losses</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-loss-requirements">Mesh loss requirements</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-losses-during-training">Combining losses during training</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-selection-by-problem">Loss selection by problem</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-losses">Combining losses</a></li>
 </ul>
 </li>
 </ul>
@@ -549,538 +540,210 @@ document.write(`
 </section>
 <section id="guide">
 <h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">losses</span></code> provides differentiable objectives for training models across
-image, graph, point-cloud, and mesh prediction tasks.</p>
-<p>The losses are grouped according to the type of prediction being trained.
-Each group makes different assumptions about the representation of the
-prediction and target, and therefore has different requirements when used
-during training.</p>
-<p>The main loss categories are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">losses</span></code> provides training objectives for images, graph features, point clouds and meshes. They
+fall into two kinds:</p>
 <ul class="simple">
-<li><p>confusion losses for image segmentation;</p></li>
-<li><p>SSIM loss for image reconstruction;</p></li>
-<li><p>feature losses for comparing graph-based fields;</p></li>
-<li><p>point-cloud losses for comparing predicted and target geometry; and</p></li>
-<li><p>mesh losses for controlling the quality and validity of predicted
-meshes.</p></li>
+<li><p><strong>agreement losses</strong> compare a prediction with a target: the confusion losses, <code class="docutils literal notranslate"><span class="pre">SSIMLoss</span></code>,
+<code class="docutils literal notranslate"><span class="pre">KnnFeatureLoss</span></code> and <code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code>;</p></li>
+<li><p><strong>quality losses</strong> constrain the predicted mesh itself, with or without a target:
+<code class="docutils literal notranslate"><span class="pre">EdgeLengthDeviationLoss</span></code>, <code class="docutils literal notranslate"><span class="pre">AspectRatioLoss</span></code>, <code class="docutils literal notranslate"><span class="pre">FaceNormalLoss</span></code> and <code class="docutils literal notranslate"><span class="pre">InversionLoss</span></code>.</p></li>
 </ul>
-<p>Losses can also be combined to provide multiple training objectives. This
-is particularly useful for mesh-based models, where geometric accuracy
-and mesh quality may need to be optimised simultaneously.</p>
-<p>Loss categories</p>
-<hr class="docutils" />
-<p>The different loss categories are intended for different types of
-prediction:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Prediction
-    │
-    ├── Image segmentation
-    │      └── Confusion losses
-    │
-    ├── Image reconstruction
-    │      └── SSIM loss
-    │
-    ├── Graph / field prediction
-    │      └── KNN feature loss
-    │
-    ├── Point-cloud geometry
-    │      └── Chamfer loss
-    │
-    └── Mesh deformation / generation
-        ├── Chamfer loss
-        ├── Edge-length deviation
-        ├── Aspect ratio
-        ├── Face normals
-        └── Inversion
-</pre></div>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Choosing a loss</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 26.0%" />
+<col style="width: 34.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Prediction</p></th>
+<th class="head"><p>Loss</p></th>
+<th class="head"><p>Main consideration</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Segmentation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DiceLoss</span></code>, <code class="docutils literal notranslate"><span class="pre">IoULoss</span></code>, <code class="docutils literal notranslate"><span class="pre">TverskyLoss</span></code>, <code class="docutils literal notranslate"><span class="pre">FocalTverskyLoss</span></code></p></td>
+<td><p>class imbalance; weighting of false positives against false negatives</p></td>
+</tr>
+<tr class="row-odd"><td><p>Image reconstruction</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SSIMLoss</span></code></p></td>
+<td><p>local structure; <code class="docutils literal notranslate"><span class="pre">max_val</span></code> must match the data range</p></td>
+</tr>
+<tr class="row-even"><td><p>Field on a graph</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">KnnFeatureLoss</span></code></p></td>
+<td><p>no node correspondence needed; shared coordinate system required</p></td>
+</tr>
+<tr class="row-odd"><td><p>Node positions</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code></p></td>
+<td><p>measures position only, not mesh quality</p></td>
+</tr>
+<tr class="row-even"><td><p>Mesh deformation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code> + quality losses</p></td>
+<td><p>balance accuracy against element quality</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>Image segmentation</p>
-<hr class="docutils" />
-<p>The confusion losses are intended for segmentation models where the
-prediction and target are spatial tensors containing class probabilities
-and labels.</p>
-<p>They include:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ConfusionLoss
-    ├── DiceLoss
-    ├── TverskyLoss
-    ├── FocalTverskyLoss
-    └── IoULoss
-</pre></div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Argument order differs between losses. <code class="docutils literal notranslate"><span class="pre">SSIMLoss</span></code> is called as <code class="docutils literal notranslate"><span class="pre">loss(prediction,</span> <span class="pre">target)</span></code>.
+Every other loss is called as <code class="docutils literal notranslate"><span class="pre">loss(target,</span> <span class="pre">prediction)</span></code>. For the graph losses, the target is
+ignored (pass <code class="docutils literal notranslate"><span class="pre">None</span></code>) when the loss is unsupervised.</p>
 </div>
-<p>These losses are based on soft versions of the confusion matrix rather
-than treating every voxel or pixel independently. This makes them useful
-for segmentation problems where the overlap between the predicted and
-target regions is more important than the absolute number of correctly
-classified background pixels.</p>
-<p>They are particularly useful for highly imbalanced segmentation problems,
-where the foreground may occupy only a small fraction of the image.</p>
-<p>The losses support binary, multiclass, and multilabel segmentation. The
-prediction should therefore be supplied as a channel-first tensor:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[batch, channels, *spatial_dimensions]
-</pre></div>
-</div>
-<p>The class reduction strategy can be selected using <code class="docutils literal notranslate"><span class="pre">&quot;micro&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;macro&quot;</span></code>
-or <code class="docutils literal notranslate"><span class="pre">&quot;weighted&quot;</span></code> averaging.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiceLoss</span>
+<section id="segmentation">
+<h2>Segmentation<a class="headerlink" href="#segmentation" title="Link to this heading">#</a></h2>
+<p>The confusion losses build a soft confusion matrix from probabilities, per batch element and
+channel, and turn it into an overlap score. They optimise overlap rather than per-voxel accuracy,
+so a small foreground counts as much as a large background.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiceLoss</span><span class="p">,</span> <span class="n">TverskyLoss</span>
 
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">DiceLoss</span><span class="p">()</span>
-
-<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span>
-    <span class="n">target</span><span class="p">,</span>
-    <span class="n">prediction</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">DiceLoss</span><span class="p">(</span><span class="n">average</span><span class="o">=</span><span class="s2">&quot;macro&quot;</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span>  <span class="c1"># both [B, C, *spatial], prediction as probabilities</span>
 </pre></div>
 </div>
-<p>Confusion losses optimise overlap, rather than voxel-wise accuracy.
-They should therefore generally be interpreted alongside a suitable
-segmentation metric such as Dice or IoU.</p>
-<p>The choice of class reduction is important for multiclass problems.
-<code class="docutils literal notranslate"><span class="pre">&quot;macro&quot;</span></code> gives each class equal importance, whereas <code class="docutils literal notranslate"><span class="pre">&quot;micro&quot;</span></code> is
-dominated by the total number of pixels or voxels.</p>
-<p>For strongly imbalanced problems, class weighting or a Tversky-style loss
-can be used to change the relative importance of false positives and false
-negatives.</p>
-<p>These losses also require predictions that represent probabilities or
-soft class assignments rather than discrete class labels.</p>
+<ul class="simple">
+<li><p>Inputs are channel-first, <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">*spatial]</span></code>, with one channel per class, and the target and
+prediction must have the same shape. Predictions must be probabilities, for example after
+<code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> or <code class="docutils literal notranslate"><span class="pre">softmax</span></code>, not class labels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">average</span></code> sets how classes are combined. <code class="docutils literal notranslate"><span class="pre">&quot;macro&quot;</span></code> gives each class equal weight.
+<code class="docutils literal notranslate"><span class="pre">&quot;micro&quot;</span></code> pools all voxels, so large classes dominate. <code class="docutils literal notranslate"><span class="pre">&quot;weighted&quot;</span></code> uses <code class="docutils literal notranslate"><span class="pre">class_weights</span></code>
+if they are given, and otherwise weights each class by its share of the target voxels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DiceLoss</span></code> and <code class="docutils literal notranslate"><span class="pre">IoULoss</span></code> weight false positives and false negatives equally. The Tversky
+losses let you weight them differently, and <code class="docutils literal notranslate"><span class="pre">FocalTverskyLoss</span></code> also emphasises hard examples.</p></li>
+</ul>
+</section>
 <section id="image-reconstruction">
 <h2>Image reconstruction<a class="headerlink" href="#image-reconstruction" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">SSIMLoss</span></code> is intended for image-to-image reconstruction tasks where
-preserving local image structure is important.</p>
-<p>Unlike a point-wise loss such as L1 or L2, SSIM compares local image
-statistics and therefore considers luminance, contrast, and structural
-similarity.</p>
-<p>It is useful for problems such as:</p>
-<ul class="simple">
-<li><p>image reconstruction;</p></li>
-<li><p>image enhancement;</p></li>
-<li><p>learned image restoration; and</p></li>
-<li><p>undersampled-image reconstruction.</p></li>
-</ul>
-<p>For example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">SSIMLoss</span></code> returns <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">SSIM</span></code>. SSIM compares local means, variances and covariances under a
+Gaussian window, so it rewards preserved structure rather than exact intensities.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSIMLoss</span>
 
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">SSIMLoss</span><span class="p">()</span>
-
-<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span>
-    <span class="n">prediction</span><span class="p">,</span>
-    <span class="n">target</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">SSIMLoss</span><span class="p">(</span><span class="n">max_val</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># [B, C, D, H, W]</span>
 </pre></div>
 </div>
-<p>The loss operates on channel-first tensors. The spatial dimensionality is
-specified using <code class="docutils literal notranslate"><span class="pre">rank</span></code>:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>rank=2    [B, C, H, W]
-rank=3    [B, C, D, H, W]
-</pre></div>
-</div>
-<p>It can also be used to apply a 2D SSIM calculation independently across
-slices of a higher-dimensional image.</p>
-<section id="training-considerations">
-<h3>Training considerations<a class="headerlink" href="#training-considerations" title="Link to this heading">#</a></h3>
-<p>SSIM is sensitive to the dynamic range of the input images. <code class="docutils literal notranslate"><span class="pre">max_val</span></code>
-should therefore correspond to the range in which the images are
-represented.</p>
-<p>The Gaussian filtering parameters also affect the spatial scale over
-which structural similarity is measured.</p>
-<p>SSIM is a structural loss rather than a direct pixel-wise error. It can
-therefore preserve image structure while allowing small local intensity
-differences that would be penalised more strongly by L1 or L2 losses.</p>
-<p>For reconstruction problems, SSIM can also be combined with a point-wise
-loss when both structural similarity and intensity accuracy are required.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_val</span></code> must match the range of the data: <code class="docutils literal notranslate"><span class="pre">1.0</span></code> for images in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter_size</span></code> and <code class="docutils literal notranslate"><span class="pre">filter_sigma</span></code> set the spatial scale of the comparison.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rank=2</span></code> on a 3D tensor computes 2D SSIM slice by slice.</p></li>
+<li><p>SSIM tolerates small intensity offsets. Add an L1 term when absolute intensities matter.</p></li>
+</ul>
 </section>
-</section>
-<section id="graph-and-field-prediction">
-<h2>Graph and field prediction<a class="headerlink" href="#graph-and-field-prediction" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">KnnFeatureLoss</span></code> is intended for predicting features defined on graphs
-when the nodes of the predicted and target graphs are not in direct
-correspondence.</p>
-<p>This is particularly relevant to mesh-based models where the geometry
-changes during prediction. The predicted mesh may contain the same
-physical domain as the target mesh while having different node positions
-or connectivity.</p>
-<p>Instead of comparing feature <code class="docutils literal notranslate"><span class="pre">i</span></code> on one graph with feature <code class="docutils literal notranslate"><span class="pre">i</span></code> on
-the other graph, the loss uses the spatial coordinates of the graphs to
-interpolate target features onto the predicted nodes using
-k-nearest-neighbour interpolation.</p>
-<p>Conceptually:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>target graph
-    │
-    │ KNN interpolation
-    ▼
-predicted coordinates
-    │
-    ▼
-feature comparison
-</pre></div>
-</div>
-<p>For example:</p>
+<section id="fields-on-graphs">
+<h2>Fields on graphs<a class="headerlink" href="#fields-on-graphs" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">KnnFeatureLoss</span></code> compares node features on two graphs whose nodes do not correspond, for
+example a predicted pressure field on a deformed mesh against a simulation on the true mesh.</p>
+<figure class="align-default">
+<img alt="Target and predicted nodes at different positions. For one predicted node, the three nearest target nodes are interpolated with inverse squared distance weights and compared with the predicted value." src="../../_images/knn_feature_loss.svg" />
+</figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">KnnFeatureLoss</span>
 
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">KnnFeatureLoss</span><span class="p">(</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span>
-    <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span>
-    <span class="n">target_graph</span><span class="p">,</span>
-    <span class="n">prediction_graph</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">KnnFeatureLoss</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">feature_key</span><span class="o">=</span><span class="s2">&quot;pressure&quot;</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">target_graph</span><span class="p">,</span> <span class="n">prediction_graph</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The graphs must therefore provide coordinates and graph features. The graph coordinates must be stored in the <code class="docutils literal notranslate"><span class="pre">coords</span></code> attribute.
-The feature tensor defaults to <code class="docutils literal notranslate"><span class="pre">x</span></code> but another graph attribute can be selected using <code class="docutils literal notranslate"><span class="pre">feature_key</span></code>.</p>
-<section id="id1">
-<h3>Training considerations<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
-<p>The main advantage of this loss is that node correspondence is not
-required.</p>
-<p>This makes it suitable for models where graph geometry is being predicted
-or deformed at the same time as graph features.</p>
-<p>The value of <code class="docutils literal notranslate"><span class="pre">k</span></code> controls the neighbourhood used to interpolate the
-target features. A small value makes the interpolation more local, while
-larger values provide a broader neighbourhood.</p>
-<p>The loss can use either L1 or L2 feature differences.</p>
-<p>It is important that the coordinates of the two graphs use the same
-physical coordinate system. Otherwise, the spatial interpolation does not
-represent a meaningful correspondence.</p>
+<p>Both graphs need <code class="docutils literal notranslate"><span class="pre">coords</span></code> and the <code class="docutils literal notranslate"><span class="pre">feature_key</span></code> attribute, in the same coordinate system.
+<code class="docutils literal notranslate"><span class="pre">feature_channels</span></code> restricts the comparison to some channels. Small <code class="docutils literal notranslate"><span class="pre">k</span></code> keeps the
+interpolation local, and larger <code class="docutils literal notranslate"><span class="pre">k</span></code> smooths it. With batched graphs, neighbours are searched
+only within the same sample.</p>
 </section>
-</section>
-<section id="point-cloud-geometry">
-<h2>Point cloud geometry<a class="headerlink" href="#point-cloud-geometry" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code> is intended for comparing the geometry of two point
-clouds or graph-based meshes when the individual points are not directly
-corresponding.</p>
-<p>It measures the nearest-neighbour distance between the two sets of
-coordinates in both directions:</p>
-<p>This makes it suitable for mesh deformation and geometry prediction where
-the number or arrangement of nodes can change.</p>
-<p>For example:</p>
+<section id="point-positions">
+<h2>Point positions<a class="headerlink" href="#point-positions" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code> measures how close two point sets are without matching points one-to-one. The
+two sets may have different sizes.</p>
+<figure class="align-default">
+<img alt="Left: each target point with an arrow to its nearest predicted point. Right: each predicted point with an arrow to its nearest target point. The loss is the sum of the two mean arrow lengths." src="../../_images/chamfer.svg" />
+</figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChamferLoss</span>
 
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">ChamferLoss</span><span class="p">()</span>
-
-<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span>
-    <span class="n">target_graph</span><span class="p">,</span>
-    <span class="n">prediction_graph</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">ChamferLoss</span><span class="p">()</span>                       <span class="c1"># all nodes</span>
+<span class="n">wall_fn</span> <span class="o">=</span> <span class="n">ChamferLoss</span><span class="p">(</span><span class="n">id_key</span><span class="o">=</span><span class="s2">&quot;wall_index&quot;</span><span class="p">)</span>    <span class="c1"># only the wall nodes on both sides</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">target_graph</span><span class="p">,</span> <span class="n">prediction_graph</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The graphs require coordinate information and batching information.</p>
-<p>A subset of points can optionally be selected using <code class="docutils literal notranslate"><span class="pre">id_key</span></code>. This can
-be useful when only a particular part of the geometry should contribute
-to the loss.</p>
-<section id="id2">
-<h3>Training considerations<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
-<p>Chamfer loss measures geometric proximity, rather than mesh quality.</p>
-<p>A prediction can therefore achieve a low Chamfer loss while still having
-poor element quality, distorted triangles or tetrahedra, or inverted
-elements.</p>
-<p>For mesh deformation models, Chamfer loss is consequently often most
-useful as one component of a larger objective.</p>
-<p>It is also insensitive to point-to-point correspondence, which makes it
-appropriate when the predicted and target meshes have different node
-locations.</p>
+<p>Both directions are needed. The target-to-prediction term alone is low when every target point
+has a nearby prediction, even if extra predicted points are scattered elsewhere. The other term
+alone is low when predictions sit on the target but leave parts of it uncovered.</p>
+<p>Chamfer says nothing about the elements between the nodes. A mesh can match the target surface
+closely and still contain slivers or inverted tetrahedra. For mesh models, pair it with quality
+losses.</p>
 </section>
-</section>
-<section id="mesh-quality-and-validity">
-<h2>Mesh quality and validity<a class="headerlink" href="#mesh-quality-and-validity" title="Link to this heading">#</a></h2>
-<p>The mesh losses are intended for models that predict or deform meshes.</p>
-<p>Unlike <code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code>, which measures where the mesh is located, these
-losses constrain properties of the mesh itself:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Mesh prediction
-    │
-    ├── geometric position
-    │      └── ChamferLoss
-    │
-    ├── edge distribution
-    │      └── EdgeLengthDeviationLoss
-    │
-    ├── element shape
-    │      └── AspectRatioLoss
-    │
-    ├── surface smoothness
-    │      └── FaceNormalLoss
-    │
-    └── element validity
-            └── InversionLoss
-</pre></div>
+<section id="mesh-quality">
+<h2>Mesh quality<a class="headerlink" href="#mesh-quality" title="Link to this heading">#</a></h2>
+<figure class="align-default">
+<img alt="Four panels with a lower-loss and a higher-loss example each: an even versus uneven triangle strip, an equilateral versus sliver triangle, a flat cap with parallel normals versus a warped cap, and a correctly oriented versus inverted element." src="../../_images/mesh_quality.svg" />
+</figure>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 26.0%" />
+<col style="width: 30.0%" />
+<col style="width: 44.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Loss</p></th>
+<th class="head"><p>Needs on the graph</p></th>
+<th class="head"><p>Measures</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EdgeLengthDeviationLoss</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, <code class="docutils literal notranslate"><span class="pre">edge_index</span></code></p></td>
+<td><p>std / mean of all edge lengths</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AspectRatioLoss(cell_key)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, tetrahedra <code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">M]</span></code></p></td>
+<td><p>mean over tetrahedra of longest edge / mean edge (1 for a regular tetrahedron)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FaceNormalLoss(face_key)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, <code class="docutils literal notranslate"><span class="pre">batch</span></code>, triangles <code class="docutils literal notranslate"><span class="pre">[3,</span> <span class="pre">M]</span></code></p></td>
+<td><p>spread of the unit face normals; zero for a flat set of faces</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InversionLoss(cell_key,</span> <span class="pre">min_vol)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, tetrahedra <code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">M]</span></code></p></td>
+<td><p>mean of <code class="docutils literal notranslate"><span class="pre">max(0,</span> <span class="pre">min_vol</span> <span class="pre">-</span> <span class="pre">V)</span></code> over signed tetrahedron volumes <code class="docutils literal notranslate"><span class="pre">V</span></code></p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>These losses are particularly useful as regularisation terms when a model
-is free to move mesh nodes and therefore has no guarantee that the
-resulting mesh remains well-conditioned.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cell_key</span></code> and <code class="docutils literal notranslate"><span class="pre">face_key</span></code> name the graph attribute that holds the connectivity, such as the
+<code class="docutils literal notranslate"><span class="pre">*_cell_index</span></code> attributes created by <a class="reference internal" href="mesh_ops.html"><span class="doc">im2sim.mesh_ops</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FaceNormalLoss</span></code> pulls faces towards a <strong>common plane</strong>, not towards a smooth surface. Apply it
+to faces that should be flat, such as inlet and outlet caps, not to a whole curved vessel wall.</p>
+<section id="supervised-and-unsupervised">
+<h3>Supervised and unsupervised<a class="headerlink" href="#supervised-and-unsupervised" title="Link to this heading">#</a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">supervised=False</span></code>, the first three losses ignore the target and return the measure for
+the prediction alone. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> as the target. With <code class="docutils literal notranslate"><span class="pre">supervised=True</span></code>, the default:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EdgeLengthDeviationLoss</span></code> and <code class="docutils literal notranslate"><span class="pre">AspectRatioLoss</span></code> return
+<code class="docutils literal notranslate"><span class="pre">relu(measure(pred)</span> <span class="pre">-</span> <span class="pre">measure(target))²</span></code>. The prediction is penalised only for being <strong>worse</strong>
+than the target, never for being better.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FaceNormalLoss</span></code> adds the distance between the mean face normals of the two meshes to the
+prediction’s own spread.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">InversionLoss</span></code> is always unsupervised, and <code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code> is always supervised.</p>
 </section>
-<section id="supervised-and-unsupervised-mesh-losses">
-<h2>Supervised and unsupervised mesh losses<a class="headerlink" href="#supervised-and-unsupervised-mesh-losses" title="Link to this heading">#</a></h2>
-<p>Several mesh losses support both supervised and unsupervised operation.</p>
-<p>In supervised mode, the predicted mesh is compared with a target mesh. The
-loss can therefore penalise degradation relative to the target.</p>
-<p>In unsupervised mode, the loss is calculated from the predicted mesh
-alone. This allows mesh quality constraints to be used even when a target
-mesh is unavailable.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdgeLengthDeviationLoss</span>
-
-<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">EdgeLengthDeviationLoss</span><span class="p">(</span>
-    <span class="n">supervised</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span>
-    <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prediction_graph</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>This distinction is useful when separating the objectives of a mesh
-prediction model:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>supervised
-    │
-    ├── match target geometry
-    └── preserve target mesh properties
-
-unsupervised
-    │
-    └── prevent invalid / poor-quality geometry
-</pre></div>
-</div>
 </section>
-<section id="mesh-loss-requirements">
-<h2>Mesh loss requirements<a class="headerlink" href="#mesh-loss-requirements" title="Link to this heading">#</a></h2>
-<p>The different mesh losses require different graph attributes.</p>
-<dl class="field-list">
-<dt class="field-odd">header-rows<span class="colon">:</span></dt>
-<dd class="field-odd"><p>1</p>
-<ul class="simple">
-<li><ul>
-<li><p>Loss</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>Required information</p></li>
-<li><p>Main purpose</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code></p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, <code class="docutils literal notranslate"><span class="pre">batch</span></code></p></li>
-<li><p>Geometric position</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">EdgeLengthDeviationLoss</span></code></p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, <code class="docutils literal notranslate"><span class="pre">edge_index</span></code></p></li>
-<li><p>Edge-length regularity</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">AspectRatioLoss</span></code></p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, tetrahedral cell connectivity</p></li>
-<li><p>Element shape</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">FaceNormalLoss</span></code></p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, triangular face connectivity</p></li>
-<li><p>Surface geometry</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">InversionLoss</span></code></p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">coords</span></code>, tetrahedral cell connectivity</p></li>
-<li><p>Element validity</p></li>
-</ul>
-</dd>
-</dl>
-<p>The names of the connectivity attributes are configurable using the
-corresponding <code class="docutils literal notranslate"><span class="pre">edge_key</span></code>, <code class="docutils literal notranslate"><span class="pre">cell_key</span></code> or <code class="docutils literal notranslate"><span class="pre">face_key</span></code> arguments.</p>
-</section>
-<section id="combining-losses-during-training">
-<h2>Combining losses during training<a class="headerlink" href="#combining-losses-during-training" title="Link to this heading">#</a></h2>
-<p>The loss categories are generally complementary rather than alternatives.</p>
-<p>For example, a mesh deformation model may need to satisfy three different
-objectives:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Target geometry
-    │
-    ▼
-ChamferLoss
+<section id="combining-losses">
+<h2>Combining losses<a class="headerlink" href="#combining-losses" title="Link to this heading">#</a></h2>
+<p>For a model that deforms a template mesh, a typical objective has a term for where the mesh is
+and terms for what it looks like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChamferLoss</span><span class="p">,</span> <span class="n">EdgeLengthDeviationLoss</span><span class="p">,</span> <span class="n">InversionLoss</span>
 
-Mesh regularity
-    │
-    ▼
-EdgeLengthDeviationLoss
-    +
-AspectRatioLoss
-
-Mesh validity
-    │
-    ▼
-InversionLoss
-</pre></div>
-</div>
-<p>These objectives can be combined using weighting factors:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">geometry_loss</span> <span class="o">=</span> <span class="n">chamfer</span><span class="p">(</span>
-    <span class="n">target_graph</span><span class="p">,</span>
-    <span class="n">prediction_graph</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">quality_loss</span> <span class="o">=</span> <span class="n">edge_loss</span><span class="p">(</span>
-    <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prediction_graph</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">validity_loss</span> <span class="o">=</span> <span class="n">inversion_loss</span><span class="p">(</span>
-    <span class="kc">None</span><span class="p">,</span>
-    <span class="n">prediction_graph</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">chamfer</span> <span class="o">=</span> <span class="n">ChamferLoss</span><span class="p">()</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">EdgeLengthDeviationLoss</span><span class="p">(</span><span class="n">supervised</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">inversion</span> <span class="o">=</span> <span class="n">InversionLoss</span><span class="p">(</span><span class="n">cell_key</span><span class="o">=</span><span class="s2">&quot;vol_cell_index&quot;</span><span class="p">)</span>
 
 <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">geometry_loss</span>
-    <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">quality_loss</span>
-    <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">validity_loss</span>
+    <span class="n">chamfer</span><span class="p">(</span><span class="n">target_graph</span><span class="p">,</span> <span class="n">prediction_graph</span><span class="p">)</span>
+    <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">edges</span><span class="p">(</span><span class="n">target_graph</span><span class="p">,</span> <span class="n">prediction_graph</span><span class="p">)</span>
+    <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">inversion</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">prediction_graph</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>The relative weighting determines the trade-off between matching the
-target and enforcing geometric constraints.</p>
-<p>In practice, this means that a mesh loss should not generally be selected
-in isolation. A geometry loss can encourage the predicted mesh to reach
-the target while a quality or validity loss prevents the deformation from
-producing undesirable elements.</p>
-</section>
-<section id="loss-selection-by-problem">
-<h2>Loss selection by problem<a class="headerlink" href="#loss-selection-by-problem" title="Link to this heading">#</a></h2>
-<p>The following provides a general guide for selecting a loss category:</p>
-<dl class="field-list">
-<dt class="field-odd">header-rows<span class="colon">:</span></dt>
-<dd class="field-odd"><p>1</p>
-<ul class="simple">
-<li><ul>
-<li><p>Problem</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>Suitable losses</p></li>
-<li><p>Main consideration</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p>Binary / multiclass segmentation</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>Dice, Tversky, Focal Tversky, IoU</p></li>
-<li><p>Class imbalance and false-positive / false-negative weighting</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p>Image reconstruction</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>SSIM</p></li>
-<li><p>Preserve local image structure and dynamic range</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p>Graph field prediction</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>KNN feature loss</p></li>
-<li><p>No direct node correspondence required</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p>Point-cloud / mesh geometry</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>Chamfer</p></li>
-<li><p>Measures position, not mesh quality</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p>Mesh deformation</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>Chamfer + mesh losses</p></li>
-<li><p>Geometry and mesh quality must be balanced</p></li>
-</ul>
-<ul class="simple">
-<li><ul>
-<li><p>Mesh validity</p></li>
-</ul>
-</li>
-</ul>
-<ul class="simple">
-<li><p>Inversion</p></li>
-<li><p>Penalises invalid tetrahedral elements</p></li>
-</ul>
-</dd>
-</dl>
-</section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">losses</span></code> module groups training objectives according to the
-representation being predicted.</p>
-<p>The general workflow is:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Image
-│
-├── segmentation ──► confusion losses
-│
-└── reconstruction ──► SSIMLoss
-
-Graph
-│
-└── field prediction ──► KnnFeatureLoss
-
-Geometry
-│
-├── point / mesh position ──► ChamferLoss
-│
-└── mesh quality
-        ├── edge lengths
-        ├── aspect ratio
-        ├── face normals
-        └── element validity
-</pre></div>
-</div>
-<p>The key distinction is between losses that measure agreement with a
-target and losses that impose constraints on the prediction itself.</p>
-<p>For image and feature prediction, the losses primarily measure agreement
-with a target. For mesh-based models, geometry losses such as Chamfer can
-be combined with mesh-quality and validity losses to constrain the
-predicted geometry during training.</p>
-<p>When combining losses, the relative weighting of each objective becomes
-part of the model’s training configuration and should be selected
-according to the desired balance between prediction accuracy and
-geometric regularity.</p>
+<p>The weights trade accuracy against element quality and are part of the training configuration.
+Too little regularisation leaves inverted or degenerate elements that break later simulation.
+Too much stops the mesh from reaching the target.</p>
 </section>
 </section>
 
@@ -1135,24 +798,15 @@ geometric regularity.</p>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-reconstruction">Image reconstruction</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-considerations">Training considerations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation">Segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#image-reconstruction">Image reconstruction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fields-on-graphs">Fields on graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-positions">Point positions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-quality">Mesh quality</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supervised-and-unsupervised">Supervised and unsupervised</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-and-field-prediction">Graph and field prediction</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Training considerations</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#point-cloud-geometry">Point cloud geometry</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Training considerations</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-quality-and-validity">Mesh quality and validity</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supervised-and-unsupervised-mesh-losses">Supervised and unsupervised mesh losses</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-loss-requirements">Mesh loss requirements</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-losses-during-training">Combining losses during training</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-selection-by-problem">Loss selection by problem</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-losses">Combining losses</a></li>
 </ul>
 </li>
 </ul>

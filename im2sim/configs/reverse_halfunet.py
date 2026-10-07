@@ -84,103 +84,122 @@ class ReverseHalfUNetConfig(Config):
 
         To create a customised configuration for a ReverseHalfUNet, you can create a preferred ImageConvBlockConfig and use it for the decoder blocks:
 
-        >>> block_cfg = ImageConvBlockConfig(
-        >>>                         depth=4,
-        >>>                         activation="LeakyReLU",
-        >>>                         out_activation="sigmoid",
-        >>>                         conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
-        >>>                         norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
-        >>>                         dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
-        >>>                         attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
-        >>>                         dropout_position=[1, 3],
-        >>>                         residual_connections={3: [0, 1]},
-        >>>                         residual_type="concat"
-        >>>                         )
-        >>> cfg = ReverseHalfUNetConfig(
-        >>>     hidden_channels=32,
-        >>>     n_levels=4,
-        >>>     pool_cfg=LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
-        >>>     upsample_cfg=LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
-        >>>     block_cfg=block_cfg)
+        .. code-block:: python
+
+            block_cfg = ImageConvBlockConfig(
+                depth=4,
+                activation="LeakyReLU",
+                out_activation="sigmoid",
+                conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
+                norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
+                dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
+                attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
+                dropout_position=[1, 3],
+                residual_connections={3: [0, 1]},
+                residual_type="concat"
+            )
+            cfg = ReverseHalfUNetConfig(
+                hidden_channels=32,
+                n_levels=4,
+                pool_cfg=LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
+                upsample_cfg=LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
+                block_cfg=block_cfg)
 
         If you want more flexibility you can also specify different configurations for the decoder blocks:
 
 
-        >>> decoder_block_cfg = [
-        >>>     ImageConvBlockConfig(depth=5, activation="GELU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=4, activation="ELU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=3, activation="LeakyReLU", out_activation="sigmoid"),
-        >>>     ImageConvBlockConfig(depth=2, activation="ReLU", out_activation="sigmoid")
-        >>> ]
-        >>> cfg = ReverseHalfUNetConfig(
-        >>>    hidden_channels=32,
-        >>>    n_levels=4,
-        >>>    decoder_block_cfg=decoder_block_cfg
-        >>> )
+        .. code-block:: python
+
+            decoder_block_cfg = [
+                ImageConvBlockConfig(depth=5, activation="GELU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=4, activation="ELU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=3, activation="LeakyReLU", out_activation="sigmoid"),
+                ImageConvBlockConfig(depth=2, activation="ReLU", out_activation="sigmoid")
+            ]
+            cfg = ReverseHalfUNetConfig(
+                hidden_channels=32,
+                n_levels=4,
+                decoder_block_cfg=decoder_block_cfg
+            )
 
         Similarly, if you want to specify different configurations for the stem block and output block, you can do so:
 
-        >>> stem_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
-        >>> out_block_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
-        >>> cfg = ReverseHalfUNetConfig(
-        >>>    hidden_channels=32,
-        >>>    n_levels=4,
-        >>>    stem_block_cfg=stem_cfg,
-        >>>    out_block_cfg=out_block_cfg
-        >>> )
+        .. code-block:: python
+
+            stem_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
+            out_block_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
+            cfg = ReverseHalfUNetConfig(
+                hidden_channels=32,
+                n_levels=4,
+                stem_block_cfg=stem_cfg,
+                out_block_cfg=out_block_cfg
+            )
 
 
         The `mod()` method can be especially useful for making simple modifications to the block configurations for different types of blocks.
 
-        >>> block_cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="sigmoid")
-        >>> decoder_block_cfg = [block_cfg.mod(depth=4) for _ in range(4)]
-        >>> cfg = ReverseHalfUNetConfig(
-        >>>    hidden_channels=32,
-        >>>    n_levels=4,
-        >>>    decoder_block_cfg=decoder_block_cfg
-        >>> )
+        .. code-block:: python
+
+            block_cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="sigmoid")
+            decoder_block_cfg = [block_cfg.mod(depth=4) for _ in range(4)]
+            cfg = ReverseHalfUNetConfig(
+                hidden_channels=32,
+                n_levels=4,
+                decoder_block_cfg=decoder_block_cfg
+            )
 
         You can also use the `mod()` method to modify a ReverseHalfUNetConfig object directly, which will apply the modification to all blocks of that type:
-        >>> cfg = ReverseHalfUNetConfig(
-        >>>    hidden_channels=32,
-        >>>    n_levels=4,
-        >>>    block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="sigmoid")
-        >>>    )
-        >>> cfg = cfg.mod(decoder_block_cfg=ImageConvBlockConfig(depth=4))
+
+        .. code-block:: python
+
+            cfg = ReverseHalfUNetConfig(
+                hidden_channels=32,
+                n_levels=4,
+                block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="sigmoid")
+            )
+            cfg = cfg.mod(decoder_block_cfg=ImageConvBlockConfig(depth=4))
 
         For heterogeneous pooling and upsampling layers, you can specify a list of LayerConfig objects for each level:
 
-        >>> pool_cfg = [
-        >>>    LayerConfig(name="MaxPool", kwargs={"kernel_size": (1,2)}),
-        >>>    LayerConfig(name="AvgPool", kwargs={"kernel_size": 2}),
-        >>>    LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
-        >>> ]
-        >>> upsample_cfg = [
-        >>>    LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
-        >>>    LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
-        >>>    LayerConfig(name="Upsample", kwargs={"scale_factor": (1,2), "mode": "bilinear"}),
-        >>> ]
-        >>> cfg = ReverseHalfUNetConfig(
-        >>>    hidden_channels=32,
-        >>>    n_levels=4,
-        >>>    pool_cfg=pool_cfg,
-        >>>    upsample_cfg=upsample_cfg
-        >>> )
+        .. code-block:: python
+
+            pool_cfg = [
+                LayerConfig(name="MaxPool", kwargs={"kernel_size": (1,2)}),
+                LayerConfig(name="AvgPool", kwargs={"kernel_size": 2}),
+                LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
+            ]
+            upsample_cfg = [
+                LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
+                LayerConfig(name="Upsample", kwargs={"scale_factor": 2, "mode": "bilinear"}),
+                LayerConfig(name="Upsample", kwargs={"scale_factor": (1,2), "mode": "bilinear"}),
+            ]
+            cfg = ReverseHalfUNetConfig(
+                hidden_channels=32,
+                n_levels=4,
+                pool_cfg=pool_cfg,
+                upsample_cfg=upsample_cfg
+            )
 
         To make simple modifications to the default configuration, you can modify a subset of attributes:
 
-        >>> cfg = ReverseHalfUNetConfig(fusion_type='add', out_activation='sigmoid')
+        .. code-block:: python
+
+            cfg = ReverseHalfUNetConfig(fusion_type='add', out_activation='sigmoid')
 
 
         Different presets exist to perform common transformations on the configuration.
         For example, to convert the convolutional blocks to use depthwise separable convolutions and add residual connections to the input of each block, you can do:
 
-        >>> cfg = ReverseHalfUNetConfig().to_depthwise_separable().add_residual()
+        .. code-block:: python
+
+            cfg = ReverseHalfUNetConfig().to_depthwise_separable().add_residual()
 
         To save the configuration to a JSON file and load it back, you can use:
 
-        >>> cfg.save("my_config.json")
-        >>> loaded_cfg = ReverseHalfUNetConfig.load("my_config.json")
+        .. code-block:: python
+
+            cfg.save("my_config.json")
+            loaded_cfg = ReverseHalfUNetConfig.load("my_config.json")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
     """
@@ -209,6 +228,8 @@ class ReverseHalfUNetConfig(Config):
     fusion_type: str = "add"
     out_activation: str | None = None
     enable_temporal: bool = False
+
+    _reversed_fields = ("decoder_block_cfg", "upsample_cfg")
 
     def __post_init__(self):
 

@@ -471,7 +471,7 @@ document.write(`
 <h1>im2sim.models.HalfUNet<a class="headerlink" href="#im2sim-models-halfunet" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.models.HalfUNet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HalfUNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/halfunet.py#L31-L230"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.HalfUNet" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HalfUNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/halfunet.py#L32-L236"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.HalfUNet" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>A flexible HalfUNet [1] implementation for image segmentation and reconstruction tasks.</p>
 <dl class="field-list simple">
@@ -479,10 +479,9 @@ document.write(`
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_channels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of input channels.</p></li>
 <li><p><strong>out_channels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of output channels.</p></li>
-<li><p><strong>rank</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Spatial rank (1D, 2D, 3D).</p></li>
+<li><p><strong>rank</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Spatial rank (1D, 2D, 3D). If <code class="docutils literal notranslate"><span class="pre">cfg.enable_temporal</span></code> is True, only ranks <code class="docutils literal notranslate"><span class="pre">2</span></code> and <code class="docutils literal notranslate"><span class="pre">3</span></code> are supported
+and inputs have shape <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">C,</span> <span class="pre">T,</span> <span class="pre">*spatial)</span></code>.</p></li>
 <li><p><strong>cfg</strong> (<a class="reference internal" href="../configs/HalfUNetConfig.html#im2sim.configs.HalfUNetConfig" title="im2sim.configs.HalfUNetConfig"><em>HalfUNetConfig</em></a>) – Configuration object for the HalfUNet.</p></li>
-<li><p><strong>supervision_levels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – Levels at which to apply deep supervision. <code class="docutils literal notranslate"><span class="pre">0</span></code> corresponds to the highest resolution output, <code class="docutils literal notranslate"><span class="pre">1</span></code> to the next lower resolution, and so on.
-Default is <a href="#id1"><span class="problematic" id="id2">``</span></a>0``(no deep supervision).</p></li>
 </ul>
 </dd>
 </dl>
@@ -544,9 +543,9 @@ For reconstruction tasks, you can use the <code class="docutils literal notransl
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;model.pth&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Configs can also be saved and loaded using the methods provided in the <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/configs/UNetConfig">im2sim.configs.UNetConfig</a> class:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded_cfg</span> <span class="o">=</span> <span class="n">HalfUNetConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+<p>Configs can also be saved and loaded using the methods provided in the <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/configs/HalfUNetConfig">im2sim.configs.HalfUNetConfig</a> class:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_config.json&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded_cfg</span> <span class="o">=</span> <span class="n">HalfUNetConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_config.json&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">HalfUNet</span><span class="p">(</span>
 <span class="gp">&gt;&gt;&gt; </span>       <span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>       <span class="n">in_channels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
@@ -557,15 +556,15 @@ For reconstruction tasks, you can use the <code class="docutils literal notransl
 </div>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id3" role="doc-footnote">
+<aside class="footnote brackets" id="id1" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>H. Lu, Y. She, J. Tie, and S. Xu, Half-UNet: A Simplified HalfUNet Architecture for Medical Image Segmentation,
+<p>H. Lu, Y. She, J. Tie, and S. Xu, Half-UNet: A Simplified U-Net Architecture for Medical Image Segmentation,
 Front. Neuroinformatics, vol. 16, Jun. 2022, doi: 10.3389/fninf.2022.911679.</p>
 </aside>
 </aside>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.models.HalfUNet.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/halfunet.py#L210-L230"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.HalfUNet.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/models/halfunet.py#L211-L236"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.models.HalfUNet.forward" title="Link to this definition">#</a></dt>
 <dd><p>Forward pass through the HalfUNet.</p>
 </dd></dl>
 

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" width="800" height="440" role="img" aria-labelledby="t">
+<title id="t">A UNetConfig is a tree of nested config dataclasses, saved as nested JSON</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.j{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#334155}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.5}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}
+.op{fill:#fef3c7;stroke:#b45309;stroke-width:1.2}
+.code{fill:#f8fafc;stroke:#cbd5e1}
+</style>
+<rect class="card" x="0.5" y="0.5" width="799" height="439" rx="10"/>
+
+<text class="h" x="20" y="30">Configs nest: model → block → layer</text>
+<text class="h" x="470" y="30">cfg.save("unet.json") writes the same tree</text>
+
+<!-- Model config -->
+<rect class="neu" x="20" y="46" width="430" height="368" rx="8"/>
+<text class="b" x="34" y="68">UNetConfig</text>
+<text class="m" x="34" y="96">filters</text>
+<text class="m" x="180" y="96">[32, 64, 128, 256]</text>
+<text class="m" x="34" y="125">pool_cfg</text>
+<rect class="op" x="180" y="110" width="150" height="22" rx="4"/>
+<text class="m" x="190" y="125">"MaxPool"</text>
+<text class="m" x="34" y="155">upsample_cfg</text>
+<rect class="op" x="180" y="140" width="150" height="22" rx="4"/>
+<text class="m" x="190" y="155">"Upsample"</text>
+
+<text class="m" x="34" y="200">encoder_block_cfg</text>
+<rect class="img" x="192" y="168" width="250" height="202" rx="6" opacity="0.45"/>
+<rect class="img" x="186" y="174" width="250" height="202" rx="6" opacity="0.7"/>
+<rect class="img" x="180" y="180" width="250" height="202" rx="6"/>
+<text class="b" x="192" y="200">ImageConvBlockConfig</text>
+<text class="s" x="192" y="216">a list with one block per level</text>
+<text class="m" x="192" y="241">depth</text>
+<text class="m" x="300" y="241">2</text>
+<text class="m" x="192" y="263">activation</text>
+<text class="m" x="300" y="263">"ReLU"</text>
+<text class="m" x="192" y="289">conv_cfg</text>
+<rect class="op" x="290" y="274" width="128" height="22" rx="4"/>
+<text class="m" x="298" y="289">"Conv"</text>
+<text class="m" x="192" y="315">norm_cfg</text>
+<rect class="op" x="290" y="300" width="128" height="22" rx="4"/>
+<text class="m" x="298" y="315">"InstanceNorm"</text>
+<text class="m" x="192" y="341">dropout_cfg</text>
+<rect class="op" x="290" y="326" width="128" height="22" rx="4"/>
+<text class="m" x="298" y="341">None</text>
+<text class="m" x="192" y="367">attn_cfg</text>
+<rect class="op" x="290" y="352" width="128" height="22" rx="4"/>
+<text class="m" x="298" y="367">None</text>
+
+<text class="m" x="34" y="402">decoder_block_cfg</text>
+<text class="m" x="180" y="402">[ImageConvBlockConfig, ...]</text>
+
+<!-- JSON -->
+<rect class="code" x="470" y="46" width="310" height="340" rx="6"/>
+<text class="j" x="484" y="68">{</text>
+<text class="j" x="497" y="83">"__class__": "UNetConfig",</text>
+<text class="j" x="497" y="98">"filters": [32, 64, 128, 256],</text>
+<text class="j" x="497" y="113">"pool_cfg": {</text>
+<text class="j" x="510" y="128">"__class__": "LayerConfig",</text>
+<text class="j" x="510" y="143">"name": "MaxPool",</text>
+<text class="j" x="510" y="158">"kwargs": {"kernel_size": 2}</text>
+<text class="j" x="497" y="173">},</text>
+<text class="j" x="497" y="188">"encoder_block_cfg": [</text>
+<text class="j" x="510" y="203">{</text>
+<text class="j" x="523" y="218">"__class__": "ImageConvBlockConfig",</text>
+<text class="j" x="523" y="233">"depth": 2,</text>
+<text class="j" x="523" y="248">"activation": "ReLU",</text>
+<text class="j" x="523" y="263">"conv_cfg": {</text>
+<text class="j" x="536" y="278">"__class__": "LayerConfig",</text>
+<text class="j" x="536" y="293">"name": "Conv", ...</text>
+<text class="j" x="523" y="308">}, ...</text>
+<text class="j" x="510" y="323">}, ...</text>
+<text class="j" x="497" y="338">],</text>
+<text class="j" x="497" y="353">...</text>
+<text class="j" x="484" y="368">}</text>
+
+<!-- Legend -->
+<rect class="neu" x="470" y="398" width="14" height="14" rx="3"/>
+<text class="s" x="490" y="410">model config</text>
+<rect class="img" x="572" y="398" width="14" height="14" rx="3"/>
+<text class="s" x="592" y="410">block config</text>
+<rect class="op" x="672" y="398" width="14" height="14" rx="3"/>
+<text class="s" x="692" y="410">LayerConfig</text>
+<text class="s" x="470" y="430">LayerConfig = layer name + kwargs</text>
+</svg>

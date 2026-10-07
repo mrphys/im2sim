@@ -19,7 +19,7 @@ import json
 from dataclasses import dataclass, fields
 from enum import Enum
 from types import UnionType
-from typing import Any, TypeVar, Union, get_args, get_origin, get_type_hints
+from typing import Any, ClassVar, TypeVar, Union, get_args, get_origin, get_type_hints
 
 T = TypeVar("T", bound="Config")
 
@@ -34,16 +34,18 @@ class Config:
     Subclasses should be defined as dataclasses.
 
     Example:
-        ```python
 
-        cfg = MyConfig(...)
+        .. code-block:: python
 
-        cfg.save("config.json")
-
-        cfg2 = MyConfig.load("config.json")
-
-        ```
+            cfg = MyConfig(...)
+            cfg.save("config.json")
+            cfg2 = MyConfig.load("config.json")
     """
+
+    # Names of list fields that `__post_init__` stores in reverse of the order they are given in.
+    # They are reversed back by `as_kwargs()` and `to_dict()` so that `mod()` and save/load
+    # round-trip instead of reversing them again.
+    _reversed_fields: ClassVar[tuple[str, ...]] = ()
 
     def __init_subclass__(cls):
         """Automatically initialise a preset registry for each subclass."""
@@ -69,7 +71,14 @@ class Config:
         Returns:
             dict: Mapping of field names to values.
         """
-        return {f.name: getattr(self, f.name) for f in fields(self)}
+        return {f.name: self._input_value(f.name) for f in fields(self)}
+
+    def _input_value(self, name):
+        """Return a field value in the order it is given to `__init__`."""
+        value = getattr(self, name)
+        if name in self._reversed_fields and isinstance(value, list):
+            return list(reversed(value))
+        return value
 
     def to_dict(self):
         """
@@ -79,7 +88,7 @@ class Config:
             dict: Serialized representation."""
         return {
             "__class__": self.__class__.__name__,
-            **{f.name: self._serialize_value(getattr(self, f.name)) for f in fields(self)},
+            **{f.name: self._serialize_value(self._input_value(f.name)) for f in fields(self)},
         }
 
     @classmethod
@@ -239,8 +248,11 @@ class LayerConfig(Config):
             A dictionary of keyword arguments for the layer/module. (e.g. {'kernel_size': 3, 'stride': 1, 'padding': 1})
 
     Examples:
-        >>> conv_cfg = LayerConfig(name='Conv', kwargs={'kernel_size': 3, 'stride': 1, 'padding': 1})
-        >>> batchnorm_cfg = LayerConfig(name='BatchNorm', kwargs={'affine': True})
+
+        .. code-block:: python
+
+            conv_cfg = LayerConfig(name='Conv', kwargs={'kernel_size': 3, 'stride': 1, 'padding': 1})
+            batchnorm_cfg = LayerConfig(name='BatchNorm', kwargs={'affine': True})
 
     Note:
     If being used within an im2sim model, inferred inputs like `in_channels` and `out_channels` should not be included and

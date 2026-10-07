@@ -37,552 +37,203 @@ Functions
 Guide
 =====
 
-``losses`` provides differentiable objectives for training models across
-image, graph, point-cloud, and mesh prediction tasks.
+``losses`` provides training objectives for images, graph features, point clouds and meshes. They
+fall into two kinds:
 
-The losses are grouped according to the type of prediction being trained.
-Each group makes different assumptions about the representation of the
-prediction and target, and therefore has different requirements when used
-during training.
+* **agreement losses** compare a prediction with a target: the confusion losses, ``SSIMLoss``,
+  ``KnnFeatureLoss`` and ``ChamferLoss``;
+* **quality losses** constrain the predicted mesh itself, with or without a target:
+  ``EdgeLengthDeviationLoss``, ``AspectRatioLoss``, ``FaceNormalLoss`` and ``InversionLoss``.
 
-The main loss categories are:
+.. list-table:: Choosing a loss
+    :header-rows: 1
+    :widths: 26 34 40
 
-* confusion losses for image segmentation;
-* SSIM loss for image reconstruction;
-* feature losses for comparing graph-based fields;
-* point-cloud losses for comparing predicted and target geometry; and
-* mesh losses for controlling the quality and validity of predicted
-  meshes.
+    * - Prediction
+      - Loss
+      - Main consideration
+    * - Segmentation
+      - ``DiceLoss``, ``IoULoss``, ``TverskyLoss``, ``FocalTverskyLoss``
+      - class imbalance; weighting of false positives against false negatives
+    * - Image reconstruction
+      - ``SSIMLoss``
+      - local structure; ``max_val`` must match the data range
+    * - Field on a graph
+      - ``KnnFeatureLoss``
+      - no node correspondence needed; shared coordinate system required
+    * - Node positions
+      - ``ChamferLoss``
+      - measures position only, not mesh quality
+    * - Mesh deformation
+      - ``ChamferLoss`` + quality losses
+      - balance accuracy against element quality
 
-Losses can also be combined to provide multiple training objectives. This
-is particularly useful for mesh-based models, where geometric accuracy
-and mesh quality may need to be optimised simultaneously.
+.. important::
 
-Loss categories
+    Argument order differs between losses. ``SSIMLoss`` is called as ``loss(prediction, target)``.
+    Every other loss is called as ``loss(target, prediction)``. For the graph losses, the target is
+    ignored (pass ``None``) when the loss is unsupervised.
 
----------------
+Segmentation
+------------
 
-The different loss categories are intended for different types of
-prediction:
-
-.. code-block:: text
-
-    Prediction
-        │
-        ├── Image segmentation
-        │      └── Confusion losses
-        │
-        ├── Image reconstruction
-        │      └── SSIM loss
-        │
-        ├── Graph / field prediction
-        │      └── KNN feature loss
-        │
-        ├── Point-cloud geometry
-        │      └── Chamfer loss
-        │
-        └── Mesh deformation / generation
-            ├── Chamfer loss
-            ├── Edge-length deviation
-            ├── Aspect ratio
-            ├── Face normals
-            └── Inversion
-
-
-Image segmentation
-
------------------
-
-The confusion losses are intended for segmentation models where the
-prediction and target are spatial tensors containing class probabilities
-and labels.
-
-They include:
-
-.. code-block:: text
-
-    ConfusionLoss
-        ├── DiceLoss
-        ├── TverskyLoss
-        ├── FocalTverskyLoss
-        └── IoULoss
-
-
-These losses are based on soft versions of the confusion matrix rather
-than treating every voxel or pixel independently. This makes them useful
-for segmentation problems where the overlap between the predicted and
-target regions is more important than the absolute number of correctly
-classified background pixels.
-
-They are particularly useful for highly imbalanced segmentation problems,
-where the foreground may occupy only a small fraction of the image.
-
-The losses support binary, multiclass, and multilabel segmentation. The
-prediction should therefore be supplied as a channel-first tensor:
-
-.. code-block:: text
-
-    [batch, channels, *spatial_dimensions]
-
-
-The class reduction strategy can be selected using ``"micro"``, ``"macro"``
-or ``"weighted"`` averaging.
-
-For example:
+The confusion losses build a soft confusion matrix from probabilities, per batch element and
+channel, and turn it into an overlap score. They optimise overlap rather than per-voxel accuracy,
+so a small foreground counts as much as a large background.
 
 .. code-block:: python
 
-    from im2sim.losses import DiceLoss
+    from im2sim.losses import DiceLoss, TverskyLoss
 
-    loss_fn = DiceLoss()
+    loss_fn = DiceLoss(average="macro")
+    loss = loss_fn(target, prediction)  # both [B, C, *spatial], prediction as probabilities
 
-    loss = loss_fn(
-        target,
-        prediction,
-    )
-
-
-Training considerations
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Confusion losses optimise overlap, rather than voxel-wise accuracy.
-They should therefore generally be interpreted alongside a suitable
-segmentation metric such as Dice or IoU.
-
-The choice of class reduction is important for multiclass problems.
-``"macro"`` gives each class equal importance, whereas ``"micro"`` is
-dominated by the total number of pixels or voxels.
-
-For strongly imbalanced problems, class weighting or a Tversky-style loss
-can be used to change the relative importance of false positives and false
-negatives.
-
-These losses also require predictions that represent probabilities or
-soft class assignments rather than discrete class labels.
-
+* Inputs are channel-first, ``[B, C, *spatial]``, with one channel per class, and the target and
+  prediction must have the same shape. Predictions must be probabilities, for example after
+  ``sigmoid`` or ``softmax``, not class labels.
+* ``average`` sets how classes are combined. ``"macro"`` gives each class equal weight.
+  ``"micro"`` pools all voxels, so large classes dominate. ``"weighted"`` uses ``class_weights``
+  if they are given, and otherwise weights each class by its share of the target voxels.
+* ``DiceLoss`` and ``IoULoss`` weight false positives and false negatives equally. The Tversky
+  losses let you weight them differently, and ``FocalTverskyLoss`` also emphasises hard examples.
 
 Image reconstruction
--------------------
+--------------------
 
-``SSIMLoss`` is intended for image-to-image reconstruction tasks where
-preserving local image structure is important.
-
-Unlike a point-wise loss such as L1 or L2, SSIM compares local image
-statistics and therefore considers luminance, contrast, and structural
-similarity.
-
-It is useful for problems such as:
-
-* image reconstruction;
-* image enhancement;
-* learned image restoration; and
-* undersampled-image reconstruction.
-
-For example:
+``SSIMLoss`` returns ``1 - SSIM``. SSIM compares local means, variances and covariances under a
+Gaussian window, so it rewards preserved structure rather than exact intensities.
 
 .. code-block:: python
 
     from im2sim.losses import SSIMLoss
 
-    loss_fn = SSIMLoss()
+    loss_fn = SSIMLoss(max_val=1.0, rank=3)
+    loss = loss_fn(prediction, target)  # [B, C, D, H, W]
 
-    loss = loss_fn(
-        prediction,
-        target,
-    )
+* ``max_val`` must match the range of the data: ``1.0`` for images in ``[0, 1]``.
+* ``filter_size`` and ``filter_sigma`` set the spatial scale of the comparison.
+* ``rank=2`` on a 3D tensor computes 2D SSIM slice by slice.
+* SSIM tolerates small intensity offsets. Add an L1 term when absolute intensities matter.
 
+Fields on graphs
+----------------
 
-The loss operates on channel-first tensors. The spatial dimensionality is
-specified using ``rank``:
+``KnnFeatureLoss`` compares node features on two graphs whose nodes do not correspond, for
+example a predicted pressure field on a deformed mesh against a simulation on the true mesh.
 
-.. code-block:: text
-
-    rank=2    [B, C, H, W]
-    rank=3    [B, C, D, H, W]
-
-
-It can also be used to apply a 2D SSIM calculation independently across
-slices of a higher-dimensional image.
-
-Training considerations
-~~~~~~~~~~~~~~~~~~~~~~~
-
-SSIM is sensitive to the dynamic range of the input images. ``max_val``
-should therefore correspond to the range in which the images are
-represented.
-
-The Gaussian filtering parameters also affect the spatial scale over
-which structural similarity is measured.
-
-SSIM is a structural loss rather than a direct pixel-wise error. It can
-therefore preserve image structure while allowing small local intensity
-differences that would be penalised more strongly by L1 or L2 losses.
-
-For reconstruction problems, SSIM can also be combined with a point-wise
-loss when both structural similarity and intensity accuracy are required.
-
-Graph and field prediction
----------------------------
-
-``KnnFeatureLoss`` is intended for predicting features defined on graphs
-when the nodes of the predicted and target graphs are not in direct
-correspondence.
-
-This is particularly relevant to mesh-based models where the geometry
-changes during prediction. The predicted mesh may contain the same
-physical domain as the target mesh while having different node positions
-or connectivity.
-
-Instead of comparing feature ``i`` on one graph with feature ``i`` on
-the other graph, the loss uses the spatial coordinates of the graphs to
-interpolate target features onto the predicted nodes using
-k-nearest-neighbour interpolation.
-
-Conceptually:
-
-.. code-block:: text
-
-    target graph
-        │
-        │ KNN interpolation
-        ▼
-    predicted coordinates
-        │
-        ▼
-    feature comparison
-
-
-For example:
+.. figure:: losses/diagrams/knn_feature_loss.svg
+   :alt: Target and predicted nodes at different positions. For one predicted node, the three
+         nearest target nodes are interpolated with inverse squared distance weights and
+         compared with the predicted value.
 
 .. code-block:: python
 
     from im2sim.losses import KnnFeatureLoss
 
-    loss_fn = KnnFeatureLoss(
-        mode="l1",
-        k=3,
-    )
+    loss_fn = KnnFeatureLoss(mode="l1", k=3, feature_key="pressure")
+    loss = loss_fn(target_graph, prediction_graph)
 
-    loss = loss_fn(
-        target_graph,
-        prediction_graph,
-    )
+Both graphs need ``coords`` and the ``feature_key`` attribute, in the same coordinate system.
+``feature_channels`` restricts the comparison to some channels. Small ``k`` keeps the
+interpolation local, and larger ``k`` smooths it. With batched graphs, neighbours are searched
+only within the same sample.
 
+Point positions
+---------------
 
-The graphs must therefore provide coordinates and graph features. The graph coordinates must be stored in the ``coords`` attribute. 
-The feature tensor defaults to ``x`` but another graph attribute can be selected using ``feature_key``.
+``ChamferLoss`` measures how close two point sets are without matching points one-to-one. The
+two sets may have different sizes.
 
-Training considerations
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-The main advantage of this loss is that node correspondence is not
-required.
-
-This makes it suitable for models where graph geometry is being predicted
-or deformed at the same time as graph features.
-
-The value of ``k`` controls the neighbourhood used to interpolate the
-target features. A small value makes the interpolation more local, while
-larger values provide a broader neighbourhood.
-
-The loss can use either L1 or L2 feature differences.
-
-It is important that the coordinates of the two graphs use the same
-physical coordinate system. Otherwise, the spatial interpolation does not
-represent a meaningful correspondence.
-
-
-Point cloud geometry
---------------------
-
-``ChamferLoss`` is intended for comparing the geometry of two point
-clouds or graph-based meshes when the individual points are not directly
-corresponding.
-
-It measures the nearest-neighbour distance between the two sets of
-coordinates in both directions:
-
-This makes it suitable for mesh deformation and geometry prediction where
-the number or arrangement of nodes can change.
-
-For example:
+.. figure:: losses/diagrams/chamfer.svg
+   :alt: Left: each target point with an arrow to its nearest predicted point. Right: each
+         predicted point with an arrow to its nearest target point. The loss is the sum of the two
+         mean arrow lengths.
 
 .. code-block:: python
 
     from im2sim.losses import ChamferLoss
 
-    loss_fn = ChamferLoss()
+    loss_fn = ChamferLoss()                       # all nodes
+    wall_fn = ChamferLoss(id_key="wall_index")    # only the wall nodes on both sides
+    loss = loss_fn(target_graph, prediction_graph)
 
-    loss = loss_fn(
-        target_graph,
-        prediction_graph,
-    )
+Both directions are needed. The target-to-prediction term alone is low when every target point
+has a nearby prediction, even if extra predicted points are scattered elsewhere. The other term
+alone is low when predictions sit on the target but leave parts of it uncovered.
 
+Chamfer says nothing about the elements between the nodes. A mesh can match the target surface
+closely and still contain slivers or inverted tetrahedra. For mesh models, pair it with quality
+losses.
 
-The graphs require coordinate information and batching information.
+Mesh quality
+------------
 
-A subset of points can optionally be selected using ``id_key``. This can
-be useful when only a particular part of the geometry should contribute
-to the loss.
-
-Training considerations
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Chamfer loss measures geometric proximity, rather than mesh quality.
-
-A prediction can therefore achieve a low Chamfer loss while still having
-poor element quality, distorted triangles or tetrahedra, or inverted
-elements.
-
-For mesh deformation models, Chamfer loss is consequently often most
-useful as one component of a larger objective.
-
-It is also insensitive to point-to-point correspondence, which makes it
-appropriate when the predicted and target meshes have different node
-locations.
-
-Mesh quality and validity
--------------------------
-
-The mesh losses are intended for models that predict or deform meshes.
-
-Unlike ``ChamferLoss``, which measures where the mesh is located, these
-losses constrain properties of the mesh itself:
-
-.. code-block:: text
-
-    Mesh prediction
-        │
-        ├── geometric position
-        │      └── ChamferLoss
-        │
-        ├── edge distribution
-        │      └── EdgeLengthDeviationLoss
-        │
-        ├── element shape
-        │      └── AspectRatioLoss
-        │
-        ├── surface smoothness
-        │      └── FaceNormalLoss
-        │
-        └── element validity
-                └── InversionLoss
-
-
-These losses are particularly useful as regularisation terms when a model
-is free to move mesh nodes and therefore has no guarantee that the
-resulting mesh remains well-conditioned.
-
-
-Supervised and unsupervised mesh losses
----------------------------------------
-
-Several mesh losses support both supervised and unsupervised operation.
-
-In supervised mode, the predicted mesh is compared with a target mesh. The
-loss can therefore penalise degradation relative to the target.
-
-In unsupervised mode, the loss is calculated from the predicted mesh
-alone. This allows mesh quality constraints to be used even when a target
-mesh is unavailable.
-
-For example:
-
-.. code-block:: python
-
-
-    from im2sim.losses import EdgeLengthDeviationLoss
-
-    loss_fn = EdgeLengthDeviationLoss(
-        supervised=False,
-    )
-
-    loss = loss_fn(
-        None,
-        prediction_graph,
-    )
-
-
-This distinction is useful when separating the objectives of a mesh
-prediction model:
-
-.. code-block:: text
-
-    supervised
-        │
-        ├── match target geometry
-        └── preserve target mesh properties
-
-    unsupervised
-        │
-        └── prevent invalid / poor-quality geometry
-
-
-Mesh loss requirements
-----------------------
-
-The different mesh losses require different graph attributes.
+.. figure:: losses/diagrams/mesh_quality.svg
+   :alt: Four panels with a lower-loss and a higher-loss example each: an even versus uneven
+         triangle strip, an equilateral versus sliver triangle, a flat cap with parallel normals
+         versus a warped cap, and a correctly oriented versus inverted element.
 
 .. list-table::
-:header-rows: 1
+    :header-rows: 1
+    :widths: 26 30 44
 
     * - Loss
-    - Required information
-    - Main purpose
-    * - ``ChamferLoss``
-    - ``coords``, ``batch``
-    - Geometric position
+      - Needs on the graph
+      - Measures
     * - ``EdgeLengthDeviationLoss``
-    - ``coords``, ``edge_index``
-    - Edge-length regularity
-    * - ``AspectRatioLoss``
-    - ``coords``, tetrahedral cell connectivity
-    - Element shape
-    * - ``FaceNormalLoss``
-    - ``coords``, triangular face connectivity
-    - Surface geometry
-    * - ``InversionLoss``
-    - ``coords``, tetrahedral cell connectivity
-    - Element validity
+      - ``coords``, ``edge_index``
+      - std / mean of all edge lengths
+    * - ``AspectRatioLoss(cell_key)``
+      - ``coords``, tetrahedra ``[4, M]``
+      - mean over tetrahedra of longest edge / mean edge (1 for a regular tetrahedron)
+    * - ``FaceNormalLoss(face_key)``
+      - ``coords``, ``batch``, triangles ``[3, M]``
+      - spread of the unit face normals; zero for a flat set of faces
+    * - ``InversionLoss(cell_key, min_vol)``
+      - ``coords``, tetrahedra ``[4, M]``
+      - mean of ``max(0, min_vol - V)`` over signed tetrahedron volumes ``V``
 
+``cell_key`` and ``face_key`` name the graph attribute that holds the connectivity, such as the
+``*_cell_index`` attributes created by :doc:`mesh_ops`.
 
-The names of the connectivity attributes are configurable using the
-corresponding ``edge_key``, ``cell_key`` or ``face_key`` arguments.
+``FaceNormalLoss`` pulls faces towards a **common plane**, not towards a smooth surface. Apply it
+to faces that should be flat, such as inlet and outlet caps, not to a whole curved vessel wall.
 
-Combining losses during training
---------------------------------
+Supervised and unsupervised
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The loss categories are generally complementary rather than alternatives.
+With ``supervised=False``, the first three losses ignore the target and return the measure for
+the prediction alone. Pass ``None`` as the target. With ``supervised=True``, the default:
 
-For example, a mesh deformation model may need to satisfy three different
-objectives:
+* ``EdgeLengthDeviationLoss`` and ``AspectRatioLoss`` return
+  ``relu(measure(pred) - measure(target))²``. The prediction is penalised only for being **worse**
+  than the target, never for being better.
+* ``FaceNormalLoss`` adds the distance between the mean face normals of the two meshes to the
+  prediction's own spread.
 
-.. code-block:: text
+``InversionLoss`` is always unsupervised, and ``ChamferLoss`` is always supervised.
 
-        Target geometry
-            │
-            ▼
-        ChamferLoss
+Combining losses
+----------------
 
-        Mesh regularity
-            │
-            ▼
-        EdgeLengthDeviationLoss
-            +
-        AspectRatioLoss
-
-        Mesh validity
-            │
-            ▼
-        InversionLoss
-
-
-These objectives can be combined using weighting factors:
+For a model that deforms a template mesh, a typical objective has a term for where the mesh is
+and terms for what it looks like:
 
 .. code-block:: python
 
-    geometry_loss = chamfer(
-        target_graph,
-        prediction_graph,
-    )
+    from im2sim.losses import ChamferLoss, EdgeLengthDeviationLoss, InversionLoss
 
-    quality_loss = edge_loss(
-        None,
-        prediction_graph,
-    )
-
-    validity_loss = inversion_loss(
-        None,
-        prediction_graph,
-    )
+    chamfer = ChamferLoss()
+    edges = EdgeLengthDeviationLoss(supervised=True)
+    inversion = InversionLoss(cell_key="vol_cell_index")
 
     loss = (
-        geometry_loss
-        + 0.1 * quality_loss
-        + 0.1 * validity_loss
+        chamfer(target_graph, prediction_graph)
+        + 0.1 * edges(target_graph, prediction_graph)
+        + 0.1 * inversion(None, prediction_graph)
     )
 
-
-The relative weighting determines the trade-off between matching the
-target and enforcing geometric constraints.
-
-In practice, this means that a mesh loss should not generally be selected
-in isolation. A geometry loss can encourage the predicted mesh to reach
-the target while a quality or validity loss prevents the deformation from
-producing undesirable elements.
-
-Loss selection by problem
--------------------------
-
-The following provides a general guide for selecting a loss category:
-
-.. list-table::
-:header-rows: 1
-
-    * - Problem
-    - Suitable losses
-    - Main consideration
-    * - Binary / multiclass segmentation
-    - Dice, Tversky, Focal Tversky, IoU
-    - Class imbalance and false-positive / false-negative weighting
-    * - Image reconstruction
-    - SSIM
-    - Preserve local image structure and dynamic range
-    * - Graph field prediction
-    - KNN feature loss
-    - No direct node correspondence required
-    * - Point-cloud / mesh geometry
-    - Chamfer
-    - Measures position, not mesh quality
-    * - Mesh deformation
-    - Chamfer + mesh losses
-    - Geometry and mesh quality must be balanced
-    * - Mesh validity
-    - Inversion
-    - Penalises invalid tetrahedral elements
-
-
-Summary
---------
-
-The ``losses`` module groups training objectives according to the
-representation being predicted.
-
-The general workflow is:
-
-.. code-block:: text
-
-    Image
-    │
-    ├── segmentation ──► confusion losses
-    │
-    └── reconstruction ──► SSIMLoss
-
-    Graph
-    │
-    └── field prediction ──► KnnFeatureLoss
-
-    Geometry
-    │
-    ├── point / mesh position ──► ChamferLoss
-    │
-    └── mesh quality
-            ├── edge lengths
-            ├── aspect ratio
-            ├── face normals
-            └── element validity
-
-The key distinction is between losses that measure agreement with a
-target and losses that impose constraints on the prediction itself.
-
-For image and feature prediction, the losses primarily measure agreement
-with a target. For mesh-based models, geometry losses such as Chamfer can
-be combined with mesh-quality and validity losses to constrain the
-predicted geometry during training.
-
-When combining losses, the relative weighting of each objective becomes
-part of the model's training configuration and should be selected
-according to the desired balance between prediction accuracy and
-geometric regularity.
-
+The weights trade accuracy against element quality and are part of the training configuration.
+Too little regularisation leaves inverted or degenerate elements that break later simulation.
+Too much stops the mesh from reaching the target.
 

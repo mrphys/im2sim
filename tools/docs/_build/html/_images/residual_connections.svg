@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 540" width="780" height="540" role="img" aria-labelledby="t">
+<title id="t">How residual_connections indices map onto a depth-4 convolutional block</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.mb{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px;font-weight:600}
+.idx{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#b45309;font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.5}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.res{stroke:#b45309;stroke-width:2;fill:none}
+.tap{fill:#475569}
+.mrg{fill:#fff;stroke:#b45309;stroke-width:2}
+</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker>
+<g id="chain">
+  <rect class="neu" x="40" y="0" width="64" height="34" rx="17"/>
+  <text x="72" y="22" text-anchor="middle">input</text>
+  <line class="ln" x1="104" y1="17" x2="148" y2="17" marker-end="url(#a)"/>
+  <rect class="img" x="150" y="0" width="90" height="34" rx="5"/>
+  <text x="195" y="15" text-anchor="middle">layer 1</text>
+  <text class="s" x="195" y="28" text-anchor="middle">conv·norm·act</text>
+  <line class="ln" x1="240" y1="17" x2="278" y2="17" marker-end="url(#a)"/>
+  <rect class="img" x="280" y="0" width="90" height="34" rx="5"/>
+  <text x="325" y="15" text-anchor="middle">layer 2</text>
+  <text class="s" x="325" y="28" text-anchor="middle">conv·norm·act</text>
+  <line class="ln" x1="370" y1="17" x2="408" y2="17" marker-end="url(#a)"/>
+  <rect class="img" x="410" y="0" width="90" height="34" rx="5"/>
+  <text x="455" y="15" text-anchor="middle">layer 3</text>
+  <text class="s" x="455" y="28" text-anchor="middle">conv·norm·act</text>
+  <line class="ln" x1="500" y1="17" x2="538" y2="17" marker-end="url(#a)"/>
+  <rect class="img" x="540" y="0" width="90" height="34" rx="5"/>
+  <text x="585" y="15" text-anchor="middle">layer 4</text>
+  <text class="s" x="585" y="28" text-anchor="middle">conv·norm·act</text>
+  <line class="ln" x1="630" y1="17" x2="678" y2="17" marker-end="url(#a)"/>
+  <rect class="neu" x="680" y="0" width="64" height="34" rx="17"/>
+  <text x="712" y="22" text-anchor="middle">output</text>
+  <circle class="tap" cx="127" cy="17" r="3"/>
+  <circle class="tap" cx="259" cy="17" r="3"/>
+  <circle class="tap" cx="389" cy="17" r="3"/>
+  <circle class="tap" cx="519" cy="17" r="3"/>
+  <circle class="tap" cx="654" cy="17" r="3"/>
+  <text class="idx" x="127" y="52" text-anchor="middle">0</text>
+  <text class="idx" x="259" y="52" text-anchor="middle">1</text>
+  <text class="idx" x="389" y="52" text-anchor="middle">2</text>
+  <text class="idx" x="519" y="52" text-anchor="middle">3</text>
+  <text class="idx" x="654" y="52" text-anchor="middle">4</text>
+</g>
+<g id="plus"><circle class="mrg" r="7"/><path d="M-3.5 0H3.5M0 -3.5V3.5" stroke="#b45309" stroke-width="1.8"/></g>
+<g id="cat"><circle class="mrg" r="7"/><path d="M-1.8 -3.5V3.5M1.8 -3.5V3.5" stroke="#b45309" stroke-width="1.6"/></g>
+</defs>
+<rect class="card" x="0.5" y="0.5" width="779" height="539" rx="10"/>
+
+<text class="h" x="20" y="30">Residual indices in a block with depth=4</text>
+<text class="s" x="20" y="50">Index 0 is the block input and index k is the output of layer k (orange numbers).</text>
+<text class="s" x="20" y="66">{target: [sources]} merges each source tensor into the target point, before the next layer runs.</text>
+
+<!-- Row A -->
+<text class="mb" x="20" y="102">add_input_residual()</text>
+<text class="m" x="200" y="102">{4: [0]}, residual_type="add"</text>
+<use href="#chain" x="0" y="130"/>
+<path class="res" d="M127 147 V126 Q127 118 135 118 H646 Q654 118 654 126 V136" marker-end="url(#r)"/>
+<use href="#plus" x="654" y="147"/>
+
+<!-- Row B -->
+<text class="mb" x="20" y="212">add_conv1_residual()</text>
+<text class="m" x="200" y="212">{4: [1]}, residual_type="add"</text>
+<use href="#chain" x="0" y="240"/>
+<path class="res" d="M259 257 V236 Q259 228 267 228 H646 Q654 228 654 236 V246" marker-end="url(#r)"/>
+<use href="#plus" x="654" y="257"/>
+
+<!-- Row C -->
+<text class="mb" x="20" y="322">add_input_concat_residual()</text>
+<text class="m" x="250" y="322">{3: [0]}, residual_type="concat"</text>
+<use href="#chain" x="0" y="350"/>
+<path class="res" d="M127 367 V346 Q127 338 135 338 H511 Q519 338 519 346 V356" marker-end="url(#r)"/>
+<use href="#cat" x="519" y="367"/>
+<text class="s" x="540" y="322">layer 4 maps the wider input</text>
+<text class="s" x="540" y="336">back to out_channels</text>
+
+<!-- Row D -->
+<text class="mb" x="20" y="432">custom</text>
+<text class="m" x="80" y="432">{3: [0, 1]}, residual_type="concat"</text>
+<use href="#chain" x="0" y="474"/>
+<path class="res" d="M127 491 V454 Q127 446 135 446 H517 Q525 446 525 454 V481" marker-end="url(#r)"/>
+<path class="res" d="M259 491 V466 Q259 460 265 460 H507 Q513 460 513 466 V481" marker-end="url(#r)" style="stroke-dasharray:4 3"/>
+<use href="#cat" x="519" y="491"/>
+<text class="s" x="540" y="432">both sources are concatenated</text>
+<text class="s" x="540" y="446">onto the output of layer 3</text>
+</svg>

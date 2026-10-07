@@ -42,10 +42,35 @@ class SimpleGraphDecoder(torch.nn.Module):
         cfg (SimpleGraphDecoderConfig):
             Configuration for the graph decoder.
 
+        graph_channels (int, optional):
+            Number of channels in `graph.x` before the projected features are concatenated.
+            Only used if `cfg.pred_feature_key` is not `'x'`: `graph.x` is then not written by the
+            decoder, so an MLP maps the concatenated `in_channels` features back to `graph_channels`
+            to give the output `graph.x`. This keeps the shape of `graph.x` fixed, so the decoder can
+            be applied iteratively. If None, it defaults to `in_channels` (no projected features).
+
     """
 
-    def __init__(self, in_channels: int, out_channels: int, cfg: SimpleGraphDecoderConfig):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        cfg: SimpleGraphDecoderConfig,
+        graph_channels: int | None = None,
+    ):
         super().__init__()
+
+        self.pred_feature_key = cfg.pred_feature_key
+
+        # Maps graph.x with the projected features concatenated back to its original channels
+        self.x_mlp = None
+        if cfg.pred_feature_key != "x":
+            graph_channels = graph_channels if graph_channels is not None else in_channels
+            self.x_mlp = torch.nn.Sequential(
+                torch.nn.Linear(in_channels, in_channels),
+                torch.nn.ReLU(),
+                torch.nn.Linear(in_channels, graph_channels),
+            )
 
         in_channels += out_channels if cfg.pred_feature_key != "x" else 0
 
@@ -92,7 +117,7 @@ class SimpleGraphDecoder(torch.nn.Module):
                 of shape (N, C). If given, they are concatenated to `graph.x` before decoding.
 
         Returns:
-            pyg.data.Data: The updated graph. `graph.x` keeps only its original channels.
+            pyg.data.Data: The updated graph. `graph.x` keeps its original number of channels.
         """
 
         graph = in_graph.clone()
@@ -105,7 +130,27 @@ class SimpleGraphDecoder(torch.nn.Module):
         # Apply the process blocks
         graph = self.decoder(graph)
 
-        # Keep only the original number of channels
-        # graph.x = graph.x[:, :init_channels]
+        if self.x_mlp is not None:
+            # graph.x was not written by the decoder, so map it back to the original channels
+            graph.x = self.x_mlp(graph.x)
+            if graph.x.shape[-1] != init_channels:
+                raise ValueError(
+                    f"graph.x has {init_channels} channels but the decoder maps it to "
+                    f"{graph.x.shape[-1]}. Set `graph_channels` to the number of channels in graph.x."
+                )
+        else:
+            # The prediction is written to the first channels of graph.x. Drop the projected
+            # features so graph.x keeps its original number of channels.
+            written_channels = (
+                self.decoder.pred_feature_channels
+                if self.decoder.pred_feature_channels is not None
+                else range(self.decoder.out_channels)
+            )
+            if max(written_channels) >= init_channels:
+                raise ValueError(
+                    f"The decoder writes to channel {max(written_channels)} of graph.x, which only "
+                    f"has {init_channels} channels before the projected features are added."
+                )
+            graph.x = graph.x[:, :init_channels]
 
         return graph

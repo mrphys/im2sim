@@ -452,7 +452,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock.forward"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock.forward()</span></code></a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -468,10 +471,10 @@ document.write(`
 <h1>im2sim.layers.GraphConvBlock<a class="headerlink" href="#im2sim-layers-graphconvblock" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.layers.GraphConvBlock">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphConvBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/graph_blocks.py#L29-L194"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphConvBlock" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphConvBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/graph_blocks.py#L29-L200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphConvBlock" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
-<p>A configurable image convolutional block that consists of a sequence of
-convolutional layers, normalization layers, dropout layers, and attention
+<p>A configurable graph convolutional block that consists of a sequence of
+graph convolutional layers, normalization layers, dropout layers, and attention
 layers. The block supports residual connections and allows for flexible
 configuration of its components.</p>
 <dl class="field-list simple">
@@ -500,6 +503,22 @@ configuration of its components.</p>
 </div>
 <p>Configs can also be saved and loaded using the methods provided in the <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/configs/GraphConvBlockConfig">im2sim.configs.GraphConvBlockConfig</a> class:</p>
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="im2sim.layers.GraphConvBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/graph_blocks.py#L175-L194"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphConvBlock.forward" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>in_graph</strong> (<em>pyg.data.Data</em>) – The input graph.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A copy of the graph with updated node features <code class="docutils literal notranslate"><span class="pre">x</span></code> and the original <code class="docutils literal notranslate"><span class="pre">edge_index</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pyg.data.Data</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -549,7 +568,10 @@ configuration of its components.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#im2sim.layers.GraphConvBlock.forward"><code class="docutils literal notranslate"><span class="pre">GraphConvBlock.forward()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

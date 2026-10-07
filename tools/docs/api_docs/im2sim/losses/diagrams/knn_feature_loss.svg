@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 300" width="780" height="300" role="img" aria-labelledby="t">
+<title id="t">KnnFeatureLoss interpolates target features onto predicted node positions before comparing them</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#334155}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.tg{stroke:#065f46;stroke-width:1.2}
+.pr{stroke:#1e3a8a;stroke-width:1.5}
+</style>
+<rect class="card" x="0.5" y="0.5" width="779" height="299" rx="10"/>
+<text class="h" x="20" y="30">KnnFeatureLoss: compare features without matching nodes</text>
+<line x1="216" y1="198" x2="250.4" y2="190.1" stroke="#b45309" stroke-width="1.6" stroke-dasharray="4 3"/>
+<line x1="216" y1="198" x2="187.4" y2="177.0" stroke="#b45309" stroke-width="1.6" stroke-dasharray="4 3"/>
+<line x1="216" y1="198" x2="189.2" y2="237.5" stroke="#b45309" stroke-width="1.6" stroke-dasharray="4 3"/>
+<circle class="tg" cx="54.8" cy="80.7" r="7" fill="#74c476"/>
+<circle class="tg" cx="57.4" cy="133.7" r="7" fill="#c7e9c0"/>
+<circle class="tg" cx="62.5" cy="177.0" r="7" fill="#f7fcf5"/>
+<circle class="tg" cx="50.3" cy="241.4" r="7" fill="#c7e9c0"/>
+<circle class="tg" cx="117.2" cy="75.7" r="7" fill="#31a354"/>
+<circle class="tg" cx="131.9" cy="131.5" r="7" fill="#c7e9c0"/>
+<circle class="tg" cx="128.7" cy="183.6" r="7" fill="#f7fcf5"/>
+<circle class="tg" cx="124.8" cy="230.4" r="7" fill="#f7fcf5"/>
+<circle class="tg" cx="186.7" cy="85.9" r="7" fill="#74c476"/>
+<circle class="tg" cx="184.5" cy="135.9" r="7" fill="#c7e9c0"/>
+<circle class="tg" cx="187.4" cy="177.0" r="7" fill="#c7e9c0"/>
+<circle class="tg" cx="189.2" cy="237.5" r="7" fill="#c7e9c0"/>
+<circle class="tg" cx="242.0" cy="72.5" r="7" fill="#74c476"/>
+<circle class="tg" cx="253.3" cy="131.6" r="7" fill="#31a354"/>
+<circle class="tg" cx="250.4" cy="190.1" r="7" fill="#31a354"/>
+<circle class="tg" cx="250.3" cy="242.7" r="7" fill="#31a354"/>
+<circle class="tg" cx="305.9" cy="84.8" r="7" fill="#74c476"/>
+<circle class="tg" cx="306.9" cy="139.0" r="7" fill="#31a354"/>
+<circle class="tg" cx="315.6" cy="177.6" r="7" fill="#006d2c"/>
+<circle class="tg" cx="300.7" cy="231.5" r="7" fill="#006d2c"/>
+<circle class="tg" cx="379.3" cy="79.0" r="7" fill="#74c476"/>
+<circle class="tg" cx="372.5" cy="128.8" r="7" fill="#31a354"/>
+<circle class="tg" cx="370.1" cy="182.2" r="7" fill="#006d2c"/>
+<circle class="tg" cx="367.0" cy="237.4" r="7" fill="#31a354"/>
+<text class="ms" x="259.4" y="182.1" style="fill:#b45309">0.69</text>
+<text class="ms" x="196.4" y="169.0" style="fill:#b45309">0.30</text>
+<text class="ms" x="198.2" y="229.5" style="fill:#b45309">0.37</text>
+<rect class="pr" x="104" y="114" width="12" height="12" fill="#c7e9c0"/>
+<rect class="pr" x="210" y="192" width="12" height="12" fill="#006d2c" style="stroke-width:2.5"/>
+<rect class="pr" x="284" y="124" width="12" height="12" fill="#006d2c"/>
+<rect class="pr" x="334" y="224" width="12" height="12" fill="#006d2c"/>
+<rect class="pr" x="154" y="244" width="12" height="12" fill="#74c476"/>
+<rect class="pr" x="249" y="94" width="12" height="12" fill="#31a354"/>
+<text class="ms" x="205" y="206" text-anchor="end" style="fill:#1e3a8a">pred 0.85</text>
+<circle class="tg" cx="50" cy="278" r="6" fill="#74c476"/><text class="s" x="62" y="282">target node</text>
+<rect class="pr" x="144" y="272" width="12" height="12" fill="#74c476"/><text class="s" x="162" y="282">predicted node</text>
+<text class="s" x="262" y="282">fill = feature value</text>
+<line x1="440" y1="50" x2="440" y2="280" stroke="#e2e8f0"/>
+<circle cx="468" cy="66" r="9" fill="#fef3c7" stroke="#b45309"/><text x="468" y="70" text-anchor="middle" style="font-size:11px;font-weight:600;fill:#b45309">1</text>
+<text x="486" y="70">Find the k nearest target nodes</text><text class="s" x="486" y="86">to each predicted node (by coords).</text>
+<circle cx="468" cy="114" r="9" fill="#fef3c7" stroke="#b45309"/><text x="468" y="118" text-anchor="middle" style="font-size:11px;font-weight:600;fill:#b45309">2</text>
+<text x="486" y="118">Interpolate their features with</text><text class="s" x="486" y="134">weights 1 / distance².</text>
+<circle cx="468" cy="162" r="9" fill="#fef3c7" stroke="#b45309"/><text x="468" y="166" text-anchor="middle" style="font-size:11px;font-weight:600;fill:#b45309">3</text>
+<text x="486" y="166">Compare with the predicted feature:</text><text class="s" x="486" y="182">L1 (mode="l1") or squared ("l2").</text>
+<rect x="460" y="212" width="300" height="54" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+<text class="ms" x="472" y="234">bold node, k=3: target ≈ 0.47</text>
+<text class="ms" x="472" y="254">|0.47 − 0.85| = 0.38  (its L1 term)</text>
+</svg>

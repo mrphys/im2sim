@@ -444,3 +444,115 @@ def test_does_not_modify_config():
     assert decoder_cfg.block_cfg.depth == 2
     assert decoder_cfg.block_cfg.norm_cfg.name == "DefaultGraphNorm"
     assert decoder_cfg.block_cfg.activation == "ReLU"
+
+
+# ---------------------------------------------------------------------------
+# Iterative decoding (graph.x must keep its width between iterations)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("protocol", ["update", "predict"])
+def test_x_key_repeated_with_projected_features(graph, protocol):
+    decoder = SimpleGraphDecoder(
+        in_channels=4 + 8,
+        out_channels=4,
+        cfg=SimpleGraphDecoderConfig(protocol=protocol, pred_feature_key="x"),
+    )
+
+    out = graph
+    for _ in range(3):
+        out = decoder(out, torch.randn(graph.num_nodes, 8))
+        assert out.x.shape == graph.x.shape
+
+
+def test_x_key_predict_fewer_channels_keeps_rest(graph):
+    decoder = SimpleGraphDecoder(
+        in_channels=4 + 8,
+        out_channels=2,
+        cfg=SimpleGraphDecoderConfig(protocol="predict", pred_feature_key="x"),
+    )
+
+    out = decoder(graph, torch.randn(graph.num_nodes, 8))
+
+    assert out.x.shape == graph.x.shape
+    assert torch.equal(out.x[:, 2:], graph.x[:, 2:])
+
+
+def test_x_key_writing_past_graph_x_raises(graph):
+    decoder = SimpleGraphDecoder(
+        in_channels=4 + 8,
+        out_channels=6,
+        cfg=SimpleGraphDecoderConfig(protocol="predict", pred_feature_key="x"),
+    )
+
+    with pytest.raises(ValueError, match="writes to channel"):
+        decoder(graph, torch.randn(graph.num_nodes, 8))
+
+
+@pytest.mark.parametrize("protocol", ["update", "predict"])
+def test_non_x_key_repeated_with_projected_features(graph, protocol):
+    decoder = SimpleGraphDecoder(
+        in_channels=4 + 8,
+        out_channels=3,
+        cfg=SimpleGraphDecoderConfig(protocol=protocol, pred_feature_key="coords"),
+        graph_channels=4,
+    )
+    projected_features = torch.randn(graph.num_nodes, 8, requires_grad=True)
+
+    out = graph
+    for _ in range(3):
+        out = decoder(out, projected_features)
+        assert out.x.shape == graph.x.shape
+        assert out.coords.shape == (graph.num_nodes, 3)
+
+    # graph.x is produced by the MLP, so it carries the image features to the next iteration.
+    out.x.sum().backward()
+    assert projected_features.grad is not None
+
+
+def test_non_x_key_without_graph_channels_raises(graph):
+    decoder = SimpleGraphDecoder(
+        in_channels=4 + 8,
+        out_channels=3,
+        cfg=SimpleGraphDecoderConfig(pred_feature_key="coords"),
+    )
+
+    with pytest.raises(ValueError, match="graph_channels"):
+        decoder(graph, torch.randn(graph.num_nodes, 8))
+
+
+@pytest.mark.parametrize(
+    "pred_feature_key, protocol, out_channels",
+    [("coords", "update", 3), ("x", "update", 4), ("x", "predict", 4), ("x", "predict", 2)],
+)
+def test_im2sim_gen2_multiple_iters(pred_feature_key, protocol, out_channels):
+    from im2sim.configs.halfunet import HalfUNetConfig
+    from im2sim.layers.projections import TrilinearProjection
+    from im2sim.models.im2sim_models import Im2SimGen2
+
+    model = Im2SimGen2(
+        image_shape=(8, 8, 8),
+        image_channels=1,
+        projection_channels=8,
+        graph_channels=4,
+        out_channels=out_channels,
+        encoder_cfg=HalfUNetConfig(n_levels=2, hidden_channels=8),
+        decoder_cfg=SimpleGraphDecoderConfig(
+            protocol=protocol, pred_feature_key=pred_feature_key
+        ),
+        projection=TrilinearProjection(image_dim=8),
+        n_iters=3,
+        return_intermediate_graphs=True,
+    )
+    graph = pyg.data.Data(
+        x=torch.randn(6, 4),
+        coords=torch.rand(6, 3) * 7,
+        batch=torch.zeros(6, dtype=torch.long),
+        edge_index=torch.tensor([[0, 1, 2, 3, 4], [1, 2, 3, 4, 5]]),
+    )
+
+    graphs = model(torch.randn(1, 1, 8, 8, 8), graph)
+
+    assert len(graphs) == 3
+    for g in graphs:
+        assert g.x.shape == (6, 4)

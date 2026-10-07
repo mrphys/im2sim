@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 370" width="780" height="370" role="img" aria-labelledby="t">
+<title id="t">Per-sample normalisation removes differences in magnitude between samples; fitted normalisation keeps them</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.mb{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px;font-weight:600}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.ax{stroke:#94a3b8;stroke-width:1}
+.A{fill:#3b82f6}
+.B{fill:#f59e0b}
+</style>
+<rect class="card" x="0.5" y="0.5" width="779" height="369" rx="10"/>
+<text class="h" x="20" y="30">Per-sample vs fitted normalisation</text>
+<rect class="A" x="440" y="19" width="12" height="12" rx="2"/><text class="s" x="458" y="29">sample A, max 20</text>
+<rect class="B" x="580" y="19" width="12" height="12" rx="2"/><text class="s" x="598" y="29">sample B, max 100</text>
+<text class="b" x="20" y="84">raw values</text><text class="s" x="20" y="101">e.g. pressure in two cases</text>
+<rect class="A" x="250.0" y="70" width="98.0" height="14" rx="2"/>
+<rect class="B" x="250.0" y="90" width="490.0" height="14" rx="2"/>
+<line class="ax" x1="250" y1="114" x2="740" y2="114"/>
+<line class="ax" x1="250.0" y1="114" x2="250.0" y2="118"/><text class="ms" x="250.0" y="130" text-anchor="middle">0</text>
+<line class="ax" x1="495.0" y1="114" x2="495.0" y2="118"/><text class="ms" x="495.0" y="130" text-anchor="middle">50</text>
+<line class="ax" x1="740.0" y1="114" x2="740.0" y2="118"/><text class="ms" x="740.0" y="130" text-anchor="middle">100</text>
+<text class="mb" x="20" y="182">Norm(keys=...)</text><text class="s" x="20" y="199">per sample</text><text class="s" x="20" y="214">each fills [0, 1]</text>
+<rect class="A" x="250.0" y="168" width="490.0" height="14" rx="2"/>
+<rect class="B" x="250.0" y="188" width="490.0" height="14" rx="2"/>
+<line class="ax" x1="250" y1="212" x2="740" y2="212"/>
+<line class="ax" x1="250.0" y1="212" x2="250.0" y2="216"/><text class="ms" x="250.0" y="228" text-anchor="middle">0</text>
+<line class="ax" x1="495.0" y1="212" x2="495.0" y2="216"/><text class="ms" x="495.0" y="228" text-anchor="middle">0.5</text>
+<line class="ax" x1="740.0" y1="212" x2="740.0" y2="216"/><text class="ms" x="740.0" y="228" text-anchor="middle">1</text>
+<text class="mb" x="20" y="280">FitNorm(keys=...)</text><text class="s" x="20" y="297">fitted on training data</text><text class="s" x="20" y="312">min 0, max 100</text>
+<rect class="A" x="250.0" y="266" width="98.0" height="14" rx="2"/>
+<rect class="B" x="250.0" y="286" width="490.0" height="14" rx="2"/>
+<line class="ax" x1="250" y1="310" x2="740" y2="310"/>
+<line class="ax" x1="250.0" y1="310" x2="250.0" y2="314"/><text class="ms" x="250.0" y="326" text-anchor="middle">0</text>
+<line class="ax" x1="495.0" y1="310" x2="495.0" y2="314"/><text class="ms" x="495.0" y="326" text-anchor="middle">0.5</text>
+<line class="ax" x1="740.0" y1="310" x2="740.0" y2="314"/><text class="ms" x="740.0" y="326" text-anchor="middle">1</text>
+<text class="s" x="250" y="242" style="fill:#b91c1c">A and B now look the same: the 5× difference is gone.</text>
+<text class="s" x="250" y="340" style="fill:#047857">A stays at a fifth of B: the relative scale is kept.</text>
+</svg>

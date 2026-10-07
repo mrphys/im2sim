@@ -1,219 +1,61 @@
+``configs`` holds the dataclasses that describe ``im2sim`` models and their parts. Models and
+blocks are built from a config object instead of a long list of constructor arguments, so an
+architecture can be changed, copied, saved and reloaded without touching any PyTorch modules.
 
-``configs`` provides a structured configuration system for defining and customising
-the components of ``im2sim`` models.
+Configs also provide:
 
-Configurations are implemented as dataclasses and can be composed hierarchically.
-For example, a model configuration can contain configurations for its convolutional
-blocks, which in turn contain configurations for individual layers. This makes it
-possible to customise a model at different levels of detail without having to
-construct the underlying PyTorch modules manually.
+* ``mod()`` for making a modified copy;
+* presets, such as ``add_se()`` or ``segmentation_mode()``, for common changes;
+* ``save()`` / ``load()`` and ``to_dict()`` / ``from_dict()`` for serialisation.
 
-The configuration system also provides utilities for:
+How configs nest
+----------------
 
-* modifying existing configurations;
-* applying common configuration presets;
-* recursively serialising configurations; and
-* saving and loading configurations from files.
+Configs are nested. A model config holds one block config per level, and each block config holds
+:class:`LayerConfig` objects. A ``LayerConfig`` names a single layer and the keyword arguments
+passed to it when the layer is built.
 
-Configuration hierarchy
------------------------
-
-The configuration classes are designed to be composed from general-purpose
-configurations into increasingly specialised components.
-
-At the lowest level, :class:`LayerConfig` describes an individual layer or module:
-
-.. code-block:: python
-
-    from im2sim.configs import LayerConfig
-
-    conv_cfg = LayerConfig(
-        name="Conv",
-        kwargs={
-            "kernel_size": 3,
-            "padding": "same",
-        },
-    )
-
-
-A ``LayerConfig`` specifies the name of the layer and the keyword arguments
-that should be passed to it when the layer is constructed.
-
-Higher-level configurations can then use ``LayerConfig`` objects to describe
-their constituent layers. For example, an :class:`ImageConvBlockConfig` can
-specify the convolution, normalisation, dropout, and attention layers within
-a convolutional block:
-
-.. code-block:: python
-
-
-    from im2sim.configs import ImageConvBlockConfig, LayerConfig
-
-    block_cfg = ImageConvBlockConfig(
-        depth=4,
-        activation="LeakyReLU",
-        conv_cfg=LayerConfig(
-            name="Conv",
-            kwargs={"kernel_size": 5, "padding": "same"},
-        ),
-        norm_cfg=LayerConfig(
-            name="BatchNorm",
-            kwargs={"affine": True},
-        ),
-        dropout_cfg=LayerConfig(
-            name="Dropout",
-            kwargs={"p": 0.5},
-        ),
-    )
-
-
-This hierarchical structure allows configurations to be reused across
-different parts of a model.
-
-Configuring model architectures
--------------------------------
-
-Complete model configurations can be built by combining these lower-level
-configurations. For example, a :class:`UNetConfig` controls the architecture
-of a U-Net while allowing the convolutional blocks to be customised:
+.. figure:: configs/diagrams/config_hierarchy.svg
+   :alt: A UNetConfig containing LayerConfigs for pooling and upsampling and a list of
+         ImageConvBlockConfigs, each of which contains LayerConfigs for its convolution,
+         normalisation, dropout and attention. Next to it, the same tree as JSON.
 
 .. code-block:: python
 
     from im2sim.configs import ImageConvBlockConfig, LayerConfig, UNetConfig
 
     block_cfg = ImageConvBlockConfig(
-        depth=4,
-        activation="LeakyReLU",
-        out_activation="sigmoid",
-        conv_cfg=LayerConfig(
-            name="Conv",
-            kwargs={"kernel_size": 5, "padding": "same"},
-        ),
-        norm_cfg=LayerConfig(
-            name="BatchNorm",
-            kwargs={"affine": True},
-        ),
-        dropout_cfg=LayerConfig(
-            name="Dropout",
-            kwargs={"p": 0.5},
-        ),
-        attn_cfg=LayerConfig(
-            name="SqueezeExcite",
-            kwargs={},
-        ),
+        depth=2,
+        activation="ReLU",
+        conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 3, "padding": "same"}),
+        norm_cfg=LayerConfig(name="InstanceNorm", kwargs={"affine": True}),
     )
 
     cfg = UNetConfig(
         filters=[32, 64, 128, 256],
-        pool_cfg=LayerConfig(
-            name="MaxPool",
-            kwargs={"kernel_size": 2},
-        ),
-        upsample_cfg=LayerConfig(
-            name="Upsample",
-            kwargs={
-                "scale_factor": 2,
-                "mode": "bilinear",
-            },
-        ),
+        pool_cfg=LayerConfig(name="MaxPool", kwargs={"kernel_size": 2}),
         block_cfg=block_cfg,
     )
 
-Modifying configurations
-------------------------
+``block_cfg`` is a template: when ``encoder_block_cfg`` and ``decoder_block_cfg`` are not given,
+``UNetConfig`` gives every level its own copy of it. To configure levels individually, pass a list
+with one ``ImageConvBlockConfig`` per level instead.
 
-Configurations can be modified after they have been created. The
-:meth:`Config.mod` method creates a modified copy of a configuration while
-leaving the original configuration unchanged.
+Configs carry no spatial rank. Layer names are resolved when the model is built (see
+:doc:`layers`), so ``"Conv"`` becomes ``Conv2d`` or ``Conv3d`` depending on the ``rank`` passed to
+the model, and the same config can build a 2D or a 3D network.
 
-For example:
+Modifying configs
+-----------------
 
-.. code-block:: python
-
-    block_cfg = ImageConvBlockConfig(
-        depth=4,
-        activation="LeakyReLU",
-    )
-
-    mini_block_cfg = block_cfg.mod(
-        depth=2,
-        activation="ReLU",
-    )
-
-
-This is particularly useful when several configurations share a common
-starting point.
-
-The same approach can be used with model configurations:
+``mod()`` returns a new config with some fields replaced:
 
 .. code-block:: python
 
-    cfg = UNetConfig(
-        filters=[32, 64, 128, 256],
-    )
+    block_cfg = ImageConvBlockConfig(depth=4, activation="LeakyReLU")
+    small_block_cfg = block_cfg.mod(depth=2, activation="ReLU")
 
-    cfg = cfg.mod(
-        encoder_block_cfg=ImageConvBlockConfig(depth=2),
-        decoder_block_cfg=ImageConvBlockConfig(depth=4),
-    )
-
-
-Configuration presets
----------------------
-
-Many configurations provide methods for applying common architectural
-modifications without manually changing individual fields.
-
-For example, convolutional blocks can be configured for reconstruction or
-segmentation tasks:
-
-.. code-block:: python
-
-    cfg = ImageConvBlockConfig(
-        depth=3,
-        activation="ReLU",
-    )
-
-    cfg = cfg.reconstruction_mode()
-
-
-For a U-Net, task-specific presets can be applied to the complete
-configuration:
-
-.. code-block:: python
-
-    cfg = UNetConfig(
-        filters=[32, 64, 128, 256],
-    )
-
-    cfg = cfg.single_class_segmentation_mode()
-
-
-For multi-class segmentation, the corresponding preset can be used:
-
-.. code-block:: python
-
-    cfg = UNetConfig(
-        filters=[32, 64, 128, 256],
-    )
-
-    cfg = cfg.multiclass_segmentation_mode()
-
-
-Other presets can modify the architecture itself. For example, depthwise
-separable convolutions and residual connections can be enabled together:
-
-.. code-block:: python
-
-    cfg = UNetConfig(
-        filters=[32, 32, 32],
-    )
-
-    cfg = cfg.to_depthwise_separable()
-    cfg = cfg.add_input_residual()
-
-
-These methods can also be chained:
+Presets are methods that apply a common change and return the config, so they can be chained:
 
 .. code-block:: python
 
@@ -223,45 +65,49 @@ These methods can also be chained:
         .add_input_residual()
     )
 
+There are presets for task set-up (``reconstruction_mode()``, ``single_class_segmentation_mode()``,
+``multiclass_segmentation_mode()``), convolution types (``to_depthwise_separable()``,
+``to_ghost_depthwise()``), attention (``add_se()``, ``add_eca()``), dilation and residual
+connections. The API pages for each config class list them all. Model-level presets such as
+``UNetConfig.add_se()`` apply the change to every encoder and decoder block.
 
-Available presets include modifications to convolution types, residual
-connections, dilation, attention mechanisms, and task-specific
-configurations. Refer to the individual configuration classes for the full
-set of available transformations.
+.. important::
 
-Working with residual connections
----------------------------------
+    Presets change the config **in place** and return the same object. ``mod()`` makes a new
+    top-level object, but the nested configs inside it are shared with the original. Applying a
+    preset to a ``mod()`` copy can therefore change the original too. Use ``copy.deepcopy`` when
+    the original must stay untouched:
 
-``ImageConvBlockConfig``  and ``GraphConvBlockConfig`` provides utilities for configuring residual
-connections within convolutional blocks.
+    .. code-block:: python
 
-For example, an input-to-output residual connection can be added with:
+        import copy
+
+        base_cfg = UNetConfig(filters=[32, 64, 128])
+        se_cfg = copy.deepcopy(base_cfg).add_se()   # base_cfg is unchanged
+
+Residual connections
+--------------------
+
+``ImageConvBlockConfig`` and ``GraphConvBlockConfig`` describe residual connections with two
+fields. ``residual_connections`` is a dict ``{target: [sources]}``, and ``residual_type`` sets how
+the tensors are combined: ``"add"``, ``"concat"``, ``"multiply"`` or ``"average"``.
+
+Each index refers to a point between layers. ``0`` is the block input and ``k`` is the output of
+layer ``k``. Each source tensor is merged into the target point before the next layer runs.
+
+.. figure:: configs/diagrams/residual_connections.svg
+   :alt: Four copies of a depth-4 block showing where add_input_residual, add_conv1_residual,
+         add_input_concat_residual and a custom two-source concat connection attach.
+
+The three residual presets set both fields for you:
 
 .. code-block:: python
 
-    cfg = ImageConvBlockConfig(depth=3)
-    cfg = cfg.add_input_residual()
+    ImageConvBlockConfig(depth=4).add_input_residual()         # {4: [0]}, "add"
+    ImageConvBlockConfig(depth=4).add_conv1_residual()         # {4: [1]}, "add"
+    ImageConvBlockConfig(depth=4).add_input_concat_residual()  # {3: [0]}, "concat"
 
-
-Residual connections can also use concatenation rather than addition:
-
-.. code-block:: python
-
-    cfg = ImageConvBlockConfig(depth=3)
-    cfg = cfg.add_input_concat_residual()
-
-
-Alternatively, a residual connection can be added from the first convolution
-to the final convolution:
-
-.. code-block:: python
-
-    cfg = ImageConvBlockConfig(depth=3)
-    cfg = cfg.add_conv1_residual()
-
-
-Residual connections can also be specified directly using
-`residual_connections`:
+Connections can also be written directly:
 
 .. code-block:: python
 
@@ -271,120 +117,39 @@ Residual connections can also be specified directly using
         residual_type="concat",
     )
 
+``"add"``, ``"multiply"`` and ``"average"`` need the merged tensors to have the same number of
+channels. ``"concat"`` increases the channel count, which is why ``add_input_concat_residual()``
+targets the input of the last layer rather than its output: the last layer maps the wider tensor
+back to ``out_channels``. Graph blocks default to ``residual_type="average"``, image blocks to
+``"add"``.
 
-The keys identify target layers and the values identify the source layers.
-Layer `0` represents the input to the block.
-Layer `1` represents the input to the first convolution, and so on. 
+Saving and loading
+------------------
 
-To add a residual connection from the input to the output of the final convolution, the following configuration can be used:
-
-.. code-block:: python
-
-    cfg = ImageConvBlockConfig(
-        depth=4,
-        residual_connections={4: [0]},
-        residual_type="add",
-    )
-
-
-Applying modifications across a model
---------------------------------------
-
-Because model configurations contain nested configuration objects, a
-modification can be propagated to multiple components.
-
-For example, encoder and decoder blocks can be created from a common base
-configuration and modified independently:
+``save()`` writes a config, including all nested configs, to a JSON file. Each nested object is
+stored with its class name, so ``load()`` rebuilds the full tree:
 
 .. code-block:: python
 
-    block_cfg = ImageConvBlockConfig(
-        depth=3,
-        activation="ReLU",
-        out_activation="sigmoid",
-    )
+    cfg = UNetConfig(filters=[32, 64, 128, 256])
+    cfg.save("unet.json")
 
-    encoder_block_cfg = [
-        block_cfg.mod(depth=2)
-        for _ in range(4)
-    ]
+    loaded_cfg = UNetConfig.load("unet.json")
 
-    decoder_block_cfg = [
-        block_cfg.mod(depth=4)
-        for _ in range(4)
-    ]
-
-    cfg = UNetConfig(
-        filters=[32, 64, 128, 256],
-        encoder_block_cfg=encoder_block_cfg,
-        decoder_block_cfg=decoder_block_cfg,
-    )
-
-
-This approach is useful when a model requires consistent configuration across
-multiple levels while retaining control over individual blocks.
-
-Saving and loading Configurations
----------------------------------
-
-Configurations can be serialised and saved for later use. Nested
-configurations, lists, dictionaries, and enumerated values are handled
-recursively by the configuration system.
-
-For example, a model configuration can be saved and subsequently restored:
-
-.. code-block:: python
-
-    cfg = UNetConfig(
-        filters=[32, 64, 128, 256],
-    )
-
-    cfg.save("my_config.yaml")
-
-    loaded_cfg = UNetConfig.load("my_config.yaml")
-
-
-This makes configurations convenient for experiment management and for
-reproducing model architectures across different runs.
-
-The configuration system can also convert configurations to dictionaries:
+``to_dict()`` and ``from_dict()`` do the same without touching the file system, which is useful
+for storing a config inside an experiment log or a checkpoint:
 
 .. code-block:: python
 
     config_dict = cfg.to_dict()
-
-
-and reconstruct them from dictionaries:
-
-.. code-block:: python
-
     cfg = UNetConfig.from_dict(config_dict)
 
+Save the config next to the model's ``state_dict`` so that the architecture can be rebuilt before
+the weights are loaded.
 
-Summary
--------
+.. note::
 
-The ``configs`` module provides a composable way to define model architectures
-and their components. Rather than specifying model parameters directly when
-constructing each model, configurations can be built hierarchically and then
-modified or transformed using reusable presets.
-
-The general workflow is:
-
-.. code-block:: text
-
-    LayerConfig
-        │
-        ▼
-    ImageConvBlockConfig
-        │
-        ▼
-    Model configuration (e.g. UNetConfig)
-        │
-        ├── modify with mod()
-        ├── apply architectural presets
-        └── save/load configuration
-
-
-This allows the same configuration objects to be reused across experiments
-while keeping model architecture definitions explicit and reproducible.
+    :class:`SimpleGraphDecoderConfig` is a plain dataclass. It does not inherit from the config
+    base class, so it has no ``mod()``, ``save()`` or ``load()``. Use ``dataclasses.replace`` and
+    ``dataclasses.asdict`` instead. Its ``block_cfg`` is a ``GraphConvBlockConfig`` and supports
+    everything described above.

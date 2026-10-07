@@ -33,588 +33,186 @@ Functions
 Guide
 =====
 
-``data`` provides the data loading and preprocessing framework used by
-``im2sim`` models.
+``data`` loads cases, preprocesses them and batches them for training. A sample is a plain
+``dict`` whose values are tensors or ``torch_geometric.data.Data`` graphs, so one sample can hold
+an image, a mask, a template mesh and a target graph side by side.
 
-The module is designed around a flexible pipeline in which each sample is
-represented as a dictionary of tensors and/or PyTorch Geometric data
-objects. Data can then be processed using composable operations and
-transforms before being passed to a model.
+The pieces are:
 
-The main components are:
+* :class:`Dataset`: turns a case identifier into a sample with your ``load_fn``;
+* ``Operation`` and its subclasses: the numerical step, such as "z-score this tensor";
+* :class:`Transform`: applies an operation to chosen keys, attributes and channels of a sample;
+* :class:`Pipeline`: an ordered list of transforms that can be fitted, inverted and saved;
+* :func:`DataLoader`: PyTorch's ``DataLoader`` with a collate function that understands graphs.
 
-* ``Dataset`` for defining how individual cases are loaded;
-* ``DataLoader`` for batching samples during training;
-* ``Operation`` for implementing data-processing operations;
-* ``Transform`` for applying operations to selected parts of a sample; and
-* ``Pipeline`` for composing multiple transforms into a preprocessing
-  workflow.
+The ready-made transforms (normalisation, scaling) are in :doc:`transforms`.
 
-The individual transforms provided by ``im2sim`` are described separately
-in the transforms guide.
+From case to batch
+------------------
 
-Data pipeline
-------------
-
-The data module separates loading, preprocessing, and batching:
-
-.. code-block:: text
-
-
-    Case files
-        │
-        ▼
-    Dataset
-        │
-        │ load_fn
-        ▼
-    Sample dictionary
-        │
-        ├── image
-        ├── mask
-        ├── graph
-        └── other tensors / data
-        │
-        ▼
-    Transform / Pipeline
-        │
-        ▼
-    Processed sample
-        │
-        ▼
-    DataLoader
-        │
-        ▼
-    Batched model input
-
-
-This separation allows the same dataset definition to be used with
-different preprocessing pipelines.
-
-A dataset is responsible for loading a case, while transforms determine
-how the loaded data is processed.
-
-Datasets
----------
-
-``Dataset`` provides a lightweight template for creating datasets from a
-collection of cases.
-
-A dataset is defined by:
-
-* a list of case identifiers;
-* a ``load_fn`` that loads the data associated with a case; and
-* an optional set of transforms.
-
-For example:
+.. figure:: data/diagrams/data_pipeline.svg
+   :alt: Case identifiers go through load_fn to a sample dict, then through each transform in the
+         pipeline (skipping those whose keys are missing), then the DataLoader collates samples
+         into a batch where tensors are stacked and graphs become a PyG Batch.
 
 .. code-block:: python
 
-    from im2sim.data import Dataset
-
-    cases = [
-        "case1",
-        "case2",
-        "case3",
-    ]
+    from im2sim.data import DataLoader, Dataset
 
     def load(case):
         return {
-            "image": load_image(case),
-            "graph": load_graph(case),
+            "image": torch.load(f"images/{case}.pt"),     # Tensor [C, D, H, W]
+            "graph": torch.load(f"templates/{case}.pt"),  # torch_geometric Data
         }
 
-    dataset = Dataset(
-        load_fn=load,
-        cases=cases,
-    )
+    dataset = Dataset(load_fn=load, cases=["case1", "case2", "case3"], transforms=pipeline)
+    loader = DataLoader(dataset, batch_size=4, shuffle=True, num_workers=4)
 
+    for batch in loader:
+        batch["image"]  # Tensor [4, C, D, H, W]
+        batch["graph"]  # torch_geometric Batch, with batch["graph"].batch
 
-The ``load_fn`` receives a case identifier and returns a dictionary
-containing the data for that case.
+Keep the dataset responsible for finding and reading files, and put all preprocessing in
+transforms. The same ``load_fn`` can then serve training, validation and inference with different
+pipelines.
 
-The dataset itself does not impose a particular medical-imaging data
-format. This allows a dataset to contain whatever combination of images,
-masks, meshes, graphs, or other tensors is required by the model.
+``load_fn`` must return only tensors and ``Data`` objects. The collate function stacks tensors
+along a new first dimension, so they must have the same shape across a batch. It joins graphs
+into a single PyG ``Batch``. Any other value type raises a ``TypeError``.
 
-For example, a sample might contain:
+Operations
+----------
+
+An operation is the numerical step, independent of where it is applied. There are three levels:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Base class
+      - Implement
+      - Adds
+    * - ``Operation``
+      - ``forward(x)``
+      - —
+    * - ``InvertibleOperation``
+      - ``forward(x)``, ``inverse(x)``
+      - can be undone with ``Pipeline.inverse()``
+    * - ``FittableOperation``
+      - ``forward``, ``inverse``, ``fit_step(x)``, ``complete_fit()``
+      - learns parameters from a dataset
 
 .. code-block:: python
 
-    {
-        "image": image,
-        "segmentation": segmentation,
-        "mesh": mesh,
-    }
+    import torch
+    from im2sim.data import InvertibleOperation, Transform, register_op
 
+    @register_op
+    class LogOp(InvertibleOperation):
+        def __init__(self, eps=1e-6):
+            self.eps = eps
 
-or:
+        def forward(self, x):
+            return torch.log(x + self.eps)
 
-.. code-block:: python
+        def inverse(self, x):
+            return torch.exp(x) - self.eps
 
-    {
-        "image": image,
-        "template": template,
-        "out_graph": graph,
-    }
+    log_pressure = Transform(op=LogOp(), keys="graph", attr="pressure")
 
-
-This dictionary-based representation allows transforms to operate on
-individual components without requiring a specialised dataset class for
-every model.
-
-
+``@register_op`` makes the class known to ``load_pipeline``.
+Without it, a saved pipeline that contains the operation cannot be loaded again. Simple
+attributes (numbers, strings, booleans, tensors) are saved as the operation's state
+automatically.
 
 Transforms
----------
+----------
 
-``Transform`` provides the interface between an operation and a sample
-dictionary.
+A :class:`Transform` decides **where** an operation is applied:
 
-A transform specifies:
+``keys``
+    Which entries of the sample to change. With several keys, the same operation (and the same
+    fitted statistics) is applied to each key in turn. Set ``multikey=True`` to pass all of them
+    to the operation in a single call instead, for example for a spatial operation that must
+    change an image and its mask together.
+``attr``
+    For a graph, which attribute to change, such as ``"x"`` or ``"coords"``. Leave it as ``None``
+    to pass the whole value.
+``channels``, ``per_channel``, ``channel_dim``
+    Which channels to change, and whether each channel gets its own copy of the operation. See
+    :doc:`transforms` for diagrams. ``channel_dim`` defaults to ``-1``, which suits graph features
+    ``[N, C]``. For channel-first images, count from the end, for example ``-4`` for
+    ``[C, D, H, W]``. The same index then also works on the ``[1, C, D, H, W]`` batches used
+    while fitting.
 
-* which sample keys it operates on;
-* optionally, which attribute of an object should be modified;
-* optionally, which channels should be processed; and
-* the operation that should be applied.
-
-For example, an operation can be restricted to a particular sample key:
-
-.. code-block:: python
-
-
-    transform = Transform(
-        op=my_operation,
-        keys="image",
-    )
-
-
-Transforms can also operate on multiple keys. This is useful when several
-parts of a sample must undergo the same spatial transformation.
-
-The transform layer therefore separates what an operation does from
-where it is applied.
-
-The available operations and their specific behaviour are described in
-the transforms guide :doc:`transforms`.
+A transform never changes its input: it works on a deep copy of the sample.
 
 Pipelines
---------
+---------
 
-``Pipeline`` combines multiple transforms into an ordered preprocessing
-sequence.
+A :class:`Pipeline` runs its transforms in order. A transform whose keys are not all present in a
+sample is skipped for that sample, so one pipeline can serve samples with different contents, for
+example training samples with targets and inference samples without.
 
-For example:
+Fitting
+~~~~~~~
+
+``pipeline.fit(dataset)`` fits every transform built on a ``FittableOperation``, one at a time.
+Each one sees the training samples after all the transforms before it have been applied, so its
+statistics describe exactly the data it will receive.
+
+.. figure:: data/diagrams/pipeline_fit.svg
+   :alt: A grid of four transforms by four phases. In the first fit pass A runs and B is fitted.
+         In the second, A, B and C run and D is fitted. Forward runs A to D. Inverse runs D, C, B
+         in reverse and skips A, which is not invertible.
 
 .. code-block:: python
+
+    from im2sim.data import Dataset, Pipeline
+    from im2sim.transforms import FitZScore, PowerScaling
 
     pipeline = Pipeline([
-        image_transform,
-        spatial_transform,
-        normalisation_transform,
+        PowerScaling(exp=0.5, preserve_sign=True, keys=["graph"], attr="x"),
+        FitZScore(keys=["graph"], attr="x", channels=[0, 1, 2], per_channel=True),
     ])
 
-    dataset = Dataset(
-        load_fn=load,
-        cases=cases,
-        transforms=pipeline,
-    )
+    train_dataset = Dataset(load_fn=load, cases=train_cases, transforms=pipeline)
+    val_dataset = Dataset(load_fn=load, cases=val_cases, transforms=pipeline)
 
+    pipeline.fit(train_dataset)  # replaces the dataset's own transforms while fitting
 
-Transforms are applied in the order in which they appear in the
-pipeline.
+Fit on the training cases only, then reuse the same fitted pipeline for validation, testing and
+inference. Fitting on validation or test cases leaks their statistics into preprocessing. A
+fittable transform raises a ``RuntimeError`` if it is used before it has been fitted.
 
-This ordering is important when operations depend on the output of
-previous operations. For example, spatial preprocessing may need to occur
-before a normalisation operation.
+Fitting reads every case once with ``batch_size=1``, for each fittable transform. Stochastic
+augmentation is better kept in a separate, training-only pipeline that is not fitted.
 
-A pipeline can also determine which transforms apply to a particular
-sample based on the keys present in that sample. This allows a single
-pipeline to contain transforms for different data components without
-requiring every sample to contain every possible key.
+Inverting
+~~~~~~~~~
 
-Invertible preprocessing
------------------------
-
-Some operations are invertible.
-
-An ``InvertibleOperation`` provides both a forward operation and an
-``inverse`` operation. A ``Transform`` wrapping such an operation can
-therefore be reversed:
+``pipeline.inverse(sample)`` undoes the invertible transforms in reverse order and skips the
+others. Use it to bring model outputs back to physical units:
 
 .. code-block:: python
 
-    transformed = transform.forward(sample)
+    prediction = {"graph": model_output_graph}
+    prediction = pipeline.inverse(prediction)  # graph.x back in the original units
 
-    original = transform.inverse(transformed)
+Saving and loading
+~~~~~~~~~~~~~~~~~~
 
-
-When several invertible transforms are used in a ``Pipeline``, the inverse
-pipeline is applied in reverse order.
-
-For example:
-
-.. code-block:: text
-
-
-    Original data
-        │
-        ▼
-    Transform A
-        │
-        ▼
-    Transform B
-        │
-        ▼
-    Model input
-
-    Model output
-        │
-        ▼
-    inverse B
-        │
-        ▼
-    inverse A
-        │
-        ▼
-    Original space
-
-
-This is particularly useful for spatial preprocessing where model outputs
-need to be mapped back into the original image or physical coordinate
-system.
-
-Only operations that provide an inverse are reversed by the pipeline.
-
-Fittable operations
--------------------
-
-Some preprocessing operations need to determine parameters from the
-dataset before they can be applied.
-
-These are represented by ``FittableOperation``.
-
-A fittable operation has three stages:
-
-.. code-block:: text
-
-    Dataset
-    │
-    ▼
-    fit_step(...)
-    │
-    │ repeated over batches
-    ▼
-    complete_fit()
-    │
-    ▼
-    Fitted operation
-    │
-    ▼
-    Transform data
-
-
-For example, a normalisation operation may need to estimate statistics
-from the training dataset before it can transform individual samples.
-
-A ``Pipeline`` handles this fitting process automatically:
+A pipeline is saved as its configuration (each transform's operation class, arguments, keys and
+channels) together with its fitted state:
 
 .. code-block:: python
 
-    pipeline = Pipeline([
-        transform_a,
-        normalisation_transform,
-        transform_c,
-    ])
+    from im2sim.data.core import load_pipeline, save_pipeline
 
-    pipeline.fit(dataset)
-
-
-Transforms earlier in the pipeline are applied before a fittable transform
-is fitted. This means that fitting can operate on the same representation
-that will subsequently be passed to the model.
-
-Training considerations
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Fittable preprocessing should generally be fitted using the training
-dataset only.
-
-The fitted state can then be reused for validation and test data. This
-prevents information from the validation or test sets from influencing
-preprocessing parameters.
-
-A fittable transform also cannot be used for forward or inverse processing
-until it has been fitted.
-
-Channel-specific processing
----------------------------
-
-Transforms can optionally operate on selected channels rather than an
-entire tensor.
-
-This is useful when different channels represent different physical
-quantities and should not undergo identical preprocessing.
-
-For example, a transform can be configured to operate only on selected
-channels:
-
-.. code-block:: python
-
-    transform = Transform(
-        op=my_operation,
-        keys="image",
-        channels=[0, 2],
-    )
-
-
-Transforms can also create separate operation instances for individual
-channels using ``per_channel=True``.
-
-This distinction is important for multimodal data where channels may have
-different units, distributions, or physical meanings.
-
-Working with image and graph data
---------------------------------
-
-The data module is designed to support hybrid image/graph models.
-
-A single sample can contain both dense image tensors and graph objects:
-
-.. code-block:: python
-
-    sample = {
-        "image": image,
-        "template": template,
-        "graph": graph,
-    }
-
-
-This allows a model to combine image-derived information with geometric
-or graph-based representations without requiring separate data-loading
-systems.
-
-For example, an image-to-simulation model might load:
-
-.. code-block:: text
-
-    Medical image
-        │
-        ├──────────────┐
-        │              │
-        ▼              ▼
-    Image          Template mesh
-        │              │
-        │              ▼
-        │          Graph data
-        │              │
-        └───────┬──────┘
-                ▼
-            Model input
-
-
-The same sample can therefore carry all of the inputs and targets required
-by a hybrid model.
-
-Batching
--------
-
-``DataLoader`` provides a wrapper around PyTorch's standard
-``DataLoader`` with an ``im2sim``-specific collate function.
-
-Tensor values are batched using standard PyTorch stacking in dim 0, while PyTorch
-Geometric ``Data`` objects are combined into a `PyG Batch <https://pytorch-geometric.readthedocs.io/en/latest/notes/batching.html?highlight=batching>`_
-
-For example, a dataset returning:
-
-.. code-block:: python
-
-    {
-        "image": image,
-        "graph": graph,
-    }
-
-
-produces batches containing:
-
-.. code-block:: python
-
-    {
-        "image": batched_images,
-        "graph": batched_graph,
-    }
-
-
-This means image and graph data can be loaded together using the same
-``DataLoade`r`.
-
-Standard PyTorch data-loading arguments such as ``batch_size``,
-``shuffle``, ``num_workers``, and ``pin_memory`` can be passed directly:
-
-.. code-block:: python
-
-    loader = DataLoader(
-        dataset,
-        batch_size=4,
-        shuffle=True,
-        num_workers=4,
-        pin_memory=True,
-    )
-
-
-Serialisation and reproducibility
---------------------------------
-
-Operations and pipelines expose configuration and state information so
-that preprocessing can be reproduced.
-
-A pipeline can be represented by its configuration:
-
-.. code-block:: python
-
-    config = pipeline.config()
-
-
-and its fitted state can be stored separately:
-
-.. code-block:: python
-
-    state = pipeline.state_dict()
-
-
-The complete pipeline can also be saved and subsequently restored:
-
-.. code-block:: python
-
-    from im2sim.data.core import save_pipeline, load_pipeline
-
-    save_pipeline(
-        pipeline,
-        "pipeline.pt",
-    )
-
+    save_pipeline(pipeline, "pipeline.pt")
     pipeline = load_pipeline("pipeline.pt")
 
-
-This is particularly useful for fitted preprocessing, where reproducing
-the transformation requires both the definition of the operations and
-their fitted state.
-
-Designing a data pipeline
-------------------------
-
-A typical ``im2sim`` training pipeline separates four stages:
-
-.. code-block:: text
-
-
-    1. Load
-    │
-    ▼
-    Dataset
-    │
-    ▼
-    2. Transform
-    │
-    ├── spatial processing
-    ├── intensity processing
-    ├── graph processing
-    └── other preprocessing
-    │
-    ▼
-    3. Batch
-    │
-    ▼
-    DataLoader
-    │
-    ▼
-    4. Train
-    │
-    ▼
-    Model
-
-
-The dataset should generally be responsible for finding and loading
-data, rather than implementing preprocessing logic.
-
-Preprocessing should instead be expressed through transforms and
-pipelines. This keeps the dataset reusable and makes preprocessing
-explicit and reproducible.
-
-
-Training and validation pipelines
----------------------------------
-
-Training, validation, and test datasets can use different pipelines while
-sharing the same underlying dataset definition.
-
-For example:
-
-.. code-block:: python
-
-    train_dataset = Dataset(
-        load_fn=load,
-        cases=train_cases,
-        transforms=train_pipeline,
-    )
-
-    val_dataset = Dataset(
-        load_fn=load,
-        cases=val_cases,
-        transforms=val_pipeline,
-    )
-
-
-The training pipeline can contain stochastic augmentation, while
-validation and test pipelines can use deterministic preprocessing.
-
-Fitted preprocessing parameters should be obtained from the training data
-and then reused for validation and test data rather than fitted
-independently.
-
-Summary
--------
-
-The ``data`` module provides a common framework for loading and
-preprocessing the heterogeneous data used by ``im2sim`` models.
-
-The general workflow is:
-
-.. code-block:: text
-
-
-    Case identifiers
-        │
-        ▼
-    Dataset
-        │
-        │ load_fn
-        ▼
-    Sample dictionary
-        │
-        ▼
-    Pipeline
-        │
-        ├── Operations
-        ├── Invertible operations
-        └── Fittable operations
-        │
-        ▼
-    DataLoader
-        │
-        ▼
-    Batched model input
-
-
-The key design principle is that data loading and data processing are
-separate.
-
-``Dataset`` defines how a case is loaded, ``Transform`` determines where
-an operation is applied, ``Pipeline`` defines the preprocessing sequence,
-and ``DataLoader`` handles batching.
-
-This provides a common data interface for models that operate on images,
-graphs, meshes, or combinations of these representations while keeping
-the preprocessing pipeline explicit and reusable.
-
+Store the fitted pipeline with the model checkpoint, because a model trained on normalised data
+is only usable with the statistics it was trained with. Two limits apply. Operations must be
+registered with ``@register_op``, which rules out transforms made with ``transform_from_fn``.
+And the ``multikey`` setting is not restored on load.
 

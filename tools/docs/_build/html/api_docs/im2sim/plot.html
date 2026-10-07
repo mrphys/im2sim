@@ -457,7 +457,11 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-point-clouds">Comparing point clouds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#animating-a-sequence">Animating a sequence</a></li>
+</ul>
+</li>
 </ul>
 
             </nav>
@@ -494,6 +498,51 @@ document.write(`
 </section>
 <section id="guide">
 <h1>Guide<a class="headerlink" href="#guide" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">plot</span></code> contains <a class="reference internal" href="plot/PointCloudPlot.html#im2sim.plot.PointCloudPlot" title="im2sim.plot.PointCloudPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointCloudPlot</span></code></a>, a grid of 3D scatter plots for comparing point clouds,
+such as predicted and target node positions, or the graph after each iteration of an
+<code class="docutils literal notranslate"><span class="pre">Im2SimGen2</span></code> model.</p>
+<section id="comparing-point-clouds">
+<h2>Comparing point clouds<a class="headerlink" href="#comparing-point-clouds" title="Link to this heading">#</a></h2>
+<p>Pass one <code class="docutils literal notranslate"><span class="pre">[N,</span> <span class="pre">3]</span></code> array per subplot, filled row by row, and optionally one value per point to
+colour by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">im2sim.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointCloudPlot</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">PointCloudPlot</span><span class="p">(</span>
+    <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">point_sets</span><span class="o">=</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">prediction</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()],</span>
+    <span class="n">color_sets</span><span class="o">=</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">pressure</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">prediction</span><span class="o">.</span><span class="n">pressure</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()],</span>
+    <span class="n">titles</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">],</span>
+    <span class="n">norm_mode</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="s2">&quot;comparison.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">norm_mode</span></code> chooses which subplots share a colour scale: <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;row&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;col&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> (each subplot scaled on its own). Use <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> when colours should be comparable
+across subplots.</p></li>
+<li><p>The axis limits of every subplot are taken from the <strong>last</strong> point cloud in <code class="docutils literal notranslate"><span class="pre">point_sets</span></code>, so
+put the reference geometry last if the clouds differ in extent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">elev</span></code> and <code class="docutils literal notranslate"><span class="pre">azim</span></code> set the viewing angle. <code class="docutils literal notranslate"><span class="pre">titles</span></code> takes one title per subplot or a single
+string for the whole figure.</p></li>
+</ul>
+</section>
+<section id="animating-a-sequence">
+<h2>Animating a sequence<a class="headerlink" href="#animating-a-sequence" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">animate</span></code> draws one frame per entry of <code class="docutils literal notranslate"><span class="pre">point_sequence_sets</span></code>. Each entry is a list with one
+point cloud per subplot. This is a quick way to watch an iterative model refine a mesh:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">graphs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>  <span class="c1"># model built with return_intermediate_graphs=True</span>
+<span class="n">frames</span> <span class="o">=</span> <span class="p">[[</span><span class="n">g</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">graphs</span><span class="p">]</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">PointCloudPlot</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">point_sets</span><span class="o">=</span><span class="n">frames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">animate</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;refinement.gif&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Files ending in <code class="docutils literal notranslate"><span class="pre">.gif</span></code> are written with Pillow; other extensions need <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code>. Both
+<code class="docutils literal notranslate"><span class="pre">save_image</span></code> and <code class="docutils literal notranslate"><span class="pre">animate</span></code> close the figure, so create a new <code class="docutils literal notranslate"><span class="pre">PointCloudPlot</span></code> for each
+output.</p>
+</section>
 </section>
 
 
@@ -546,7 +595,11 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#guide">Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparing-point-clouds">Comparing point clouds</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#animating-a-sequence">Animating a sequence</a></li>
+</ul>
+</li>
 </ul>
 
   </nav></div>

@@ -52,70 +52,82 @@ class HalfUNet(torch.nn.Module):
         To create a HalfUNet model with a specific configuration, you can first create a HalfUNetConfig object and then pass it to the HalfUNet constructor.
         For example, to create a HalfUNet with 3 levels of depth, ReLU activation, and softmax output activation:
 
-        >>> cfg = HalfUNetConfig(
-        >>>            hidden_channels=32,
-        >>>            n_levels=3,
-        >>>            encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
-        >>>            out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax")
-        >>>       )
+        .. code-block:: python
+
+            cfg = HalfUNetConfig(
+                hidden_channels=32,
+                n_levels=3,
+                encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
+                out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax")
+            )
 
         Since the configs are rankless, you could use the same config for a 1D, 2D, or 3D convolutional block by changing the rank parameter when creating the HalfUNet instance.
 
-        >>> model1D = HalfUNet(
-        >>>        rank=1,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model2D = HalfUNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model3D = HalfUNet(
-        >>>        rank=3,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
+        .. code-block:: python
+
+            model1D = HalfUNet(
+                rank=1,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
+            model2D = HalfUNet(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
+            model3D = HalfUNet(
+                rank=3,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
 
         The HalfUNet model can be used for both segmentation and reconstruction tasks.
         For segmentation, you can use the `single_class_segmentation_mode()` or `multiclass_segmentation_mode()` methods of the HalfUNetConfig to set the appropriate output activation function (sigmoid for single-class, softmax for multi-class).
         For reconstruction tasks, you can use the `reconstruction_mode()` method to set the output activation to None.
 
-        >>> cfg_segmentation = HalfUNetConfig().single_class_segmentation_mode()
-        >>> model_segmentation = HalfUNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=1,
-        >>>        cfg=cfg_segmentation,
-        >>>    )
+        .. code-block:: python
 
-        >>> cfg_reconstruction = HalfUNetConfig().reconstruction_mode()
-        >>> model_reconstruction = HalfUNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=1,
-        >>>        cfg=cfg_reconstruction,
-        >>>    )
+            cfg_segmentation = HalfUNetConfig().single_class_segmentation_mode()
+            model_segmentation = HalfUNet(
+                rank=2,
+                in_channels=32,
+                out_channels=1,
+                cfg=cfg_segmentation,
+            )
+
+        .. code-block:: python
+
+            cfg_reconstruction = HalfUNetConfig().reconstruction_mode()
+            model_reconstruction = HalfUNet(
+                rank=2,
+                in_channels=32,
+                out_channels=1,
+                cfg=cfg_reconstruction,
+            )
 
 
         Models can be saved and loaded using the standard PyTorch methods:
 
-        >>> torch.save(model.state_dict(), "model.pth")
-        >>> model.load_state_dict(torch.load("model.pth"))
+        .. code-block:: python
+
+            torch.save(model.state_dict(), "model.pth")
+            model.load_state_dict(torch.load("model.pth"))
 
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.HalfUNetConfig` class:
 
-        >>> cfg.save("my_config.json")
-        >>> loaded_cfg = HalfUNetConfig.load("my_config.json")
-        >>> model = HalfUNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=loaded_cfg,
-        >>>    )
+        .. code-block:: python
+
+            cfg.save("my_config.json")
+            loaded_cfg = HalfUNetConfig.load("my_config.json")
+            model = HalfUNet(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=loaded_cfg,
+            )
 
 
     References:

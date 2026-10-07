@@ -17,6 +17,7 @@
 import dataclasses
 import inspect
 import os
+import shutil
 import string
 import sys
 import typing
@@ -159,10 +160,19 @@ for name, module in modules.items():
 
   filename = os.path.join(API_DOCS_PATH, f'im2sim/{name}.rst')
 
+  # The guide is pasted into api_docs/im2sim/{name}.rst, so relative paths in
+  # it resolve from api_docs/im2sim/. Its diagrams are copied next to the page,
+  # which lets the guide reference them as `{name}/diagrams/<file>.svg`.
   with open(f"{ROOT_PATH}/im2sim/{name}/guide.rst", "r") as src:
     module_guide_text = src.read()
 
-  with open(filename, 'a') as f:
+  diagrams_path = os.path.join(ROOT_PATH, 'im2sim', name, 'diagrams')
+  if os.path.isdir(diagrams_path):
+    shutil.copytree(diagrams_path,
+                    os.path.join(API_DOCS_PATH, 'im2sim', name, 'diagrams'),
+                    dirs_exist_ok=True)
+
+  with open(filename, 'w') as f:
     f.write(MODULE_DOC_TEMPLATE.substitute(
         module=name,
         underline='=' * len(name),

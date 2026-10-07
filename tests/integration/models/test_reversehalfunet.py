@@ -723,3 +723,23 @@ def test_forward_is_deterministic_in_eval_mode(model):
         y2 = model(x)
 
     assert torch.equal(y1, y2)
+
+def test_decoder_and_upsample_order_survives_mod_and_save_load(tmp_path):
+    from im2sim.configs.halfunet import HalfUNetConfig
+
+    cfg = ReverseHalfUNetConfig(
+        n_levels=3, decoder_block_cfg=[ImageConvBlockConfig(depth=d) for d in (1, 2, 3)]
+    )
+    expected = [c.depth for c in cfg.decoder_block_cfg]
+
+    path = tmp_path / "cfg.json"
+    cfg.mod().save(path)
+    loaded = ReverseHalfUNetConfig.load(path)
+
+    assert [c.depth for c in cfg.mod().decoder_block_cfg] == expected
+    assert [c.depth for c in loaded.decoder_block_cfg] == expected
+
+    ups = [LayerConfig(name="Upsample", kwargs={"scale_factor": s}) for s in (2, 3)]
+    half = HalfUNetConfig(n_levels=3, upsample_cfg=ups)
+    expected = [u.kwargs["scale_factor"] for u in half.upsample_cfg]
+    assert [u.kwargs["scale_factor"] for u in half.mod().upsample_cfg] == expected

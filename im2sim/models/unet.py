@@ -56,77 +56,91 @@ class UNet(torch.nn.Module):
         To create a UNet model with a specific configuration, you can first create a UNetConfig object and then pass it to the UNet constructor.
         For example, to create a UNet with 3 levels of depth, ReLU activation, and softmax output activation:
 
-        >>> cfg = UNetConfig(filters=[32, 64, 128],
-        >>>            encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
-        >>>            decoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
-        >>>            out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax"))
+        .. code-block:: python
+
+            cfg = UNetConfig(filters=[32, 64, 128],
+                encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
+                decoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
+                out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax"))
 
         Since the configs are rankless, you could use the same config for a 1D, 2D, or 3D convolutional block by changing the rank parameter when creating the UNet instance.
 
-        >>> model1D = UNet(
-        >>>        rank=1,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model2D = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
-        >>> model3D = UNet(
-        >>>        rank=3,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>    )
+        .. code-block:: python
+
+            model1D = UNet(
+                rank=1,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
+            model2D = UNet(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
+            model3D = UNet(
+                rank=3,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+            )
 
         The UNet model can be used for both segmentation and reconstruction tasks.
         For segmentation, you can use the `single_class_segmentation_mode()` or `multiclass_segmentation_mode()` methods of the UNetConfig to set the appropriate output activation function (sigmoid for single-class, softmax for multi-class).
         For reconstruction tasks, you can use the `reconstruction_mode()` method to set the output activation to None.
 
-        >>> cfg_segmentation = UNetConfig(filters=[32, 64, 128]).single_class_segmentation_mode()
-        >>> model_segmentation = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=1,
-        >>>        cfg=cfg_segmentation,
-        >>>    )
+        .. code-block:: python
 
-        >>> cfg_reconstruction = UNetConfig(filters=[32, 64, 128]).reconstruction_mode()
-        >>> model_reconstruction = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=1,
-        >>>        cfg=cfg_reconstruction,
-        >>>    )
+            cfg_segmentation = UNetConfig(filters=[32, 64, 128]).single_class_segmentation_mode()
+            model_segmentation = UNet(
+                rank=2,
+                in_channels=32,
+                out_channels=1,
+                cfg=cfg_segmentation,
+            )
+
+        .. code-block:: python
+
+            cfg_reconstruction = UNetConfig(filters=[32, 64, 128]).reconstruction_mode()
+            model_reconstruction = UNet(
+                rank=2,
+                in_channels=32,
+                out_channels=1,
+                cfg=cfg_reconstruction,
+            )
 
         If deep supervision is desired, you can specify the levels at which to apply it using the `supervision_levels` argument.
 
-        >>> model_deep_supervision = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=cfg,
-        >>>        supervision_levels=[0, 1],  # Apply deep supervision at top 2 levels
-        >>>    )
+        .. code-block:: python
+
+            model_deep_supervision = UNet(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=cfg,
+                supervision_levels=[0, 1],  # Apply deep supervision at top 2 levels
+            )
 
         Models can be saved and loaded using the standard PyTorch methods:
 
-        >>> torch.save(model.state_dict(), "model.pth")
-        >>> model.load_state_dict(torch.load("model.pth"))
+        .. code-block:: python
+
+            torch.save(model.state_dict(), "model.pth")
+            model.load_state_dict(torch.load("model.pth"))
 
         Configs can also be saved and loaded using the methods provided in the `im2sim.configs.UNetConfig` class:
 
-        >>> cfg.save("my_config.json")
-        >>> loaded_cfg = UNetConfig.load("my_config.json")
-        >>> model = UNet(
-        >>>        rank=2,
-        >>>        in_channels=32,
-        >>>        out_channels=32,
-        >>>        cfg=loaded_cfg,
-        >>>    )
+        .. code-block:: python
+
+            cfg.save("my_config.json")
+            loaded_cfg = UNetConfig.load("my_config.json")
+            model = UNet(
+                rank=2,
+                in_channels=32,
+                out_channels=32,
+                cfg=loaded_cfg,
+            )
 
 
     References:

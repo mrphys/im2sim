@@ -478,20 +478,21 @@ document.write(`
 <h1>im2sim.configs.GraphConvBlockConfig<a class="headerlink" href="#im2sim-configs-graphconvblockconfig" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphConvBlockConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_channels=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation='ReLU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_position=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_connections=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_type='average'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L23-L229"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphConvBlockConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_channels=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation='ReLU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_activation=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conv_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attn_cfg=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_position=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_connections=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_type='average'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L23-L232"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></p>
 <p>Configuration class for defining the parameters of a graph convolutional block.</p>
-<p>The default configuration consists of a single convolutional layer with ReLU activation, <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/DefaultGraphNorm">im2sim.layers.DefaultGraphNorm</a> normalization, and no dropout or attention layers.</p>
+<p>The default configuration consists of a single <code class="docutils literal notranslate"><span class="pre">GCNConv</span></code> layer with <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/DefaultGraphNorm">im2sim.layers.DefaultGraphNorm</a> normalization, and no dropout or attention layers.
+The ReLU activation is applied between layers, so it has no effect at the default depth of <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 <p>Attributes can either be set directly when creating an instance of the class or modified later.
 Configuration presets can be applied to quickly set up common configurations for different use cases.</p>
-<p>The configuration can also be saved to and loaded from a YAML file.</p>
+<p>The configuration can also be saved to and loaded from a JSON file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The number of convolutional layers in the block. Default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
 <li><p><strong>hidden_channels</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The number of channels in the hidden layers.
-Default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, which means that the number of channels will be the same as <code class="docutils literal notranslate"><span class="pre">in_channels</span></code> for all layers except the last one, which will have <code class="docutils literal notranslate"><span class="pre">out_channels</span></code>.</p></li>
-<li><p><strong>activation</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – The activation function to use after each convolutional layer. Default is <code class="docutils literal notranslate"><span class="pre">&quot;ReLU&quot;</span></code>.</p></li>
+Default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>, which means that the number of channels will be the same as <code class="docutils literal notranslate"><span class="pre">in_channels</span></code>. The last layer always has <code class="docutils literal notranslate"><span class="pre">out_channels</span></code>.</p></li>
+<li><p><strong>activation</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – The activation function to use after each convolutional layer except the last. Default is <code class="docutils literal notranslate"><span class="pre">&quot;ReLU&quot;</span></code>.</p></li>
 <li><p><strong>out_activation</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – <p>The activation function to use after the final layer. Default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>.</p>
 </p></li>
 <li><p><strong>conv_cfg</strong> (<a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a>) – Configuration for the graph convolutional layers.
@@ -500,10 +501,11 @@ Default is <code class="docutils literal notranslate"><span class="pre">GCNConv<
 Default is <a class="reference external" href="https://mrphys.github.io/im2sim/api_docs/im2sim/layers/DefaultGraphNorm">im2sim.layers.DefaultGraphNorm</a>.</p>
 </p></li>
 <li><p><strong>dropout_cfg</strong> (<a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a>) – Configuration for the dropout layers. Default is no dropout.</p></li>
-<li><p><strong>attn_cfg</strong> (<a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a>) – Configuration for the attention layers. Default is no attention.
-Attention is applied before the residual connection if the layer is a target of a residual connection, or after the last layer if there are no residual connections.</p></li>
+<li><p><strong>attn_cfg</strong> (<a class="reference internal" href="LayerConfig.html#im2sim.configs.LayerConfig" title="im2sim.configs.LayerConfig"><em>LayerConfig</em></a>) – <p>Configuration for the attention layers. Supported names are <code class="docutils literal notranslate"><span class="pre">&quot;EfficientChannelAttn&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;SqueezeExcite&quot;</span></code> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>. Default is no attention.
+Attention is applied before the residual connection if the layer is a target of a residual connection, or after the last layer if there are no residual connections.</p>
+</p></li>
 <li><p><strong>dropout_position</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em>) – <p>Specifies the position(s) of the dropout layers within the block.
-Dropout will be applied after the specified layer(s), where the layer numbers start from <code class="docutils literal notranslate"><span class="pre">1</span></code> and end at <code class="docutils literal notranslate"><span class="pre">depth</span></code>.
+Dropout will be applied after the specified layer(s), where the layer numbers start from <code class="docutils literal notranslate"><span class="pre">1</span></code> and must be less than <code class="docutils literal notranslate"><span class="pre">depth</span></code>.
 If a list is provided, dropout will be applied after each specified layer.
 Default is <code class="docutils literal notranslate"><span class="pre">1</span></code>. (only applied if dropout_cfg is not <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>)</p>
 </p></li>
@@ -511,12 +513,12 @@ Default is <code class="docutils literal notranslate"><span class="pre">1</span>
 The keys represent the target layers (numbered from <code class="docutils literal notranslate"><span class="pre">1</span></code> to <code class="docutils literal notranslate"><span class="pre">depth</span></code>), and the values are lists of source layers. Default is <a class="reference external" href="https://docs.python.org/3/library/constants.html#None">None</a>.
 Example: <code class="docutils literal notranslate"><span class="pre">{1:</span> <span class="pre">[0]}</span></code> means that the input(0) to the block will be added to the output of layer 1.</p>
 </p></li>
-<li><p><strong>residual_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The type of residual connection to use (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;add&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;concat&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;average&quot;</span></code>). Default is <code class="docutils literal notranslate"><span class="pre">&quot;average&quot;</span></code>.</p></li>
+<li><p><strong>residual_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The type of residual connection to use (<code class="docutils literal notranslate"><span class="pre">&quot;add&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;concat&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;multiply&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;average&quot;</span></code>). Default is <code class="docutils literal notranslate"><span class="pre">&quot;average&quot;</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>To create a highly customised configuration for an image convolutional block, you can specify all attributes of the configuration:</p>
+<p>To create a highly customised configuration for a graph convolutional block, you can specify all attributes of the configuration:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">GraphConvBlockConfig</span><span class="p">(</span>
             <span class="n">depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
             <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;LeakyReLU&quot;</span><span class="p">,</span>
@@ -558,58 +560,59 @@ or to add a residual connection from the input to the output of the last layer, 
 <span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_input_residual</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>To save the configuration to a YAML file and load it back, you can use:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
-<span class="n">loaded_cfg</span> <span class="o">=</span> <span class="n">GraphConvBlockConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+<p>To save the configuration to a JSON file and load it back, you can use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;my_config.json&quot;</span><span class="p">)</span>
+<span class="n">loaded_cfg</span> <span class="o">=</span> <span class="n">GraphConvBlockConfig</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;my_config.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Refer to the methods below to see all available transformations that can be applied to the configuration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.add_conv1_residual">
-<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L187-L194"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_conv1_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L188-L195"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_conv1_residual" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to have a residual connection from the output of the first layer to the output of the last layer.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.add_eca">
-<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L204-L209"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_eca" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_eca</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L207-L212"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_eca" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to use Efficient Channel Attention (ECA)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.add_input_concat_residual">
-<span class="sig-name descname"><span class="pre">add_input_concat_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L196-L202"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_input_concat_residual" title="Link to this definition">#</a></dt>
-<dd><p>Configures the block to have a residual connection from the input to the output of the last layer, using concatenation instead of addition.</p>
+<span class="sig-name descname"><span class="pre">add_input_concat_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L197-L205"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_input_concat_residual" title="Link to this definition">#</a></dt>
+<dd><p>Configures the block to have a residual connection from the input to the input of the last layer, using concatenation instead of addition.</p>
+<p>The input is concatenated before the last layer rather than after it, so the output keeps <code class="docutils literal notranslate"><span class="pre">out_channels</span></code> channels.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.add_input_residual">
-<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L179-L185"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_input_residual" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_input_residual</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L180-L186"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_input_residual" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to have a residual connection from the input to the output of the last layer.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.add_se">
-<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L211-L216"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_se" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_se</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L214-L219"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.add_se" title="Link to this definition">#</a></dt>
 <dd><p>Configures the block to use Squeeze-and-Excitation (SE) attention</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.nullify">
-<span class="sig-name descname"><span class="pre">nullify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L218-L229"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.nullify" title="Link to this definition">#</a></dt>
-<dd><p>Configures the block to have no normalization, dropout, or attention layers.</p>
+<span class="sig-name descname"><span class="pre">nullify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L221-L232"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.nullify" title="Link to this definition">#</a></dt>
+<dd><p>Configures the block to be a no-op: removes the convolution, activations, normalization, dropout, attention, and residual connections.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.to_single_block">
-<span class="sig-name descname"><span class="pre">to_single_block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L170-L177"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.to_single_block" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_single_block</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L171-L178"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.to_single_block" title="Link to this definition">#</a></dt>
 <dd><p>Sets the block depth to 1 and removes dropout and residual connections, but keeps normalization and activation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.configs.GraphConvBlockConfig.to_single_conv">
-<span class="sig-name descname"><span class="pre">to_single_conv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L158-L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.to_single_conv" title="Link to this definition">#</a></dt>
-<dd><p>Converts the blcok into a single convolutional layer with no normalization, dropout, or residual connections.</p>
+<span class="sig-name descname"><span class="pre">to_single_conv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/configs/graph_blocks.py#L159-L169"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.configs.GraphConvBlockConfig.to_single_conv" title="Link to this definition">#</a></dt>
+<dd><p>Converts the block into a single convolutional layer with no activation, normalization, dropout, attention, or residual connections.</p>
 </dd></dl>
 
 </dd></dl>

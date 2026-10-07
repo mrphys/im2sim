@@ -468,7 +468,7 @@ document.write(`
 <h1>im2sim.mesh_ops.get_structure_edges<a class="headerlink" href="#im2sim-mesh-ops-get-structure-edges" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="im2sim.mesh_ops.get_structure_edges">
-<span class="sig-name descname"><span class="pre">get_structure_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_dict</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L59-L94"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.get_structure_edges" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_structure_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_dict</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L61-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.get_structure_edges" title="Link to this definition">#</a></dt>
 <dd><p>Extracts edges for different substructures in a pyvista PointGrid object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -478,7 +478,7 @@ document.write(`
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A dictionary with items in the format ‘structurename_index’: torch.Tensor(2, N),
+<dd class="field-even"><p>A dictionary with items in the format ‘structurename_edge_index’: torch.Tensor(2, N),
 where N is the number of edges in the structure.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

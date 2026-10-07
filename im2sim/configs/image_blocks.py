@@ -80,51 +80,61 @@ class ImageConvBlockConfig(Config):
 
         To create a highly customised configuration for an image convolutional block, you can specify all attributes of the configuration:
 
-        >>> cfg = ImageConvBlockConfig(
-        >>>                         depth=4,
-        >>>                         activation="LeakyReLU",
-        >>>                         out_activation="sigmoid",
-        >>>                         conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
-        >>>                         norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
-        >>>                         dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
-        >>>                         attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
-        >>>                         dropout_position=[1, 3],
-        >>>                         residual_connections={3: [0, 1]},
-        >>>                         residual_type="concat"
-        >>>                         )
+        .. code-block:: python
+
+            cfg = ImageConvBlockConfig(
+                depth=4,
+                activation="LeakyReLU",
+                out_activation="sigmoid",
+                conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
+                norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
+                dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
+                attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
+                dropout_position=[1, 3],
+                residual_connections={3: [0, 1]},
+                residual_type="concat"
+            )
 
 
         To make simple modifications to the default configuration, you can modify a subset of attributes:
 
-        >>> cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
+        .. code-block:: python
+
+            cfg = ImageConvBlockConfig(depth=3, activation="ReLU", out_activation="softmax")
 
         To make modifications to an existing configuration, you can use the `mod()` method:
 
-        >>> block_cfg = ImageConvBlockConfig(
-        >>>                         depth=4,
-        >>>                         activation="LeakyReLU",
-        >>>                         out_activation="sigmoid",
-        >>>                         conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
-        >>>                         norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
-        >>>                         dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
-        >>>                         attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
-        >>>                         dropout_position=[1, 3],
-        >>>                         residual_connections={3: [0, 1]},
-        >>>                         residual_type="concat"
-        >>>                         )
-        >>> mini_block_cfg = block_cfg.mod(depth=2, dropout_position=[1], residual_connections={1: [0]})
+        .. code-block:: python
+
+            block_cfg = ImageConvBlockConfig(
+                depth=4,
+                activation="LeakyReLU",
+                out_activation="sigmoid",
+                conv_cfg=LayerConfig(name="Conv", kwargs={"kernel_size": 5, "padding": "same"}),
+                norm_cfg=LayerConfig(name="BatchNorm", kwargs={"affine": True}),
+                dropout_cfg=LayerConfig(name="Dropout", kwargs={"p": 0.5}),
+                attn_cfg=LayerConfig(name="SqueezeExcite", kwargs={}),
+                dropout_position=[1, 3],
+                residual_connections={3: [0, 1]},
+                residual_type="concat"
+            )
+            mini_block_cfg = block_cfg.mod(depth=2, dropout_position=[1], residual_connections={1: [0]})
 
         Different presets exist to perform common mods on the configuration.
         For example, to convert the block into a single convolutional layer with no normalization, dropout, or residual connections, you can use `to_single_conv()`
         or to add a residual connection from the input to the output of the last layer, you can use `add_input_residual()`:
 
-        >>> cfg = cfg.to_single_conv()
-        >>> cfg = cfg.add_input_residual()
+        .. code-block:: python
+
+            cfg = cfg.to_single_conv()
+            cfg = cfg.add_input_residual()
 
         To save the configuration to a JSON file and load it back, you can use:
 
-        >>> cfg.save("my_config.json")
-        >>> loaded_cfg = ImageConvBlockConfig.load("my_config.json")
+        .. code-block:: python
+
+            cfg.save("my_config.json")
+            loaded_cfg = ImageConvBlockConfig.load("my_config.json")
 
         Refer to the methods below to see all available transformations that can be applied to the configuration.
 

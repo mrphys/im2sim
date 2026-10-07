@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" width="800" height="380" role="img" aria-labelledby="t">
+<title id="t">The Im2SimBase forward pass: encode, project onto the graph, decode, and optionally rasterise back into the image for the next iteration</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.b{font-weight:600}
+.h{font-size:14px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.img{fill:#dbeafe;stroke:#2563eb;stroke-width:1.5}
+.gr{fill:#d1fae5;stroke:#047857;stroke-width:1.5}
+.neu{fill:#f1f5f9;stroke:#64748b;stroke-width:1.5}
+.op{fill:#fef3c7;stroke:#b45309;stroke-width:1.5}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.lg{stroke:#047857;stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.lo{stroke:#b45309;stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#047857"/></marker>
+<marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker>
+</defs>
+<rect class="card" x="0.5" y="0.5" width="799" height="379" rx="10"/>
+<text class="h" x="20" y="30">model(image_input, in_graph): one iteration, repeated n_iters times</text>
+
+<!-- image row -->
+<rect class="img" x="30" y="80" width="140" height="48" rx="6"/>
+<text class="m" x="44" y="101">image_input</text>
+<text class="s" x="44" y="118">[B, C, D, H, W]</text>
+<path class="ln" d="M170 104 H218" marker-end="url(#a)"/>
+<rect class="img" x="220" y="80" width="150" height="48" rx="6"/>
+<text class="m" x="234" y="101">image_encoder</text>
+<text class="s" x="234" y="118">e.g. HalfUNet</text>
+<path class="ln" d="M370 96 H468" marker-end="url(#a)"/>
+<text class="ms" x="414" y="88" text-anchor="middle">image_features</text>
+<rect class="neu" x="470" y="80" width="150" height="48" rx="6"/>
+<text class="m" x="484" y="101">projection(s)</text>
+<text class="s" x="484" y="118">sample at graph.coords</text>
+
+<!-- graph row -->
+<rect class="gr" x="30" y="226" width="140" height="48" rx="6"/>
+<text class="m" x="44" y="247">in_graph</text>
+<text class="s" x="44" y="264">needs coords, batch</text>
+<path class="ln" d="M170 250 H468" marker-end="url(#a)"/>
+<path class="ln" d="M430 250 V120 H468" marker-end="url(#a)"/>
+<circle cx="430" cy="250" r="3" fill="#475569"/>
+<text class="ms" x="300" y="242" text-anchor="middle">graph</text>
+<rect class="gr" x="470" y="226" width="150" height="48" rx="6"/>
+<text class="m" x="484" y="247">graph_decoder</text>
+<text class="s" x="484" y="264">e.g. SimpleGraphDecoder</text>
+<path class="ln" d="M545 128 V224" marker-end="url(#a)"/>
+<text class="ms" x="553" y="172">projected</text>
+<text class="ms" x="553" y="186">features</text>
+<path class="ln" d="M620 250 H658" marker-end="url(#a)"/>
+<rect class="gr" x="660" y="226" width="120" height="48" rx="6"/>
+<text class="b" x="672" y="247">graph</text>
+<text class="s" x="672" y="264">after iteration k</text>
+
+<!-- graph feedback -->
+<path class="lg" d="M720 274 V312 Q720 320 712 320 H438 Q430 320 430 312 V256" marker-end="url(#g)"/>
+<text class="s" x="575" y="338" text-anchor="middle" style="fill:#047857">next iteration starts from the updated graph</text>
+
+<!-- rasteriser feedback -->
+<rect class="op" x="660" y="140" width="120" height="44" rx="6"/>
+<text class="m" x="672" y="160">rasterizer</text>
+<text class="s" x="672" y="176">optional</text>
+<path class="lo" d="M720 226 V186" marker-end="url(#o)"/>
+<path class="lo" d="M720 140 V58 Q720 50 712 50 H108 Q100 50 100 58 V78" marker-end="url(#o)"/>
+<text class="s" x="410" y="66" text-anchor="middle" style="fill:#b45309">writes the graph into the last image channel(s); the encoder runs again</text>
+
+<text class="s" x="20" y="362">Without a rasterizer the image is encoded once, and each iteration re-samples those features at the moved node coordinates.</text>
+</svg>

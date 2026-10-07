@@ -468,14 +468,15 @@ document.write(`
 <h1>im2sim.mesh_ops.soft_threshold<a class="headerlink" href="#im2sim-mesh-ops-soft-threshold" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="im2sim.mesh_ops.soft_threshold">
-<span class="sig-name descname"><span class="pre">soft_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sharpness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L474-L487"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.soft_threshold" title="Link to this definition">#</a></dt>
-<dd><p>Thresholds a Tensor y according to a specified float threshold. Every value less than the threshold
-is assigned 1.0 and values greater are assigned 0.0</p>
+<span class="sig-name descname"><span class="pre">soft_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sharpness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/mesh_ops/mesh_utils.py#L477-L491"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.mesh_ops.soft_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Differentiable threshold of a Tensor y, computed as <code class="docutils literal notranslate"><span class="pre">sigmoid(sharpness</span> <span class="pre">*</span> <span class="pre">(threshold</span> <span class="pre">-</span> <span class="pre">y))</span></code>.
+Values well below the threshold approach 1.0 and values well above it approach 0.0.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>y</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>) – tensor containing the raw values</p></li>
-<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – threshold value</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – threshold value. Default is 1.5.</p></li>
+<li><p><strong>sharpness</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – steepness of the sigmoid. Higher values approach a hard threshold. Default is 10.0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

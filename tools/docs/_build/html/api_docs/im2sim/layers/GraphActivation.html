@@ -471,7 +471,7 @@ document.write(`
 <h1>im2sim.layers.GraphActivation<a class="headerlink" href="#im2sim-layers-graphactivation" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="im2sim.layers.GraphActivation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphActivation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation_name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/custom_graph_layers.py#L26-L50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphActivation" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphActivation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation_name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/custom_graph_layers.py#L26-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphActivation" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
 <p>A wrapper for activation functions to be used in graph neural networks.</p>
 <dl class="field-list simple">
@@ -482,20 +482,16 @@ document.write(`
 <p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="im2sim.layers.GraphActivation.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/custom_graph_layers.py#L39-L50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphActivation.forward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_graph</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/mrphys/im2sim/blob/main//im2sim/layers/custom_graph_layers.py#L39-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#im2sim.layers.GraphActivation.forward" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>) – The input tensor of shape (N, C) where N is the number of nodes and C is the number of channels.</p></li>
-<li><p><strong>batch</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a>) – The batch tensor of shape (N,) indicating the batch index for each node.</p></li>
-<li><p><strong>in_graph</strong> (<em>Data</em>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>in_graph</strong> (<em>pyg.data.Data</em>) – The input graph with node features <code class="docutils literal notranslate"><span class="pre">x</span></code> of shape (N, C).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The tensor after applying the activation function.</p>
+<dd class="field-even"><p>A copy of the graph with the activation function applied to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.14)"><em>Tensor</em></a></p>
+<dd class="field-odd"><p>pyg.data.Data</p>
 </dd>
 </dl>
 </dd></dl>

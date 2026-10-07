@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-labelledby="t">
+<title id="t">TrilinearProjection samples image features at node coordinates; MaskRasterizer turns node coordinates back into a voxel mask</title>
+<style>
+text{font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:13px;fill:#0f172a}
+.s{font-size:11.5px;fill:#475569}
+.m{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12px}
+.ms{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:11px;fill:#475569}
+.mb{font-family:"Roboto Mono",Menlo,Consolas,monospace;font-size:12.5px;font-weight:600}
+.card{fill:#fff;stroke:#e2e8f0}
+.ln{stroke:#475569;stroke-width:1.5;fill:none}
+.node{fill:#10b981;stroke:#065f46;stroke-width:1.5}
+.op{fill:#fef3c7;stroke:#b45309;stroke-width:1.5}
+</style>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<rect class="card" x="0.5" y="0.5" width="799" height="359" rx="10"/>
+<line x1="400" y1="20" x2="400" y2="340" stroke="#e2e8f0"/>
+<text class="mb" x="20" y="34">TrilinearProjection(image_dim)</text>
+<text class="s" x="20" y="52">image → graph: sample features at each node</text>
+<rect x="30" y="72" width="30" height="30" fill="#60a5fa" stroke="#ffffff" stroke-width="1"/>
+<rect x="60" y="72" width="30" height="30" fill="#93c5fd" stroke="#ffffff" stroke-width="1"/>
+<rect x="90" y="72" width="30" height="30" fill="#93c5fd" stroke="#ffffff" stroke-width="1"/>
+<rect x="120" y="72" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="150" y="72" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="72" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="30" y="102" width="30" height="30" fill="#60a5fa" stroke="#ffffff" stroke-width="1"/>
+<rect x="60" y="102" width="30" height="30" fill="#60a5fa" stroke="#ffffff" stroke-width="1"/>
+<rect x="90" y="102" width="30" height="30" fill="#93c5fd" stroke="#ffffff" stroke-width="1"/>
+<rect x="120" y="102" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="150" y="102" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="102" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="30" y="132" width="30" height="30" fill="#60a5fa" stroke="#ffffff" stroke-width="1"/>
+<rect x="60" y="132" width="30" height="30" fill="#60a5fa" stroke="#ffffff" stroke-width="1"/>
+<rect x="90" y="132" width="30" height="30" fill="#93c5fd" stroke="#ffffff" stroke-width="1"/>
+<rect x="120" y="132" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="150" y="132" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="132" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="30" y="162" width="30" height="30" fill="#93c5fd" stroke="#ffffff" stroke-width="1"/>
+<rect x="60" y="162" width="30" height="30" fill="#93c5fd" stroke="#ffffff" stroke-width="1"/>
+<rect x="90" y="162" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="120" y="162" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="150" y="162" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="162" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="30" y="192" width="30" height="30" fill="#bfdbfe" stroke="#ffffff" stroke-width="1"/>
+<rect x="60" y="192" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="90" y="192" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="120" y="192" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="150" y="192" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="192" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="30" y="222" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="60" y="222" width="30" height="30" fill="#dbeafe" stroke="#ffffff" stroke-width="1"/>
+<rect x="90" y="222" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="120" y="222" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="150" y="222" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="222" width="30" height="30" fill="#eff6ff" stroke="#ffffff" stroke-width="1"/>
+<rect x="30" y="72" width="180" height="180" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+<line x1="153.0" y1="186.0" x2="135.0" y2="177.0" stroke="#065f46" stroke-width="1.2" stroke-dasharray="3 2"/>
+<circle cx="135.0" cy="177.0" r="2.5" fill="#1e3a8a"/>
+<line x1="153.0" y1="186.0" x2="165.0" y2="177.0" stroke="#065f46" stroke-width="1.2" stroke-dasharray="3 2"/>
+<circle cx="165.0" cy="177.0" r="2.5" fill="#1e3a8a"/>
+<line x1="153.0" y1="186.0" x2="135.0" y2="207.0" stroke="#065f46" stroke-width="1.2" stroke-dasharray="3 2"/>
+<circle cx="135.0" cy="207.0" r="2.5" fill="#1e3a8a"/>
+<line x1="153.0" y1="186.0" x2="165.0" y2="207.0" stroke="#065f46" stroke-width="1.2" stroke-dasharray="3 2"/>
+<circle cx="165.0" cy="207.0" r="2.5" fill="#1e3a8a"/>
+<circle class="node" cx="117.0" cy="135.0" r="5.5"/>
+<text class="ms" x="125.0" y="129.0" style="fill:#065f46">0</text>
+<circle class="node" cx="153.0" cy="186.0" r="5.5"/>
+<text class="ms" x="173" y="191" style="fill:#065f46">1</text>
+<circle class="node" cx="81.0" cy="219.0" r="5.5"/>
+<text class="ms" x="89.0" y="213.0" style="fill:#065f46">2</text>
+<text class="s" x="30" y="270">image_features [B, C, D, H, W] (one slice)</text>
+<path class="ln" d="M222 162 H268" marker-end="url(#a)"/>
+<text class="ms" x="276" y="126" text-anchor="end" style="fill:#065f46">0</text>
+<rect x="280" y="110" width="24" height="24" fill="#dbeafe" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="304" y="110" width="24" height="24" fill="#60a5fa" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="328" y="110" width="24" height="24" fill="#bfdbfe" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="352" y="110" width="24" height="24" fill="#eff6ff" stroke="#2563eb" stroke-width="0.8"/>
+<text class="ms" x="276" y="150" text-anchor="end" style="fill:#065f46">1</text>
+<rect x="280" y="134" width="24" height="24" fill="#93c5fd" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="304" y="134" width="24" height="24" fill="#dbeafe" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="328" y="134" width="24" height="24" fill="#60a5fa" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="352" y="134" width="24" height="24" fill="#bfdbfe" stroke="#2563eb" stroke-width="0.8"/>
+<text class="ms" x="276" y="174" text-anchor="end" style="fill:#065f46">2</text>
+<rect x="280" y="158" width="24" height="24" fill="#eff6ff" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="304" y="158" width="24" height="24" fill="#93c5fd" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="328" y="158" width="24" height="24" fill="#dbeafe" stroke="#2563eb" stroke-width="0.8"/>
+<rect x="352" y="158" width="24" height="24" fill="#60a5fa" stroke="#2563eb" stroke-width="0.8"/>
+<text class="s" x="280" y="102">[N, C]</text>
+<text class="s" x="280" y="200">one row per node</text>
+<text class="s" x="20" y="300">Each node takes a weighted mix of the 8 voxels around it</text>
+<text class="s" x="20" y="315">(4 in this 2D slice). Coordinates are in input-image voxels and</text>
+<text class="s" x="20" y="330">are rescaled by feature size / image_dim, so features from any</text>
+<text class="s" x="20" y="345">encoder level can be sampled.</text>
+<text class="mb" x="420" y="34">MaskRasterizer(voxel_sizes)</text>
+<text class="s" x="420" y="52">graph → image: mark voxels that contain nodes</text>
+<rect x="430" y="72" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="460" y="72" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="490" y="72" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="520" y="72" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="550" y="72" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="580" y="72" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="430" y="102" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="460" y="102" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="490" y="102" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="520" y="102" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="550" y="102" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="580" y="102" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="430" y="132" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="460" y="132" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="490" y="132" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="520" y="132" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="550" y="132" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="580" y="132" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="430" y="162" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="460" y="162" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="490" y="162" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="520" y="162" width="30" height="30" fill="#f59e0b" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="550" y="162" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="580" y="162" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="430" y="192" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="460" y="192" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="490" y="192" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="520" y="192" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="550" y="192" width="30" height="30" fill="#fde68a" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="580" y="192" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="430" y="222" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="460" y="222" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="490" y="222" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="520" y="222" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="550" y="222" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="580" y="222" width="30" height="30" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<rect x="430" y="72" width="180" height="180" fill="none" stroke="#b45309" stroke-width="1.5"/>
+<circle class="node" cx="499.0" cy="90.0" r="4.5"/>
+<circle class="node" cx="472.0" cy="111.0" r="4.5"/>
+<circle class="node" cx="463.0" cy="138.0" r="4.5"/>
+<circle class="node" cx="478.0" cy="165.0" r="4.5"/>
+<circle class="node" cx="511.0" cy="186.0" r="4.5"/>
+<circle class="node" cx="547.0" cy="174.0" r="4.5"/>
+<circle class="node" cx="562.0" cy="144.0" r="4.5"/>
+<circle class="node" cx="544.0" cy="114.0" r="4.5"/>
+<text class="s" x="430" y="270">graph.coords on the image grid</text>
+<rect x="640" y="86" width="16" height="16" fill="#f59e0b" stroke="#b45309" stroke-width="0.8"/><text class="s" x="662" y="98.5">voxel holds a node</text>
+<rect x="640" y="110" width="16" height="16" fill="#fde68a" stroke="#b45309" stroke-width="0.8"/><text class="s" x="662" y="122.5">added by 3×3×3 dilation</text>
+<path class="ln" d="M630 190 H660" marker-end="url(#a)"/>
+<rect class="op" x="662" y="168" width="122" height="46" rx="6"/>
+<text class="m" x="672" y="187">image[:, -1]</text>
+<text class="s" x="672" y="204">← mask</text>
+<text class="s" x="420" y="300">Voxel index = floor(coords / voxel_sizes). The mask replaces the</text>
+<text class="s" x="420" y="315">last channel of the image it is given. FeatureRasterizer writes</text>
+<text class="s" x="420" y="330">node features into the last channels instead of a 0/1 mask.</text>
+</svg>

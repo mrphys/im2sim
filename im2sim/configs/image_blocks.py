@@ -40,10 +40,11 @@ class ImageConvBlockConfig(Config):
             The number of convolutional layers in the block. Default is `1`.
 
         activation (str | None):
-            The activation function to use after each convolutional layer except the last. Default is `"ReLU"`.
+            The activation function to use after each convolutional layer, including the last. Default is `"ReLU"`.
 
         out_activation (str | None):
-            The activation function to use after the final layer. Default is `None`.
+            An additional activation function applied to the block output, after `activation` and any
+            residual connection on the final layer (e.g. `"sigmoid"` or `"softmax"`). Default is `None`.
 
         conv_cfg (LayerConfig):
             Configuration for the convolutional layers, including kernel size and padding.

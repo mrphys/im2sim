@@ -73,8 +73,11 @@ class ReverseHalfUNetConfig(Config):
             Only used when `out_block_cfg` is None.
 
         enable_temporal (bool):
-            If True, layers are wrapped with `TemporalFactorizer` so the model accepts inputs of shape `(N, C, T, *spatial)` with the time axis after channels.
-            Only supported for rank `2` and `3`, and only for layer types supported by `TemporalFactorizer`.
+            If True, the temporal versions of the layers (see `im2sim.layers.temporal_layers`) are used, so the model accepts inputs of shape `(N, C, T, *spatial)` with the time axis after channels.
+            Only supported for rank `2` and `3` and the layers Conv, ConvTranspose, MaxPool, AvgPool, BatchNorm, InstanceNorm, Upsample and Dropout;
+            other layers (e.g. GhostConv or SqueezeExcite) raise an `UnsupportedTemporalLayerError`.
+            A scalar conv `kernel_size`/`padding` also applies to time, while pooling, upsampling and strides only resample the spatial dims
+            unless a `(T, *spatial)` tuple is given.
             Default is `False`.
 
     Examples:

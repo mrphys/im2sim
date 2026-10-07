@@ -46,8 +46,10 @@ class ImageConvBlock(torch.nn.Module):
             Configuration object that defines the parameters of the block.
 
         temporal (bool):
-            If True, each layer is wrapped with `TemporalFactorizer` so the block accepts inputs of shape
-            `(N, C, T, *spatial)`. Only supported for rank `2` and `3`. Default is `False`.
+            If True, the temporal versions of the layers (see `im2sim.layers.temporal_layers`) are used,
+            so the block accepts inputs of shape `(N, C, T, *spatial)`. Only supported for rank `2` and `3`
+            and the layers in `im2sim.layers.temporal_layers.SUPPORTED_TEMPORAL_LAYERS`; other layers
+            raise an `UnsupportedTemporalLayerError`. Default is `False`.
 
     Examples:
 
@@ -168,7 +170,7 @@ class ImageConvBlock(torch.nn.Module):
                 norm,
                 dropout,
                 attn,
-                self.activation if i < self.depth - 1 else torch.nn.Identity(),
+                self.activation,
             )
             self.layers.append(block)
 

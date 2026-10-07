@@ -255,7 +255,7 @@ class TestImageConvBlock:
 
             assert len(model.layers) == depth
 
-    def test_activation_is_applied_between_layers(self):
+    def test_activation_is_applied_after_every_layer(self):
         cfg = ImageConvBlockConfig(
             depth=3,
             activation="ReLU",
@@ -268,10 +268,16 @@ class TestImageConvBlock:
             cfg=cfg,
         )
 
-        # The activation should be present on all but the final layer.
-        assert isinstance(model.layers[0][-1], torch.nn.ReLU)
-        assert isinstance(model.layers[1][-1], torch.nn.ReLU)
-        assert isinstance(model.layers[2][-1], torch.nn.Identity)
+        # The activation should be present on every layer, including the final one.
+        for layer in model.layers:
+            assert isinstance(layer[-1], torch.nn.ReLU)
+
+    def test_single_layer_block_applies_activation(self):
+        model = ImageConvBlock(
+            in_channels=1, out_channels=4, rank=2, cfg=ImageConvBlockConfig(depth=1)
+        )
+        y = model(torch.randn(2, 1, 8, 8))
+        assert (y >= 0).all()
 
     def test_no_activation(self, input_tensor):
         cfg = ImageConvBlockConfig(

@@ -106,6 +106,6 @@ class SimpleGraphDecoder(torch.nn.Module):
         graph = self.decoder(graph)
 
         # Keep only the original number of channels
-        graph.x = graph.x[:, :init_channels]
+        # graph.x = graph.x[:, :init_channels]
 
         return graph

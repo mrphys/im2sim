@@ -310,6 +310,7 @@ class HalfUNetConfig(Config):
         This preset is typically used for image reconstruction or superresolution tasks,
         where the output is expected to be a continuous value (e.g., pixel intensity).
         """
+        self.stem_block_cfg = self.stem_block_cfg.reconstruction_mode()
         self.out_activation = None
         self.out_block_cfg.out_activation = None
         self.out_block_cfg = self.out_block_cfg.reconstruction_mode()

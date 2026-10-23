@@ -74,6 +74,33 @@ class SimpleGraphDecoder(torch.nn.Module):
 
         in_channels += out_channels if cfg.pred_feature_key != "x" else 0
 
+        module = self._build_module(in_channels, out_channels, cfg)
+
+        self.decoder = GNN_PROTOCOLS[cfg.protocol](
+            module=module,
+            in_channels=in_channels,
+            out_channels=out_channels,
+            pred_feature_key=cfg.pred_feature_key,
+            pred_feature_channels=cfg.pred_feature_channels,
+            include_ids=cfg.include_ids,
+            exclude_ids=cfg.exclude_ids,
+        )
+
+    def _build_module(
+        self, in_channels: int, out_channels: int, cfg: SimpleGraphDecoderConfig
+    ) -> torch.nn.Module:
+        """
+        Builds the graph module wrapped by the GNN protocol. Subclasses override this to decode
+        with a different network.
+
+        Args:
+            in_channels (int): Number of channels of `graph.x` when the module is called.
+            out_channels (int): Number of channels the module predicts.
+            cfg (SimpleGraphDecoderConfig): Configuration of the decoder.
+
+        Returns:
+            torch.nn.Module: A module mapping a graph to a graph with `out_channels` in `graph.x`.
+        """
         hidden_channels = (
             cfg.block_cfg.hidden_channels
             if cfg.block_cfg.hidden_channels is not None
@@ -95,17 +122,7 @@ class SimpleGraphDecoder(torch.nn.Module):
             cfg=deepcopy(cfg.block_cfg).to_single_conv(),
         )
 
-        module = torch.nn.Sequential(*process_blocks, out_conv)
-
-        self.decoder = GNN_PROTOCOLS[cfg.protocol](
-            module=module,
-            in_channels=in_channels,
-            out_channels=out_channels,
-            pred_feature_key=cfg.pred_feature_key,
-            pred_feature_channels=cfg.pred_feature_channels,
-            include_ids=cfg.include_ids,
-            exclude_ids=cfg.exclude_ids,
-        )
+        return torch.nn.Sequential(*process_blocks, out_conv)
 
     def forward(
         self, in_graph: pyg.data.Data, projected_features: torch.Tensor = None

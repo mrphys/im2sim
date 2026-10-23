@@ -15,6 +15,6 @@
 # ==============================================================================
 
 
-from im2sim import configs, data, layers, losses, models, plot
+from im2sim import configs, data, lab, layers, losses, models, plot
 
-__all__ = ["configs", "layers", "models", "losses", "data", "plot"]
+__all__ = ["configs", "layers", "models", "losses", "data", "plot", "lab"]

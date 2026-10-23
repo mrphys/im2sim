@@ -16,6 +16,8 @@ Classes
     DefaultGraphNorm
     DepthwiseConv
     DepthwiseSeparableConv
+    DirectionalBlock
+    DirectionalConv
     EdgeDropout
     EfficientChannelAttn
     FeatureRasterizer
@@ -23,12 +25,15 @@ Classes
     GraphActivation
     GraphConvBlock
     GraphDropout
+    GraphContext
     GraphECA
     GraphSE
     ImageConvBlock
     MaskRasterizer
     NodeDropout
+    SparseOps
     SqueezeExcite
+    StructVirtualNode
     TrilinearProjection
 
 Functions

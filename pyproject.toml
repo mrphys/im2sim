@@ -147,6 +147,10 @@ pythonpath = [
     ".",
 ]
 
+markers = [
+    "slow: trains models; deselect with -m 'not slow'",
+]
+
 filterwarnings = [
     "ignore:.*torch_geometric.distributed.*:DeprecationWarning",
 ]

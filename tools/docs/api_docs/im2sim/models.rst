@@ -16,6 +16,8 @@ Classes
     Im2SimGen2
     ReverseHalfUNet
     SimpleGraphDecoder
+    StructVN
+    StructVNDecoder
     UNet
 
 Functions

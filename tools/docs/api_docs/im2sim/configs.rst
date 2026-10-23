@@ -17,6 +17,7 @@ Classes
     LayerConfig
     ReverseHalfUNetConfig
     SimpleGraphDecoderConfig
+    StructVNConfig
     UNetConfig
 
 Functions

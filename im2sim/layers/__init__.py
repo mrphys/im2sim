@@ -37,6 +37,13 @@ from im2sim.layers.graph_blocks import GraphConvBlock
 from im2sim.layers.image_blocks import ImageConvBlock
 from im2sim.layers.projections import TrilinearProjection
 from im2sim.layers.rasterization import FeatureRasterizer, MaskRasterizer
+from im2sim.layers.virtual_node_layers import (
+    DirectionalBlock,
+    DirectionalConv,
+    GraphContext,
+    SparseOps,
+    StructVirtualNode,
+)
 
 __all__ = [
     "DepthwiseConv",
@@ -58,4 +65,9 @@ __all__ = [
     "ChannelDropout",
     "GraphECA",
     "GraphSE",
+    "DirectionalConv",
+    "DirectionalBlock",
+    "StructVirtualNode",
+    "GraphContext",
+    "SparseOps",
 ]

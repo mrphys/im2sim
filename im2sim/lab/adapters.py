@@ -132,9 +132,7 @@ class ModelAdapter:
             return self.call_fn(self.model, g)
         if self.kind == "pyg_xe":
             out = self.model(g[self.input_key], g.edge_index)
-        elif self.kind == "pyg_data":
-            out = self.model(g)
-        elif self.kind == "graph":
+        elif self.kind == "pyg_data" or self.kind == "graph":
             out = self.model(g)
         elif self.kind == "im2sim":
             image = self.image(g) if callable(self.image) else self.image

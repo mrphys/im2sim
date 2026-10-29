@@ -1,4 +1,4 @@
-torch<3,>=2.3
+torch<=2.14.0,>=2.3
 torch-geometric
 numpy
 matplotlib

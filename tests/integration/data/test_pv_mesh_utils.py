@@ -1,10 +1,9 @@
-import torch
 import hypothesis.strategies as st
 import numpy as np
 import pyvista as pv
+import torch
 from hypothesis import given
 from torch_geometric.data import Data
-
 
 from im2sim.mesh_ops import *
 

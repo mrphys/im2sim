@@ -1,5 +1,4 @@
 import numpy as np
-import numpy as np
 import pytest
 import torch
 
@@ -9,7 +8,6 @@ from im2sim.losses.confusion_losses import (
     IoULoss,
     TverskyLoss,
 )
-
 
 LOSS_CLASSES = {
     "FocalTverskyLoss": FocalTverskyLoss,

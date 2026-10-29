@@ -4,11 +4,11 @@ import pytest
 import torch
 import torch_geometric as pyg
 
+from im2sim.configs.graph_blocks import GraphConvBlockConfig
 from im2sim.models.graph_decoders import (
     SimpleGraphDecoder,
     SimpleGraphDecoderConfig,
 )
-from im2sim.configs.graph_blocks import GraphConvBlockConfig
 
 
 @pytest.fixture

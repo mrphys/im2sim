@@ -15,6 +15,7 @@
 # ==============================================================================
 
 import copy
+from collections.abc import Sequence
 
 import torch
 import torch_geometric as pyg
@@ -22,8 +23,8 @@ from torch.utils.checkpoint import checkpoint
 
 from im2sim.configs.virtual_node import StructVNConfig
 from im2sim.layers.virtual_node_layers import (
-    DirectionalBlock,
     GraphContext,
+    LocalBlock,
     StructVirtualNode,
 )
 from im2sim.models.graph_decoders import SimpleGraphDecoder
@@ -34,10 +35,11 @@ class StructVN(torch.nn.Module):
     """
     Graph network that propagates dense boundary conditions with one virtual node per structure.
 
-    ``encode -> [local layers -> virtual-node exchange] x n_blocks -> decode``. The local layers
-    are sparse-matmul layers on ``[h, mean, d_x h, d_y h, d_z h]`` (see
-    :class:`~im2sim.layers.virtual_node_layers.SparseOps`), and each virtual-node exchange pools
-    the nodes of every structure (``cfg.structure_keys``) into a virtual node, lets the virtual
+    ``encode -> [local layers -> virtual-node exchange] x n_blocks -> decode``. By default the
+    local layers are sparse-matmul layers on ``[h, mean, d_x h, d_y h, d_z h]`` (see
+    :class:`~im2sim.layers.virtual_node_layers.SparseOps`); `cfg.conv_cfg` swaps in any other PyG
+    graph convolution (e.g. ``GATConv``). Each virtual-node exchange pools
+    the nodes of every structure (``structure_keys``) into a virtual node, lets the virtual
     nodes interact, and broadcasts the result back with attention. Geometry enters through the
     node coordinates (``coords`` or ``pos``), normalised per graph and Fourier encoded, and through
     the directional differences.
@@ -52,22 +54,43 @@ class StructVN(torch.nn.Module):
         cfg (StructVNConfig):
             Configuration object that defines the parameters of the network.
 
+        structure_keys (Sequence[str]):
+            Graph attributes holding the node indices of each structure, e.g. the wall and the
+            caps. There is one virtual node per key. A node in several structures belongs to the
+            last one.
+
     Examples:
 
         .. code-block:: python
 
-            model = StructVN(in_channels=8, out_channels=4, cfg=StructVNConfig())
+            model = StructVN(
+                in_channels=8,
+                out_channels=4,
+                cfg=StructVNConfig(),
+                structure_keys=["wall_index", "inlet_index", "outlet_index"],
+            )
             out_graph = model(graph)  # out_graph.x has shape (N, 4)
 
         The graph must have `x`, `edge_index`, `coords` (or `pos`) and one index attribute per
-        entry of `cfg.structure_keys`. Batches of graphs are supported.
+        entry of `structure_keys`. Batches of graphs are supported.
     """
 
-    def __init__(self, in_channels: int, out_channels: int, cfg: StructVNConfig):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        cfg: StructVNConfig,
+        structure_keys: Sequence[str],
+    ):
         super().__init__()
+        if isinstance(structure_keys, str) or len(structure_keys) == 0:
+            raise ValueError(
+                f"structure_keys must be a non-empty sequence of graph attribute names, got {structure_keys!r}."
+            )
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.cfg = cfg
+        self.structure_keys = tuple(structure_keys)
 
         c = cfg.hidden_channels
         pos_channels = 3 + 6 * cfg.n_fourier
@@ -77,11 +100,14 @@ class StructVN(torch.nn.Module):
             torch.nn.Linear(c, c),
         )
         self.local = torch.nn.ModuleList(
-            torch.nn.ModuleList(DirectionalBlock(c, cfg.activation) for _ in range(cfg.n_local))
+            torch.nn.ModuleList(
+                LocalBlock(c, cfg.conv_cfg, cfg.activation) for _ in range(cfg.n_local)
+            )
             for _ in range(cfg.n_blocks)
         )
+        self.uses_sparse_ops = LocalBlock.uses_sparse_ops(cfg.conv_cfg)
         self.far = torch.nn.ModuleList(
-            StructVirtualNode(c, len(cfg.structure_keys), cfg.heads, cfg.activation)
+            StructVirtualNode(c, len(self.structure_keys), cfg.heads, cfg.activation)
             for _ in range(cfg.n_blocks)
         )
         self.decode = torch.nn.Sequential(
@@ -99,7 +125,7 @@ class StructVN(torch.nn.Module):
             pyg.data.Data: A shallow copy of the graph with the prediction in `x`,
             of shape (N, out_channels).
         """
-        ctx = GraphContext(in_graph, self.cfg.structure_keys)
+        ctx = GraphContext(in_graph, self.structure_keys)
         h = self.encode(torch.cat([in_graph.x, ctx.pos_features(self.cfg.n_fourier)], dim=1))
 
         # Checkpointing keeps training memory small (a real mesh has ~10^4 nodes x 5C features)
@@ -113,9 +139,12 @@ class StructVN(torch.nn.Module):
             def run(f, *args):
                 return f(*args)
 
+        # Built outside the checkpointed blocks, and only if the convolution needs it
+        neighbours = ctx.ops if self.uses_sparse_ops else ctx.edge_index
+
         for local, far in zip(self.local, self.far, strict=True):
             for block in local:
-                h = run(block, h, ctx.ops)
+                h = run(block, h, neighbours)
             h = run(far, h, ctx)
 
         graph = copy.copy(in_graph)
@@ -146,6 +175,9 @@ class StructVNDecoder(SimpleGraphDecoder):
         cfg (StructVNConfig):
             Configuration for the network and the protocol.
 
+        structure_keys (Sequence[str]):
+            See :class:`StructVN`.
+
         graph_channels (int, optional):
             See :class:`SimpleGraphDecoder`.
 
@@ -154,11 +186,28 @@ class StructVNDecoder(SimpleGraphDecoder):
         .. code-block:: python
 
             cfg = StructVNConfig(pred_feature_key="cfd")
-            decoder = StructVNDecoder(in_channels=8, out_channels=4, cfg=cfg)
+            decoder = StructVNDecoder(
+                in_channels=8,
+                out_channels=4,
+                cfg=cfg,
+                structure_keys=["wall_index", "inlet_index", "outlet_index"],
+            )
             out_graph = decoder(graph)  # out_graph.cfd has shape (N, 4)
     """
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        cfg: StructVNConfig,
+        structure_keys: Sequence[str],
+        graph_channels: int | None = None,
+    ):
+        # Set first: the base class calls `_build_module` from its `__init__`
+        self.structure_keys = tuple(structure_keys)
+        super().__init__(in_channels, out_channels, cfg, graph_channels=graph_channels)
 
     def _build_module(
         self, in_channels: int, out_channels: int, cfg: StructVNConfig
     ) -> torch.nn.Module:
-        return StructVN(in_channels, out_channels, cfg)
+        return StructVN(in_channels, out_channels, cfg, self.structure_keys)

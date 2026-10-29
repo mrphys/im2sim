@@ -24,16 +24,15 @@ forward pass in a :class:`GraphContext` and shared by all layers.
 """
 
 import math
+from collections.abc import Sequence
 
 import torch
 import torch.nn.functional as F
 from torch_geometric.data import Data
 from torch_geometric.utils import degree, scatter
 
-from im2sim.utils.layer_util import get_activation, register_pyg_layer
-
-#: Structure ids of a mesh: attributes holding node indices, later ones override earlier ones.
-DEFAULT_STRUCTURE_KEYS = ("surface_index", "cap_1_index", "cap_2_index", "cap_3_index")
+from im2sim.configs.core import LayerConfig
+from im2sim.utils.layer_util import PYG_LAYERS, get_activation, register_pyg_layer
 
 
 def _coords(graph: Data) -> torch.Tensor:
@@ -101,7 +100,7 @@ class GraphContext:
             rim where a cap meets the wall). Only needed by :attr:`assign`.
     """
 
-    def __init__(self, graph: Data, structure_keys=DEFAULT_STRUCTURE_KEYS):
+    def __init__(self, graph: Data, structure_keys: Sequence[str]):
         self.graph = graph
         self.coords = _coords(graph)
         self.edge_index = graph.edge_index
@@ -221,6 +220,61 @@ class DirectionalBlock(torch.nn.Module):
             torch.Tensor: Node features of shape (N, C).
         """
         return h + self.out(self.act(self.norm(self.mix.apply(h, ops))))
+
+
+class LocalBlock(torch.nn.Module):
+    """
+    Residual local layer with a configurable graph convolution: ``h + out(act(norm(conv(h))))``.
+
+    The same block as :class:`DirectionalBlock`, but the convolution is looked up by name in the
+    PyG layer registry, so any layer taking ``(x, edge_index)`` can be used, e.g. ``GATConv``,
+    ``GCNConv`` or ``SAGEConv``, as well as ``DirectionalConv``.
+
+    Args:
+        channels (int): Number of channels, kept by the block.
+        conv_cfg (LayerConfig | None): The convolution, built as ``conv(channels, channels,
+            **conv_cfg.kwargs)``. It must output ``channels`` channels, so a multi-head layer needs
+            e.g. ``kwargs={"heads": 4, "concat": False}``. Default is ``None``, which is
+            ``DirectionalConv``.
+        activation (str | None): Activation function. Default is ``"GELU"``.
+    """
+
+    def __init__(
+        self,
+        channels: int,
+        conv_cfg: LayerConfig | None = None,
+        activation: str | None = "GELU",
+    ):
+        super().__init__()
+        name = "DirectionalConv" if conv_cfg is None else conv_cfg.name
+        if name is None or name not in PYG_LAYERS:
+            raise ValueError(f"Local convolution {name} not found in the PyG layers registry.")
+        kwargs = {} if conv_cfg is None else conv_cfg.kwargs
+        self.mix = PYG_LAYERS[name](channels, channels, **kwargs)
+        self.norm = torch.nn.LayerNorm(channels)
+        self.act = get_activation(activation)
+        self.out = torch.nn.Linear(channels, channels)
+
+    @staticmethod
+    def uses_sparse_ops(conv_cfg: LayerConfig | None) -> bool:
+        """Whether the convolution takes :class:`SparseOps` (``DirectionalConv``) rather than ``edge_index``."""
+        return conv_cfg is None or issubclass(PYG_LAYERS[conv_cfg.name], DirectionalConv)
+
+    def forward(self, h: torch.Tensor, neighbours: "SparseOps | torch.Tensor") -> torch.Tensor:
+        """
+        Args:
+            h (torch.Tensor): Node features of shape (N, C).
+            neighbours (SparseOps | torch.Tensor): The :class:`SparseOps` of the graph if
+                :meth:`uses_sparse_ops`, otherwise its ``edge_index`` of shape (2, E).
+
+        Returns:
+            torch.Tensor: Node features of shape (N, C).
+        """
+        if isinstance(self.mix, DirectionalConv):
+            mixed = self.mix.apply(h, neighbours)
+        else:
+            mixed = self.mix(h, neighbours)
+        return h + self.out(self.act(self.norm(mixed)))
 
 
 class StructVirtualNode(torch.nn.Module):

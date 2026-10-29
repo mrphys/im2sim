@@ -41,6 +41,7 @@ from im2sim.layers.virtual_node_layers import (
     DirectionalBlock,
     DirectionalConv,
     GraphContext,
+    LocalBlock,
     SparseOps,
     StructVirtualNode,
 )
@@ -67,6 +68,7 @@ __all__ = [
     "GraphSE",
     "DirectionalConv",
     "DirectionalBlock",
+    "LocalBlock",
     "StructVirtualNode",
     "GraphContext",
     "SparseOps",

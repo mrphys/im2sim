@@ -99,7 +99,7 @@ def test_missing_true_feature_raises():
 
     with pytest.raises(
         ValueError,
-        match=f"Both true_graph and pred_graph must have non-None 'x' attribute."
+        match="Both true_graph and pred_graph must have non-None 'x' attribute."
     ):
         loss(true_graph, pred_graph)
 
@@ -115,7 +115,7 @@ def test_missing_pred_feature_raises():
 
     with pytest.raises(
         ValueError,
-        match=f"Both true_graph and pred_graph must have non-None 'x' attribute.",
+        match="Both true_graph and pred_graph must have non-None 'x' attribute.",
     ):
         loss(true_graph, pred_graph)
 

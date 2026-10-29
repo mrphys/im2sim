@@ -3,22 +3,21 @@ import torch
 from torch_geometric.data import Data
 
 from im2sim.losses.mesh import (
-    MeshLoss,
-    EdgeLengthDeviationLoss,
     AspectRatioLoss,
+    EdgeLengthDeviationLoss,
     FaceNormalLoss,
     InversionLoss,
-    edge_length_deviation_loss,
+    MeshLoss,
+    _aspect_ratio,
+    _edge_length_deviation,
+    _face_norm,
     aspect_ratio_loss,
+    edge_length_deviation_loss,
     face_norm_consistency,
     face_norm_loss,
     inversion_loss,
-    _edge_length_deviation,
-    _aspect_ratio,
-    _face_norm,
     tet_det,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures / helpers

@@ -2,10 +2,9 @@ import pytest
 import torch
 import torch_geometric as pyg
 
-from im2sim.layers.graph_blocks import GraphConvBlock
 from im2sim.configs.core import LayerConfig
 from im2sim.configs.graph_blocks import GraphConvBlockConfig
-
+from im2sim.layers.graph_blocks import GraphConvBlock
 
 # ---------------------------------------------------------------------------
 # Fixtures / helpers

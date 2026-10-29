@@ -75,8 +75,9 @@ def test_hidden_states_of_im2sim_decoder(tube):
 
 
 def test_run_suite_mixes_pyg_and_im2sim(tube):
-    import torch_geometric.nn as gnn
     from functools import partial
+
+    import torch_geometric.nn as gnn
 
     models = {
         "pyg_gcn": lambda i, o: ModelAdapter(gnn.GCN(i, 8, 3, out_channels=o)),

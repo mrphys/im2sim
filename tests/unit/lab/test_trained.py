@@ -18,7 +18,6 @@
 
 import numpy as np
 import pytest
-import torch
 import torch_geometric.nn as gnn
 
 from im2sim.lab import (

@@ -4,7 +4,6 @@ import torch
 from im2sim.configs.core import LayerConfig
 from im2sim.models.halfunet import HalfUNet, HalfUNetConfig
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

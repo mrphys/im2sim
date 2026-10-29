@@ -25,8 +25,8 @@ import pytest
 import torch_geometric.nn as gnn
 
 from im2sim.lab import (
-    ModelAdapter,
     LabResult,
+    ModelAdapter,
     equivariance_error,
     grid_graph,
     jacobian_reach,

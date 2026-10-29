@@ -8,6 +8,7 @@ from im2sim.layers import (
     DirectionalConv,
     GraphContext,
     GraphConvBlock,
+    LocalBlock,
     SparseOps,
     StructVirtualNode,
 )
@@ -142,6 +143,23 @@ def test_directional_block_is_residual():
     torch.nn.init.zeros_(block.out.bias)
     out = block(graph.x, SparseOps(graph.coords, graph.edge_index))
     assert torch.equal(out, graph.x)
+
+
+def test_local_block_default_matches_directional_block():
+    graph = make_graph()
+    ops = SparseOps(graph.coords, graph.edge_index)
+    directional, local = DirectionalBlock(6), LocalBlock(6)
+    local.load_state_dict(directional.state_dict())
+    assert LocalBlock.uses_sparse_ops(None)
+    assert torch.allclose(local(graph.x, ops), directional(graph.x, ops))
+
+
+def test_local_block_with_pyg_conv_takes_edge_index():
+    graph = make_graph()
+    cfg = LayerConfig(name="GATConv", kwargs={})
+    block = LocalBlock(6, cfg)
+    assert not LocalBlock.uses_sparse_ops(cfg)
+    assert block(graph.x, graph.edge_index).shape == graph.x.shape
 
 
 # ---------------------------------------------------------------------------

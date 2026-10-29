@@ -29,6 +29,7 @@ Classes
     GraphECA
     GraphSE
     ImageConvBlock
+    LocalBlock
     MaskRasterizer
     NodeDropout
     SparseOps

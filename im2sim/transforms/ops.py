@@ -275,3 +275,82 @@ class FitZScoreOp(FittableOperation):
     def complete_fit(self):
         self.mean = self.sum / self.numel
         self.std = torch.sqrt(self.sq_sum / self.numel - self.mean**2)
+
+
+@register_op
+class FitPCAOp(FittableOperation):
+    """
+    Node-wise PCA over the channel axis, fitted from the data.
+
+    Every node (all non-channel positions of every sample) is treated as one observation and the
+    channels as its features, so ``C`` channels are projected onto ``n_components`` principal axes.
+    Statistics are accumulated in ``fit_step``, so fitting streams over the dataset.
+
+    After fitting, ``explained_variance`` and ``explained_variance_ratio`` hold the values for all
+    ``C`` components (not only the kept ones) to help choosing ``n_components``.
+
+    Args:
+        n_components (int): Number of principal components to keep.
+        channel_dim (int, optional): Dimension of the channel axis. Default is -1.
+    """
+
+    def __init__(self, n_components, channel_dim=-1):
+        if n_components < 1:
+            raise ValueError("n_components must be at least 1")
+        self.n_components = n_components
+        self.channel_dim = channel_dim
+        self.count = 0
+        self.sum = None
+        self.xtx = None
+
+    def _flatten(self, x):
+        x = torch.moveaxis(x, self.channel_dim, -1)
+        return x.reshape(-1, x.shape[-1])
+
+    def forward(self, x):
+        x = torch.moveaxis(x, self.channel_dim, -1)
+        mean = self.mean.to(x.dtype)
+        comps = self.components.to(x.dtype)
+        return torch.moveaxis((x - mean) @ comps.T, -1, self.channel_dim)
+
+    def inverse(self, x):
+        x = torch.moveaxis(x, self.channel_dim, -1)
+        mean = self.mean.to(x.dtype)
+        comps = self.components.to(x.dtype)
+        return torch.moveaxis(x @ comps + mean, -1, self.channel_dim)
+
+    def fit_step(self, x):
+        x = self._flatten(x).double()
+        if self.sum is None:
+            self.sum = torch.zeros(x.shape[1], dtype=torch.float64, device=x.device)
+            self.xtx = torch.zeros(x.shape[1], x.shape[1], dtype=torch.float64, device=x.device)
+        self.count += x.shape[0]
+        self.sum += x.sum(0)
+        self.xtx += x.T @ x
+
+    def complete_fit(self):
+        if self.count < 2:
+            raise RuntimeError("PCA needs at least 2 nodes to fit")
+        n_channels = self.sum.shape[0]
+        if self.n_components > n_channels:
+            raise ValueError(f"n_components={self.n_components} exceeds {n_channels} channels")
+
+        mean = self.sum / self.count
+        cov = (self.xtx - self.count * torch.outer(mean, mean)) / (self.count - 1)
+        evals, evecs = torch.linalg.eigh(cov)
+        evals = evals.flip(0).clamp(min=0)
+        evecs = evecs.flip(1)
+
+        # deterministic sign: largest loading of each component is positive
+        signs = torch.sign(evecs[evecs.abs().argmax(0), torch.arange(n_channels)])
+        evecs = evecs * torch.where(signs == 0, torch.ones_like(signs), signs)
+
+        self.mean = mean.float()
+        self.components = evecs[:, : self.n_components].T.contiguous().float()
+        self.explained_variance = evals.float()
+        self.explained_variance_ratio = (evals / (evals.sum() + eps)).float()
+
+        # free the accumulators
+        self.count = 0
+        self.sum = None
+        self.xtx = None

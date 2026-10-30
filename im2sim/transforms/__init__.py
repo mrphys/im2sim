@@ -16,6 +16,7 @@
 
 from im2sim.transforms.ops import (
     FitNormOp,
+    FitPCAOp,
     FitRangeNormOp,
     FitZScoreOp,
     NormOp,
@@ -25,12 +26,14 @@ from im2sim.transforms.ops import (
 )
 from im2sim.transforms.transforms import (
     FitNorm,
+    FitPCA,
     FitRangeNorm,
     FitZScore,
     Norm,
     PowerScaling,
     RangeNorm,
     ZScore,
+    explained_variance,
     transform_from_fn,
 )
 
@@ -39,6 +42,9 @@ __all__ = [
     "Norm",
     "RangeNorm",
     "FitNorm",
+    "FitPCA",
+    "FitPCAOp",
+    "explained_variance",
     "FitRangeNorm",
     "FitZScore",
     "PowerScaling",

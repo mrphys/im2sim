@@ -14,9 +14,12 @@
 # limitations under the License.
 # ==============================================================================
 
-from im2sim.data.core import Operation, Transform
+import torch
+
+from im2sim.data.core import DataLoader, Operation, Transform
 from im2sim.transforms.ops import (
     FitNormOp,
+    FitPCAOp,
     FitRangeNormOp,
     FitZScoreOp,
     NormOp,
@@ -307,3 +310,70 @@ def FitZScore(
         channel_dim=channel_dim,
         name=name,
     )
+
+
+def FitPCA(
+    n_components: int,
+    keys: list[str],
+    attr: str = None,
+    channel_dim: int = -1,
+    name: str = None,
+) -> Transform:
+    """
+    Factory function to create a node-wise PCA transform using `im2sim.transforms.ops.FitPCAOp`.
+
+    Every node is an observation and the channels are its features, so the channel axis changes
+    from C to `n_components`. Use `explained_variance` to choose `n_components`.
+
+    Args:
+        n_components (int): Number of principal components to keep.
+        keys (list): List of keys to which the PCA will be applied.
+        attr (str, optional): Object attribute to transform. For example in a `pyg.data.Data` object this could be `'x'`. Defaults to None.
+        channel_dim (int, optional): Dimension of the channel axis. Defaults to -1.
+        name (str, optional): Name of the transform. Defaults to None.
+
+    Returns:
+        Transform: An instance of `im2sim.data.Transform` configured with the fittable PCA operation.
+    """
+    return Transform(
+        op=FitPCAOp(n_components=n_components, channel_dim=channel_dim),
+        keys=keys,
+        attr=attr,
+        name=name,
+    )
+
+
+def explained_variance(
+    dataset,
+    key: str,
+    attr: str = None,
+    channel_dim: int = -1,
+) -> dict[str, torch.Tensor]:
+    """
+    Computes the node-wise PCA explained variance of every channel component, to help choosing
+    `n_components` for `FitPCA`.
+
+    Args:
+        dataset (im2sim.data.Dataset): Dataset to fit on, normally the training set. Its own
+            transforms are applied first.
+        key (str): Key of the data to analyse.
+        attr (str, optional): Object attribute to analyse. Defaults to None.
+        channel_dim (int, optional): Dimension of the channel axis. Defaults to -1.
+
+    Returns:
+        dict: ``explained_variance``, ``explained_variance_ratio`` and ``cumulative_ratio``,
+        each of length C and ordered by decreasing variance.
+    """
+    sample = dataset[0]
+    target = sample[key] if attr is None else getattr(sample[key], attr)
+    n_channels = target.shape[channel_dim]
+
+    transform = FitPCA(n_channels, keys=[key], attr=attr, channel_dim=channel_dim)
+    transform.fit(DataLoader(dataset, batch_size=1))
+
+    ratio = transform.op.explained_variance_ratio
+    return {
+        "explained_variance": transform.op.explained_variance,
+        "explained_variance_ratio": ratio,
+        "cumulative_ratio": ratio.cumsum(0),
+    }

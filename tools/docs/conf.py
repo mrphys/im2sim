@@ -108,7 +108,7 @@ autoclass_content = 'both'
 # -- Options for HTML output -------------------------------------------------
 
 html_title = 'IM2SIM Documentation'
-html_logo = '../assets/im2sim_logo.png'
+html_logo = '../assets/im2sim_logo.png'  # Fallback; light/dark variants set below.
 html_favicon = '../assets/im2sim_logo.png'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -130,7 +130,10 @@ html_theme_options = {
         'colab_url': "https://colab.research.google.com/"
     },
     'path_to_docs': 'tools/docs',
-
+    'logo': {
+        'image_light': '../assets/im2sim_logo.png',
+        'image_dark': '../assets/im2sim_logo_dark.png',
+    },
 }
 
 html_css_files = [

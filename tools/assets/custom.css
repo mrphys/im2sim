@@ -1,10 +1,4 @@
-button.theme-switch-button {
-    display: none;
-}
-.bd-header-article .theme-switch-button {
-    display: none;
-}
-
+/* Light palette: blue/teal accents taken from the im2sim logo. */
 html[data-theme="light"] {
     /* Main accent colour */
     --pst-color-primary: #3b5da0;
@@ -26,7 +20,55 @@ html[data-theme="light"] {
     --pst-color-target: #d8edfd;
 }
 
-/* Force sphinx-book-theme to use light mode */
+/* Dark palette: the same blue/teal hues, lightened for contrast on a
+   near-black background, so the accents echo the light theme. */
 html[data-theme="dark"] {
-    color-scheme: light;
+    --pst-color-primary: #8aa6e6;
+    --pst-color-secondary: #6fb4d6;
+
+    /* Links */
+    --pst-color-link: #7fc4e6;
+    --pst-color-link-hover: #b3c6f2;
+    --pst-color-table-row-hover-bg: #1a1d26;
+
+    /* Text */
+    --pst-color-text-base: #dcdce0;
+    --pst-color-text-muted: #9d9da6;
+    --pst-color-heading: #f4f4f6;
+    --pst-color-inline-code: #6fd6cf;
+
+    /* Backgrounds */
+    --pst-color-background: #0b0b0d;
+    --pst-color-on-background: #141417;
+    --pst-color-surface: #141417;
+    --pst-color-on-surface: #1c1c21;
+    --pst-color-target: #17222e;
+    --pst-color-border: #2a2a31;
+    --pst-color-shadow: #000000;
+    --pst-color-inline-code-links: #6fd6cf;
+}
+
+html[data-theme="dark"] {
+    background-color: var(--pst-color-background);
+    color-scheme: dark;
+}
+
+/* The dark logo has an opaque black background; "screen" blending makes the
+   black vanish into the page background and leaves the colours intact. */
+html[data-theme="dark"] .bd-sidebar-primary img.logo__image,
+html[data-theme="dark"] .navbar-brand img {
+    mix-blend-mode: screen;
+}
+
+/* Dark scrollbars (the sidebar's default track is light). */
+html[data-theme="dark"],
+html[data-theme="dark"] * {
+    scrollbar-color: var(--pst-color-border) var(--pst-color-background);
+}
+html[data-theme="dark"] body::-webkit-scrollbar-track,
+html[data-theme="dark"] .bd-sidebar-primary::-webkit-scrollbar-track {
+    background-color: var(--pst-color-background);
+}
+html[data-theme="dark"] .bd-sidebar-primary::-webkit-scrollbar-thumb {
+    background-color: var(--pst-color-border);
 }

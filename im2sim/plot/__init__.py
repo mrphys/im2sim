@@ -14,4 +14,25 @@
 # limitations under the License.
 # ==============================================================================
 
+from im2sim.plot.data import MeshSequence as MeshSequence
+from im2sim.plot.data import VTUSequence as VTUSequence
+from im2sim.plot.data import graph_to_mesh as graph_to_mesh
+from im2sim.plot.data import to_pyvista as to_pyvista
+from im2sim.plot.data import vector_field as vector_field
+from im2sim.plot.figure import Figure as Figure
+from im2sim.plot.figure import Panel as Panel
+from im2sim.plot.layers import Graph as Graph
+from im2sim.plot.layers import Layer as Layer
+from im2sim.plot.layers import Points as Points
+from im2sim.plot.layers import Streamlines as Streamlines
+from im2sim.plot.layers import Surface as Surface
+from im2sim.plot.layers import Trace as Trace
+from im2sim.plot.layers import Wireframe as Wireframe
+from im2sim.plot.mesh import MeshPlot as MeshPlot
 from im2sim.plot.pointcloud import PointCloudPlot as PointCloudPlot
+from im2sim.plot.scales import ColorScale as ColorScale
+from im2sim.plot.volume import Mask as Mask
+from im2sim.plot.volume import MeshMask as MeshMask
+from im2sim.plot.volume import VolumePlot as VolumePlot
+from im2sim.plot.volume import rasterise_mesh as rasterise_mesh
+from im2sim.plot.volume import rasterise_nodes as rasterise_nodes

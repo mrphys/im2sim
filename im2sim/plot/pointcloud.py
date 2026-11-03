@@ -14,27 +14,43 @@
 # limitations under the License.
 # ==============================================================================
 
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import animation
+
+from im2sim.plot.data import _import_pyvista, _to_numpy
+from im2sim.plot.figure import Figure, Panel
+from im2sim.plot.layers import Points
+from im2sim.plot.scales import ColorScale
+
+_NORM_MODES = ("all", "row", "col", "none")
 
 
 class PointCloudPlot:
     """
-    A class to create a grid of 3D scatter plots for visualizing point clouds.
+    A grid of 3D point clouds, e.g. predicted and target node positions.
+
+    A shortcut for a :class:`~im2sim.plot.figure.Figure` of
+    :class:`~im2sim.plot.layers.Points` layers, rendered with pyvista. For anything more (edges,
+    surfaces, streamlines, traces) use ``Figure`` directly.
 
     Args:
         nrows (int): Number of rows in the grid.
         ncols (int): Number of columns in the grid.
-        point_sets (list of np.ndarray): List of point clouds to plot, each as an (N, 3) array of 3D coordinates.
-        color_sets (list of np.ndarray, optional): List of color values for each point cloud. If None, all points will be colored uniformly.
-        figsize (tuple, optional): Size of the figure. If None, it will be set based on nrows and ncols.
-        cmap (str, optional): Colormap to use for coloring the points. Default is "Blues_r".
-        norm_mode (str, optional): Normalization mode for color values. Options are 'all', 'row', 'col', or 'none'. Default is 'none'.
-        bound_mode (str, optional): Currently unused. Axis bounds are always set from the last point cloud in `point_sets`. Default is 'all'.
-        titles (str or list of str, optional): A single figure title, or a list with one title per subplot. If None, no titles will be set.
-        elev (float, optional): Elevation angle for the 3D view. Default is 20.
-        azim (float, optional): Azimuth angle for the 3D view. Default is 90.
+        point_sets (list of np.ndarray): One ``[N, 3]`` point cloud per subplot, filled row by row.
+            Extra columns are ignored.
+        color_sets (list of np.ndarray, optional): One value per point for each point cloud
+            (``[N]`` or ``[N, 1]``). If None, all points are one colour.
+        figsize (tuple, optional): Size in inches, as in matplotlib; the image is
+            ``figsize * dpi`` pixels. Default is 3 inches per subplot.
+        cmap (str, optional): Colormap. Default is "Blues_r".
+        norm_mode (str, optional): Which subplots share a colour scale (and colour bar): 'all',
+            'row', 'col' or 'none'. Default is 'none'.
+        bound_mode (str, optional): Unused. The camera is always fitted to the last point cloud
+            in ``point_sets``. Default is 'all'.
+        titles (str or list of str, optional): A single figure title, or one title per subplot.
+        elev (float, optional): Camera elevation in degrees, with y as the vertical axis.
+            Default is 20.
+        azim (float, optional): Camera azimuth in degrees, as in matplotlib. Default is 90.
+        point_size (float, optional): Point size in pixels at ``dpi=100``. Default is 5.
     """
 
     def __init__(
@@ -45,227 +61,117 @@ class PointCloudPlot:
         color_sets=None,
         figsize=None,
         cmap="Blues_r",
-        norm_mode="none",  # 'all', 'row', 'col', 'none'
+        norm_mode="none",
         bound_mode="all",
-        titles=None,  # NEW: optional titles
+        titles=None,
         elev=20,
         azim=90,
+        point_size=5.0,
     ):
+        n_plots = nrows * ncols
+        if norm_mode not in _NORM_MODES:
+            raise ValueError("norm_mode must be 'all', 'row', 'col', or 'none'")
+        if len(point_sets) != n_plots:
+            raise ValueError(f"expected {n_plots} point sets for a {nrows}x{ncols} grid")
+        if color_sets is not None and len(color_sets) != n_plots:
+            raise ValueError("color_sets must have one entry per subplot")
 
-        self.cmap = cmap
-        self.elev = elev
-        self.azim = azim
+        self.title = None
+        if isinstance(titles, str):
+            self.title, titles = titles, None
+        if titles is not None and len(titles) != n_plots:
+            raise ValueError("titles must match number of subplots")
+
         self.nrows = nrows
         self.ncols = ncols
+        self.cmap = cmap
         self.norm_mode = norm_mode
+        self.titles = titles
+        self.elev = elev
+        self.azim = azim
+        self.point_size = point_size
+        self.figsize = (ncols * 3, nrows * 3) if figsize is None else figsize
+        self.point_sets = list(point_sets)
+        self.color_sets = None if color_sets is None else list(color_sets)
 
-        if color_sets is None:
-            is_colored = False
-            color_sets = [0.1 * np.ones(points.shape[0]) for points in point_sets]
-        else:
-            is_colored = True
+        # Like the matplotlib version, every subplot is framed on the last point cloud.
+        last = np.asarray(_to_numpy(self.point_sets[-1]), dtype=float)[:, :3]
+        lo, hi = last.min(axis=0), last.max(axis=0)
+        self.bounds = [lo[0], hi[0], lo[1], hi[1], lo[2], hi[2]]
+        self.camera = self._camera(lo, hi)
 
-        if figsize is None:
-            figsize = (ncols * 3, nrows * 3)
+    def _camera(self, lo, hi):
+        # matplotlib's view direction for (elev, azim) with vertical_axis="y".
+        e, a = np.radians(self.elev), np.radians(self.azim)
+        direction = np.array([np.cos(e) * np.cos(a), np.sin(e), -np.cos(e) * np.sin(a)])
+        center = (lo + hi) / 2
+        return [tuple(center + direction), tuple(center), (0.0, 1.0, 0.0)]
 
-        self.fig, axes = plt.subplots(
-            nrows, ncols, figsize=figsize, subplot_kw={"projection": "3d"}
+    def _scale(self, i):
+        r, c = divmod(i, self.ncols)
+        return {"all": "values", "row": f"row {r}", "col": f"col {c}", "none": f"plot {i}"}[
+            self.norm_mode
+        ]
+
+    @staticmethod
+    def _cloud(points, colors):
+        pv = _import_pyvista()
+        points = np.asarray(_to_numpy(points), dtype=float)[:, :3]
+        cloud = pv.PolyData(points)
+        if colors is not None:
+            cloud["values"] = np.asarray(_to_numpy(colors), dtype=float).reshape(len(points), -1)[
+                :, 0
+            ]
+        return cloud
+
+    def _figure(self, point_frames, color_frames, dpi):
+        """A Figure with one frame per entry of ``point_frames`` (each a list per subplot)."""
+        colored = color_frames is not None
+        panels = []
+        for i in range(self.nrows * self.ncols):
+            clouds = [
+                self._cloud(points[i], color_frames[f][i] if colored else None)
+                for f, points in enumerate(point_frames)
+            ]
+            if colored:
+                layer = Points("values", scale=self._scale(i), point_size=self._px(dpi))
+            else:
+                layer = Points(solid_color="steelblue", point_size=self._px(dpi))
+            panels.append(Panel(clouds, [layer], None if self.titles is None else self.titles[i]))
+
+        scales = {self._scale(i): ColorScale(self.cmap, title="") for i in range(len(panels))}
+        return Figure(
+            panels,
+            grid=(self.nrows, self.ncols),
+            scales=scales,
+            camera=self.camera,
+            bounds=self.bounds,
+            window_size=(int(self.figsize[0] * dpi), int(self.figsize[1] * dpi)),
+            title=self.title,
         )
 
-        self.axes = np.array(axes).reshape(-1)
-        self.scatters = []
-
-        # -----------------------------
-        # Titles handling
-        # -----------------------------
-        if titles is not None:
-            if isinstance(titles, str):
-                self.fig.suptitle(titles)
-                titles = [None] * len(self.axes)
-            elif len(titles) != len(self.axes):
-                raise ValueError("titles must match number of subplots")
-
-        # -----------------------------
-        # Bounds (same as your logic)
-        # -----------------------------
-        maxs = np.max(point_sets[-1], axis=0)
-        mins = np.min(point_sets[-1], axis=0)
-
-        # -----------------------------
-        # Normalization helpers
-        # -----------------------------
-        def compute_norm_ranges(color_sets):
-            color_sets = list(color_sets)
-
-            if norm_mode == "none":
-                return [(None, None)] * len(color_sets)
-
-            elif norm_mode == "all":
-                all_vals = np.concatenate(color_sets)
-                vmin, vmax = all_vals.min(), all_vals.max()
-                return [(vmin, vmax)] * len(color_sets)
-
-            elif norm_mode == "row":
-                ranges = []
-                for r in range(nrows):
-                    row_vals = []
-                    for c in range(ncols):
-                        idx = r * ncols + c
-                        row_vals.append(color_sets[idx])
-                    row_vals = np.concatenate(row_vals)
-                    vmin, vmax = row_vals.min(), row_vals.max()
-                    for _ in range(ncols):
-                        ranges.append((vmin, vmax))
-                return ranges
-
-            elif norm_mode == "col":
-                ranges = [None] * len(color_sets)
-                for c in range(ncols):
-                    col_vals = []
-                    for r in range(nrows):
-                        idx = r * ncols + c
-                        col_vals.append(color_sets[idx])
-                    col_vals = np.concatenate(col_vals)
-                    vmin, vmax = col_vals.min(), col_vals.max()
-                    for r in range(nrows):
-                        idx = r * ncols + c
-                        ranges[idx] = (vmin, vmax)
-                return ranges
-
-            else:
-                raise ValueError("norm_mode must be 'all', 'row', 'col', or 'none'")
-
-        norm_ranges = compute_norm_ranges(color_sets)
-
-        # -----------------------------
-        # Plot creation
-        # -----------------------------
-        for i, (ax, points, colors) in enumerate(
-            zip(self.axes, point_sets, color_sets, strict=True)
-        ):
-            vmin, vmax = norm_ranges[i]
-
-            sc = ax.scatter(
-                points[:, 0],
-                points[:, 1],
-                points[:, 2],
-                c=colors,
-                cmap=cmap,
-                vmin=vmin,
-                vmax=vmax,
-            )
-
-            ax.view_init(elev=elev, azim=azim, vertical_axis="y")
-
-            ax.set_xlim(mins[0], maxs[0])
-            ax.set_ylim(mins[1], maxs[1])
-            ax.set_zlim(mins[2], maxs[2])
-
-            # Apply subplot title
-            if titles is not None and titles[i] is not None:
-                ax.set_title(titles[i])
-
-            if is_colored:
-                plt.colorbar(sc, ax=ax, shrink=0.5)
-
-            self.scatters.append(sc)
-
-        self.point_sets = point_sets
-        self.color_sets = color_sets
+    def _px(self, dpi):
+        return self.point_size * dpi / 100
 
     # ---------------------------------------------------------
     # DRAW ONE FRAME
     # ---------------------------------------------------------
 
     def draw_frame(self, point_sets=None, color_sets=None):
-
-        if point_sets is None:
-            point_sets = self.point_sets
-
-        if color_sets is None:
-            color_sets = self.color_sets
-
-        # recompute normalization each frame
-        def compute_norm_ranges(color_sets):
-            color_sets = list(color_sets)
-
-            if self.norm_mode == "none":
-                return [(None, None)] * len(color_sets)
-
-            elif self.norm_mode == "all":
-                all_vals = np.concatenate(color_sets)
-                vmin, vmax = all_vals.min(), all_vals.max()
-                return [(vmin, vmax)] * len(color_sets)
-
-            elif self.norm_mode == "row":
-                ranges = []
-                for r in range(self.nrows):
-                    row_vals = []
-                    for c in range(self.ncols):
-                        idx = r * self.ncols + c
-                        row_vals.append(color_sets[idx])
-                    row_vals = np.concatenate(row_vals)
-                    vmin, vmax = row_vals.min(), row_vals.max()
-                    for _ in range(self.ncols):
-                        ranges.append((vmin, vmax))
-                return ranges
-
-            elif self.norm_mode == "col":
-                ranges = [None] * len(color_sets)
-                for c in range(self.ncols):
-                    col_vals = []
-                    for r in range(self.nrows):
-                        idx = r * self.ncols + c
-                        col_vals.append(color_sets[idx])
-                    col_vals = np.concatenate(col_vals)
-                    vmin, vmax = col_vals.min(), col_vals.max()
-                    for r in range(self.nrows):
-                        idx = r * self.ncols + c
-                        ranges[idx] = (vmin, vmax)
-                return ranges
-
-        norm_ranges = compute_norm_ranges(color_sets)
-
-        new_scatters = []
-
-        for i, (ax, sc, pts, colors) in enumerate(
-            zip(self.axes, self.scatters, point_sets, color_sets, strict=True)
-        ):
-            vmin, vmax = norm_ranges[i]
-
-            if sc is None or len(pts) != len(sc.get_offsets()):
-                if sc is not None:
-                    sc.remove()
-
-                sc = ax.scatter(
-                    pts[:, 0],
-                    pts[:, 1],
-                    pts[:, 2],
-                    c=colors,
-                    cmap=self.cmap,
-                    vmin=vmin,
-                    vmax=vmax,
-                )
-
-            else:
-                sc._offsets3d = (pts[:, 0], pts[:, 1], pts[:, 2])
-                sc.set_array(colors)
-                if vmin is not None:
-                    sc.set_clim(vmin, vmax)
-
-            new_scatters.append(sc)
-
-        self.scatters = new_scatters
-        return self.scatters
+        """Replace the point clouds and/or colours drawn by the next ``save_image``."""
+        if point_sets is not None:
+            self.point_sets = list(point_sets)
+        if color_sets is not None:
+            self.color_sets = list(color_sets)
 
     # ---------------------------------------------------------
     # SAVE IMAGE
     # ---------------------------------------------------------
 
     def save_image(self, filename, dpi=200):
-        plt.tight_layout()
-        self.fig.savefig(filename, dpi=dpi)
-        plt.close(self.fig)
+        colors = None if self.color_sets is None else [self.color_sets]
+        with self._figure([self.point_sets], colors, dpi) as fig:
+            fig.save(filename)
 
     # ---------------------------------------------------------
     # ANIMATE
@@ -277,21 +183,14 @@ class PointCloudPlot:
         color_sequence_sets=None,
         filename="animation.gif",
         fps=15,
+        dpi=100,
     ):
-
-        n_frames = len(point_sequence_sets)
-
-        def update(frame):
-
-            colors = None if color_sequence_sets is None else color_sequence_sets[frame]
-
-            return self.draw_frame(point_sets=point_sequence_sets[frame], color_sets=colors)
-
-        ani = animation.FuncAnimation(self.fig, update, frames=n_frames, blit=False)
-
-        if filename.endswith(".gif"):
-            ani.save(filename, writer="pillow", fps=fps)
-        else:
-            ani.save(filename, writer="ffmpeg", fps=fps)
-
-        plt.close(self.fig)
+        """
+        Write one frame per entry of ``point_sequence_sets``, each a list with one point cloud
+        per subplot. ``.gif`` needs ``imageio``; other extensions need ``imageio-ffmpeg``.
+        Colour scales are recomputed every frame.
+        """
+        if color_sequence_sets is None and self.color_sets is not None:
+            color_sequence_sets = [self.color_sets] * len(point_sequence_sets)
+        with self._figure(point_sequence_sets, color_sequence_sets, dpi) as fig:
+            fig.save(filename, fps=fps)

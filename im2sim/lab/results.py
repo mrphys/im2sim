@@ -31,7 +31,7 @@ class LabResult:
     """Outcome of one lab experiment on one model / graph / seed.
 
     Args:
-        name (str): Experiment name, e.g. ``"jacobian_reach"``.
+        name (str): Experiment name, e.g. `"jacobian_reach"`.
         scalars (dict[str, float]): Headline numbers (one value each).
         arrays (dict[str, np.ndarray]): Curves / per-node data used for plotting.
         model (str): Label of the model that was tested.
@@ -113,7 +113,7 @@ def experiment(trained: bool = False) -> Callable:
 
 
 def is_trained(fn: Callable) -> bool:
-    """Whether ``fn`` (possibly a ``functools.partial``) is a training experiment."""
+    """Whether `fn` (possibly a `functools.partial`) is a training experiment."""
     while hasattr(fn, "func") and not hasattr(fn, "trained"):
         fn = fn.func
     return bool(getattr(fn, "trained", False))

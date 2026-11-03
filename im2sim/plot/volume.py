@@ -21,7 +21,7 @@ A :class:`VolumePlot` steps through a 3D image one slice at a time and draws eac
 any number of mask layers on top. A mask is either a voxel array (:class:`Mask`) or a surface
 mesh that is rasterised onto the image grid (:class:`MeshMask`), so a predicted mesh can be
 checked against the image it came from. Uses matplotlib and Pillow only; rasterising meshes
-also needs pyvista (``pip install -e ".[mesh]"``).
+also needs pyvista (`pip install -e ".[mesh]"`).
 """
 
 import numpy as np
@@ -34,18 +34,18 @@ def rasterise_nodes(mesh, shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0)
     Fast, approximate rasterisation of a mesh's nodes with :class:`im2sim.layers.MaskRasterizer`.
 
     Each node marks the voxel it falls in and the result is dilated to close the gaps between
-    nodes. This is the mask the models' ``MaskRasterizer`` layer produces, so it is what the
+    nodes. This is the mask the models' `MaskRasterizer` layer produces, so it is what the
     network sees. It is only as accurate as the node spacing: use a volume mesh, as a surface
-    mesh with few nodes leaves holes in the middle. Voxel ``(i, j, k)`` covers
-    ``origin + [i, i + 1) * spacing`` here, as in ``pointcloud_to_mask``.
+    mesh with few nodes leaves holes in the middle. Voxel `(i, j, k)` covers
+    `origin + [i, i + 1) * spacing` here, as in `pointcloud_to_mask`.
 
     Args:
         mesh: Anything :func:`~im2sim.plot.data.to_pyvista` accepts.
-        shape (tuple of int): Grid size ``(X, Y, Z)``.
+        shape (tuple of int): Grid size `(X, Y, Z)`.
         spacing, origin (optional): Voxel size and the position of the grid's corner.
 
     Returns:
-        np.ndarray: Boolean array of ``shape``.
+        np.ndarray: Boolean array of `shape`.
     """
     import torch
     from torch_geometric.data import Data
@@ -65,21 +65,21 @@ def rasterise_mesh(mesh, shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0),
     """
     Rasterise a surface mesh onto a voxel grid.
 
-    Voxel ``(i, j, k)`` is centred at ``origin + (i, j, k) * spacing``, so with the defaults mesh
+    Voxel `(i, j, k)` is centred at `origin + (i, j, k) * spacing`, so with the defaults mesh
     coordinates are voxel indices, matching :func:`im2sim.layers.rasterization.pointcloud_to_mask`.
 
     Args:
         mesh: Anything :func:`~im2sim.plot.data.to_pyvista` accepts. Volume meshes are reduced
             to their outer surface.
-        shape (tuple of int): Grid size ``(X, Y, Z)``.
-        spacing (tuple of float, optional): Voxel size along each axis. Default is 1.
-        origin (tuple of float, optional): Position of voxel ``(0, 0, 0)``. Default is 0.
+        shape (tuple of int): Grid size `(X, Y, Z)`.
+        spacing (tuple of float, optional): Voxel size along each axis. Default is `1`.
+        origin (tuple of float, optional): Position of voxel `(0, 0, 0)`. Default is `0`.
         fill (bool, optional): Mark every voxel inside a closed surface (which must lie inside
             the grid). If False, only the voxels the surface passes through (a shell).
-            Default is True.
+            Default is `True`.
 
     Returns:
-        np.ndarray: Boolean array of ``shape``.
+        np.ndarray: Boolean array of `shape`.
     """
     pv = _import_pyvista()
     shape = tuple(int(s) for s in shape)
@@ -122,11 +122,11 @@ class Mask:
 
     Args:
         data (array or torch.Tensor): Mask with the same shape as the image. Non-zero is inside.
-            Use ``labels`` for integer label maps.
-        color (str, optional): Colour of the mask. Default is "red".
-        alpha (float, optional): Opacity of the filled mask, 0 to 1. Default is 0.4.
-        outline (bool, optional): Also draw the mask boundary, fully opaque. Default is True.
-        labels (list of int, optional): Treat ``data`` as a label map and draw only these labels.
+            Use `labels` for integer label maps.
+        color (str, optional): Colour of the mask. Default is `"red"`.
+        alpha (float, optional): Opacity of the filled mask, 0 to 1. Default is `0.4`.
+        outline (bool, optional): Also draw the mask boundary, fully opaque. Default is `True`.
+        labels (list of int, optional): Treat `data` as a label map and draw only these labels.
         name (str, optional): Legend entry.
     """
 
@@ -152,12 +152,12 @@ class MeshMask(Mask):
     """
     A surface mesh rasterised onto the image grid and drawn as a mask.
 
-    Mesh coordinates are taken to be in the same space as the image: voxel ``(i, j, k)`` sits at
-    ``origin + (i, j, k) * spacing`` (the plot's ``spacing`` and ``origin``, unless overridden
+    Mesh coordinates are taken to be in the same space as the image: voxel `(i, j, k)` sits at
+    `origin + (i, j, k) * spacing` (the plot's `spacing` and `origin`, unless overridden
     here). The mesh is rasterised once and then reused for every slice.
 
     Args:
-        mesh: A pyvista mesh, PyG ``Data`` with ``pos`` and ``face``, or anything else
+        mesh: A pyvista mesh, PyG `Data` with `pos` and `face`, or anything else
             :func:`~im2sim.plot.data.to_pyvista` accepts.
         method (str, optional): "nodes" (default) rasterises the mesh's nodes with the
             :class:`~im2sim.layers.MaskRasterizer` layer: fast, and the same mask the models
@@ -165,7 +165,7 @@ class MeshMask(Mask):
             nodes) to fill the inside. "exact" rasterises the surface itself, see
             :func:`rasterise_mesh`: accurate but slow (tens of seconds at 128^3).
         fill (bool, optional): With "exact", fill the inside of a closed surface; False draws
-            the shell only. Default is True.
+            the shell only. Default is `True`.
         spacing, origin (optional): Override the image's voxel size / origin for this mesh.
         **kwargs: As for :class:`Mask`.
     """
@@ -209,25 +209,25 @@ class VolumePlot:
     Step through a 3D image slice by slice, with masks overlaid, and save it as a GIF.
 
     Args:
-        image (array or torch.Tensor): ``[X, Y, Z]`` image, or ``[C, X, Y, Z]`` / ``[1, C, X, Y, Z]``
-            of which ``channel`` is shown.
+        image (array or torch.Tensor): `[X, Y, Z]` image, or `[C, X, Y, Z]` / `[1, C, X, Y, Z]`
+            of which `channel` is shown.
         masks (list of Mask, optional): Drawn in order, later ones on top. Bare arrays or
             tensors are wrapped as :class:`Mask`, and pyvista meshes as :class:`MeshMask`.
-        axis (int, optional): Axis to slide along: 0, 1 or 2. Default is 2.
-        channel (int, optional): Channel to show when ``image`` has channels. Default is 0.
+        axis (int, optional): Axis to slide along: 0, 1 or 2. Default is `2`.
+        channel (int, optional): Channel to show when `image` has channels. Default is `0`.
         spacing (tuple of float, optional): Voxel size, used to set the aspect ratio of each
-            slice and to place meshes. Default is (1, 1, 1).
-        origin (tuple of float, optional): Position of voxel (0, 0, 0). Default is (0, 0, 0).
-        cmap (str, optional): Image colormap. Default is "gray".
+            slice and to place meshes. Default is `(1, 1, 1)`.
+        origin (tuple of float, optional): Position of voxel (0, 0, 0). Default is `(0, 0, 0)`.
+        cmap (str, optional): Image colormap. Default is `"gray"`.
         clim (tuple, optional): Image intensity limits. Default is the 1st to 99th percentile of
             the whole volume, so brightness is comparable between slices.
         slices (iterable of int, optional): Which slice indices to draw. Default is all.
-            Slices with no masks in them are still drawn unless ``only_masked`` is set.
-        only_masked (bool, optional): Skip slices where no mask has any voxels. Default False.
+            Slices with no masks in them are still drawn unless `only_masked` is set.
+        only_masked (bool, optional): Skip slices where no mask has any voxels. Default is `False`.
         title (str, optional): Title above each slice; the slice index is appended.
-        legend (bool, optional): Show a legend for masks that have a ``name``. Default True.
-        figsize (tuple, optional): Size in inches. Default is (4, 4).
-        dpi (int, optional): Default is 100.
+        legend (bool, optional): Show a legend for masks that have a `name`. Default is `True`.
+        figsize (tuple, optional): Size in inches. Default is `(4, 4)`.
+        dpi (int, optional): Default is `100`.
     """
 
     def __init__(
@@ -312,7 +312,7 @@ class VolumePlot:
         return self.spacing[axes[1]] / self.spacing[axes[0]]
 
     def render(self, index, volumes=None):
-        """Draw one slice and return it as an ``[H, W, 3]`` uint8 array."""
+        """Draw one slice and return it as an `[H, W, 3]` uint8 array."""
         import matplotlib
 
         matplotlib.use("Agg", force=False)
@@ -374,7 +374,7 @@ class VolumePlot:
         return frame
 
     def frames(self):
-        """All frames as a list of ``[H, W, 3]`` uint8 arrays."""
+        """All frames as a list of `[H, W, 3]` uint8 arrays."""
         volumes = self._volumes()
         indices = self._frame_indices(volumes)
         if not indices:
@@ -387,8 +387,8 @@ class VolumePlot:
 
         Args:
             filename (str or Path): Output path.
-            fps (float, optional): Frames per second. Default is 10.
-            loop (int, optional): Times to repeat; 0 loops forever. Default is 0.
+            fps (float, optional): Frames per second. Default is `10`.
+            loop (int, optional): Times to repeat; 0 loops forever. Default is `0`.
         """
         from PIL import Image
 

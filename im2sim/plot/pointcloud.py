@@ -30,27 +30,27 @@ class PointCloudPlot:
 
     A shortcut for a :class:`~im2sim.plot.figure.Figure` of
     :class:`~im2sim.plot.layers.Points` layers, rendered with pyvista. For anything more (edges,
-    surfaces, streamlines, traces) use ``Figure`` directly.
+    surfaces, streamlines, traces) use `Figure` directly.
 
     Args:
         nrows (int): Number of rows in the grid.
         ncols (int): Number of columns in the grid.
-        point_sets (list of np.ndarray): One ``[N, 3]`` point cloud per subplot, filled row by row.
+        point_sets (list of np.ndarray): One `[N, 3]` point cloud per subplot, filled row by row.
             Extra columns are ignored.
         color_sets (list of np.ndarray, optional): One value per point for each point cloud
-            (``[N]`` or ``[N, 1]``). If None, all points are one colour.
+            (`[N]` or `[N, 1]`). If None, all points are one colour.
         figsize (tuple, optional): Size in inches, as in matplotlib; the image is
-            ``figsize * dpi`` pixels. Default is 3 inches per subplot.
-        cmap (str, optional): Colormap. Default is "Blues_r".
-        norm_mode (str, optional): Which subplots share a colour scale (and colour bar): 'all',
-            'row', 'col' or 'none'. Default is 'none'.
+            `figsize * dpi` pixels. Default is 3 inches per subplot.
+        cmap (str, optional): Colormap. Default is `"Blues_r"`.
+        norm_mode (str, optional): Which subplots share a colour scale (and colour bar): `"all"`,
+            `"row"`, `"col"` or `"none"`. Default is `"none"`.
         bound_mode (str, optional): Unused. The camera is always fitted to the last point cloud
-            in ``point_sets``. Default is 'all'.
+            in `point_sets`. Default is `"all"`.
         titles (str or list of str, optional): A single figure title, or one title per subplot.
         elev (float, optional): Camera elevation in degrees, with y as the vertical axis.
-            Default is 20.
-        azim (float, optional): Camera azimuth in degrees, as in matplotlib. Default is 90.
-        point_size (float, optional): Point size in pixels at ``dpi=100``. Default is 5.
+            Default is `20`.
+        azim (float, optional): Camera azimuth in degrees, as in matplotlib. Default is `90`.
+        point_size (float, optional): Point size in pixels at `dpi=100`. Default is `5`.
     """
 
     def __init__(
@@ -125,7 +125,7 @@ class PointCloudPlot:
         return cloud
 
     def _figure(self, point_frames, color_frames, dpi):
-        """A Figure with one frame per entry of ``point_frames`` (each a list per subplot)."""
+        """A Figure with one frame per entry of `point_frames` (each a list per subplot)."""
         colored = color_frames is not None
         panels = []
         for i in range(self.nrows * self.ncols):
@@ -158,7 +158,7 @@ class PointCloudPlot:
     # ---------------------------------------------------------
 
     def draw_frame(self, point_sets=None, color_sets=None):
-        """Replace the point clouds and/or colours drawn by the next ``save_image``."""
+        """Replace the point clouds and/or colours drawn by the next `save_image`."""
         if point_sets is not None:
             self.point_sets = list(point_sets)
         if color_sets is not None:
@@ -186,8 +186,8 @@ class PointCloudPlot:
         dpi=100,
     ):
         """
-        Write one frame per entry of ``point_sequence_sets``, each a list with one point cloud
-        per subplot. ``.gif`` needs ``imageio``; other extensions need ``imageio-ffmpeg``.
+        Write one frame per entry of `point_sequence_sets`, each a list with one point cloud
+        per subplot. `.gif` needs `imageio`; other extensions need `imageio-ffmpeg`.
         Colour scales are recomputed every frame.
         """
         if color_sequence_sets is None and self.color_sets is not None:

@@ -36,13 +36,13 @@ def fit(
     lr: float = 1e-2,
     weight_decay: float = 0.0,
 ) -> list[float]:
-    """Fit the adapter's model so ``adapter(graph, input) ~ target`` (masked MSE, Adam).
+    """Fit the adapter's model so `adapter(graph, input) ~ target` (masked MSE, Adam).
 
     Args:
         adapter (ModelAdapter): Model to train in place.
         graphs: One graph or a list; they are batched, so the list entries may differ in size.
-        inputs: Node inputs matching ``graphs`` (one tensor, or one per graph).
-        targets: Node targets ``[N]`` or ``[N, C]`` matching ``graphs``.
+        inputs: Node inputs matching `graphs` (one tensor, or one per graph).
+        targets: Node targets `[N]` or `[N, C]` matching `graphs`.
         masks: Optional bool masks selecting the nodes that enter the loss.
         steps (int): Optimiser steps (full batch).
         lr (float): Adam learning rate.
@@ -80,6 +80,6 @@ def fit(
 
 @torch.no_grad()
 def predict(adapter: ModelAdapter, graph: Data, x: torch.Tensor) -> torch.Tensor:
-    """Eval-mode prediction ``[N, C]``."""
+    """Eval-mode prediction `[N, C]`."""
     with adapter.evaluating():
         return adapter(graph, x)

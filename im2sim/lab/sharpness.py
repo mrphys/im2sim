@@ -31,7 +31,7 @@ from im2sim.lab.training import fit, predict
 
 
 def rise_width(coord: np.ndarray, values: np.ndarray, lo: float = 0.1, hi: float = 0.9) -> float:
-    """Distance along ``coord`` over which ``values`` (a 0 -> 1 step) rises from ``lo`` to ``hi``.
+    """Distance along `coord` over which `values` (a 0 -> 1 step) rises from `lo` to `hi`.
 
     Values are averaged per unique coordinate and made monotone before interpolating.
     """
@@ -58,16 +58,16 @@ def step_sweep(
 ) -> LabResult:
     """Fit a smooth-to-sharp step across the graph and measure what the model can reproduce.
 
-    The target is ``sigmoid((p_axis - mid) / (w * h))`` where ``h`` is the mean edge length, so
-    ``w`` is the step width in edge lengths (``w=0``: a hard step). The model is trained on this
+    The target is `sigmoid((p_axis - mid) / (w * h))` where `h` is the mean edge length, so
+    `w` is the step width in edge lengths (`w=0`: a hard step). The model is trained on this
     single graph, so the result measures *representational* sharpness, not generalisation.
 
     Args:
-        adapter_factory (AdapterFactory): ``factory(in_channels, 1) -> ModelAdapter``.
-        graph (Data): Graph with ``pos``.
+        adapter_factory (AdapterFactory): `factory(in_channels, 1) -> ModelAdapter`.
+        graph (Data): Graph with `pos`.
         widths: Step widths in mean edge lengths.
-        mode (str): ``"coords"``: input is the normalised position (a model must build the
-            edge from geometry; exposes spectral bias). ``"identity"``: input is the target itself
+        mode (str): `"coords"`: input is the normalised position (a model must build the
+            edge from geometry; exposes spectral bias). `"identity"`: input is the target itself
             (a model must pass a sharp signal through its layers).
         axis (int): Coordinate axis normal to the step.
         steps (int): Training steps per width.
@@ -75,9 +75,9 @@ def step_sweep(
         seed (int): Random seed.
 
     Returns:
-        LabResult: arrays ``widths``, ``rmse``, ``rise_pred``, ``rise_true``, ``overshoot``
-        and per-width profiles ``profile_true_{i}`` / ``profile_pred_{i}`` with
-        ``profile_coord``; scalar ``mean_sharpness_ratio`` (predicted / true rise width, 1 is ideal
+        LabResult: arrays `widths`, `rmse`, `rise_pred`, `rise_true`, `overshoot`
+        and per-width profiles `profile_true_{i}` / `profile_pred_{i}` with
+        `profile_coord`; scalar `mean_sharpness_ratio` (predicted / true rise width, 1 is ideal
         and large means over-smoothing; measured on the sharpest non-zero width).
     """
     h = mean_edge_length(graph)
@@ -129,10 +129,10 @@ def spectral_gain(
 ) -> LabResult:
     """Frequency response of a model: feed each low Laplacian eigenvector, measure what returns.
 
-    Every input channel is set to the unit-norm eigenvector ``v_j`` (eigenvalue ``lambda_j``).
-    For output ``y`` the gain is the mean over channels of ``|<y_c, v_j>|`` (how much of the
+    Every input channel is set to the unit-norm eigenvector `v_j` (eigenvalue `lambda_j`).
+    For output `y` the gain is the mean over channels of `|<y_c, v_j>|` (how much of the
     signal comes back at the same frequency) and the Dirichlet ratio is
-    ``(y^T L y / y^T y) / lambda_j``, the mean frequency of the output relative to the input:
+    `(y^T L y / y^T y) / lambda_j`, the mean frequency of the output relative to the input:
     below 1 the output has shifted to lower frequencies (smoothing), above 1 to higher ones
     (sharpening or aliasing). Exactly 1 for any filter that commutes with the Laplacian, so it
     is informative for nonlinear or position-dependent models.
@@ -142,13 +142,13 @@ def spectral_gain(
         adapter (ModelAdapter): Model under test.
         graph (Data): Graph whose Laplacian defines the frequencies.
         k (int): Number of lowest-frequency eigenvectors.
-        normalization (str | None): Laplacian normalisation (see ``laplacian_eigs``).
+        normalization (str | None): Laplacian normalisation (see `laplacian_eigs`).
         out_channel (int | None): Use one output channel (default all).
         seed (int): Unused.
 
     Returns:
-        LabResult: arrays ``eigvals``, ``gain``, ``dirichlet_ratio``; scalar ``cutoff_eigval``
-        (smallest eigenvalue whose gain drops below half the maximum; ``inf`` if never).
+        LabResult: arrays `eigvals`, `gain`, `dirichlet_ratio`; scalar `cutoff_eigval`
+        (smallest eigenvalue whose gain drops below half the maximum; `inf` if never).
     """
     vals, vecs = laplacian_eigs(graph, k=k, normalization=normalization)
     from torch_geometric.utils import get_laplacian, to_scipy_sparse_matrix
@@ -191,23 +191,23 @@ def boundary_layer(
     """Fit near-wall profiles of decreasing thickness on a tube graph (CFD-style boundary layer).
 
     Needs a graph from :func:`im2sim.lab.graphs.tube_graph`. Targets are
-    ``1 - exp(-wall_dist / (delta * radial_spacing))`` (``profile="exp"``), thickness ``delta``
-    in radial node spacings, or the parabolic Poiseuille profile (``profile="poiseuille"``,
-    ``deltas`` ignored). Trained on the single graph, like :func:`step_sweep`.
+    `1 - exp(-wall_dist / (delta * radial_spacing))` (`profile="exp"`), thickness `delta`
+    in radial node spacings, or the parabolic Poiseuille profile (`profile="poiseuille"`,
+    `deltas` ignored). Trained on the single graph, like :func:`step_sweep`.
 
     Args:
-        adapter_factory (AdapterFactory): ``factory(in_channels, 1) -> ModelAdapter``.
-        graph (Data): Tube graph (``wall_dist``, ``radial_spacing``, ``poiseuille``).
+        adapter_factory (AdapterFactory): `factory(in_channels, 1) -> ModelAdapter`.
+        graph (Data): Tube graph (`wall_dist`, `radial_spacing`, `poiseuille`).
         deltas: Boundary-layer thicknesses in radial node spacings.
-        profile (str): ``"exp"`` or ``"poiseuille"``.
-        inputs (str): ``"coords"`` (geometry only) or ``"wall_dist"`` (given the distance).
+        profile (str): `"exp"` or `"poiseuille"`.
+        inputs (str): `"coords"` (geometry only) or `"wall_dist"` (given the distance).
         steps (int): Training steps per case.
         lr (float): Learning rate.
         seed (int): Random seed.
 
     Returns:
-        LabResult: arrays ``deltas``, ``rmse``, ``near_wall_rmse`` (outer two radial layers),
-        ``profile_r`` (wall distance) and ``profile_true_{i}`` / ``profile_pred_{i}`` (means per
+        LabResult: arrays `deltas`, `rmse`, `near_wall_rmse` (outer two radial layers),
+        `profile_r` (wall distance) and `profile_true_{i}` / `profile_pred_{i}` (means per
         wall distance).
     """
     cases = [None] if profile == "poiseuille" else list(deltas)

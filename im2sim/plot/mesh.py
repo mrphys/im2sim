@@ -25,8 +25,8 @@ def compute_norm_ranges(color_sets, nrows, ncols, norm_mode):
     """
     Shared colour limits for a grid of subplots, filled row by row.
 
-    ``norm_mode`` is ``"all"``, ``"row"``, ``"col"`` or ``"none"``. Entries of ``color_sets`` that
-    are ``None`` are ignored, and ``"none"`` returns each subplot's own range.
+    `norm_mode` is `"all"`, `"row"`, `"col"` or `"none"`. Entries of `color_sets` that
+    are `None` are ignored, and `"none"` returns each subplot's own range.
     """
     if norm_mode not in ("all", "row", "col", "none"):
         raise ValueError("norm_mode must be 'all', 'row', 'col', or 'none'")
@@ -62,44 +62,44 @@ class MeshPlot:
     A grid of pyvista renders for comparing meshes, with edges drawn.
 
     The pyvista counterpart of :class:`PointCloudPlot`: the same grid, colouring and
-    ``norm_mode`` options, but each subplot is a mesh so its edges (graph connectivity, surface
+    `norm_mode` options, but each subplot is a mesh so its edges (graph connectivity, surface
     triangles or tetrahedra) are visible.
 
     Args:
         nrows (int): Number of rows in the grid.
         ncols (int): Number of columns in the grid.
         meshes (list): One entry per subplot, filled row by row. Each entry is a pyvista dataset
-            (e.g. from ``pv.read``), or a ``(points, edge_index)`` tuple which is converted with
+            (e.g. from `pv.read`), or a `(points, edge_index)` tuple which is converted with
             :func:`graph_to_mesh`.
         scalars (list, optional): One entry per subplot: an array with one value per point (or
-            per cell), the name of an array on the mesh, or ``None`` for a uniform colour.
-        cmap (str, optional): Colormap. Default is "Blues_r", matching :class:`PointCloudPlot`.
-        norm_mode (str, optional): Which subplots share a colour scale: 'all', 'row', 'col' or
-            'none'. Default is 'none'.
-        clim (tuple or list of tuple, optional): Fixed ``(vmin, vmax)`` colour limits, either one
-            pair for every subplot or one per subplot. Overrides ``norm_mode`` and stays fixed
-            across animation frames. Default is None.
+            per cell), the name of an array on the mesh, or `None` for a uniform colour.
+        cmap (str, optional): Colormap. Default is `"Blues_r"`, matching :class:`PointCloudPlot`.
+        norm_mode (str, optional): Which subplots share a colour scale: `"all"`, `"row"`, `"col"` or
+            `"none"`. Default is `"none"`.
+        clim (tuple or list of tuple, optional): Fixed `(vmin, vmax)` colour limits, either one
+            pair for every subplot or one per subplot. Overrides `norm_mode` and stays fixed
+            across animation frames. Default is `None`.
         titles (str or list of str, optional): A single figure title, or one title per subplot.
-        show_edges (bool, optional): Draw cell edges. Default is True.
-        edge_color (str, optional): Colour of the edges. Default is "black".
-        line_width (float, optional): Width of the edges in pixels. Default is 1.
+        show_edges (bool, optional): Draw cell edges. Default is `True`.
+        edge_color (str, optional): Colour of the edges. Default is `"black"`.
+        line_width (float, optional): Width of the edges in pixels. Default is `1`.
         style (str, optional): pyvista render style: "surface", "wireframe" or "points".
             Use "wireframe" to see every edge of a volume mesh rather than only its outer
-            surface. Default is "surface".
-        opacity (float, optional): Mesh opacity. Default is 1.
-        color (str, optional): Mesh colour for subplots with no scalars. Default is "lightsteelblue".
-        scalar_bar_title (str, optional): Label for the colour bars. Default is "".
+            surface. Default is `"surface"`.
+        opacity (float, optional): Mesh opacity. Default is `1`.
+        color (str, optional): Mesh colour for subplots with no scalars. Default is `"lightsteelblue"`.
+        scalar_bar_title (str, optional): Label for the colour bars. Default is `""`.
         window_size (tuple, optional): Size of the image in pixels. Default is
-            ``(ncols * 400, nrows * 400)``.
+            `(ncols * 400, nrows * 400)`.
         camera_position (str or list, optional): pyvista camera position, e.g. "xy", "iso" or a
-            ``[position, focal_point, view_up]`` list. Default is "xy".
-        elev (float, optional): Camera elevation in degrees, applied after ``camera_position``.
-            Default is 0.
-        azim (float, optional): Camera azimuth in degrees, applied after ``camera_position``.
-            Default is 0.
+            `[position, focal_point, view_up]` list. Default is `"xy"`.
+        elev (float, optional): Camera elevation in degrees, applied after `camera_position`.
+            Default is `0`.
+        azim (float, optional): Camera azimuth in degrees, applied after `camera_position`.
+            Default is `0`.
         link_views (bool, optional): Share one camera between all subplots, fitted to all of the
-            meshes. Default is True.
-        background (str, optional): Background colour. Default is "white".
+            meshes. Default is `True`.
+        background (str, optional): Background colour. Default is `"white"`.
     """
 
     def __init__(
@@ -160,7 +160,7 @@ class MeshPlot:
         self.elev = elev
         self.azim = azim
 
-        # Copies, so that frames drawn by ``animate`` do not modify the caller's meshes.
+        # Copies, so that frames drawn by `animate` do not modify the caller's meshes.
         self.meshes = [self._as_mesh(m).copy() for m in meshes]
         values = [self._resolve_scalars(m, s) for m, s in zip(self.meshes, scalars, strict=True)]
         ranges = self._color_ranges(values)
@@ -258,7 +258,7 @@ class MeshPlot:
         else:
             mesh.cell_data[_SCALARS] = vals
             preference = "cell"
-        # The renderer colours by the active array, and ``copy_from`` in ``draw_frame`` replaces
+        # The renderer colours by the active array, and `copy_from` in `draw_frame` replaces
         # it with whatever the new mesh had active.
         mesh.set_active_scalars(_SCALARS, preference=preference)
 
@@ -296,10 +296,10 @@ class MeshPlot:
         Update the subplots in place.
 
         Args:
-            meshes (list, optional): One entry per subplot: an ``[N, 3]`` array of new point
-                positions (same connectivity), a new pyvista dataset, or ``None`` to keep the
+            meshes (list, optional): One entry per subplot: an `[N, 3]` array of new point
+                positions (same connectivity), a new pyvista dataset, or `None` to keep the
                 current geometry.
-            scalars (list, optional): New colour values per subplot, as in ``__init__``.
+            scalars (list, optional): New colour values per subplot, as in `__init__`.
                 Subplots that had no scalars stay uniformly coloured.
         """
         n_plots = len(self.meshes)
@@ -346,12 +346,12 @@ class MeshPlot:
         self, mesh_sequence_sets, scalar_sequence_sets=None, filename="animation.gif", fps=15
     ):
         """
-        Write one frame per entry of ``mesh_sequence_sets``.
+        Write one frame per entry of `mesh_sequence_sets`.
 
         Each entry is a list with one item per subplot, in any form accepted by
-        :meth:`draw_frame`. Pass ``None`` for the whole entry to keep the geometry fixed and only
-        change the scalars. Files ending in ``.gif`` need ``imageio``; other extensions are
-        written as movies and need ``imageio-ffmpeg``.
+        :meth:`draw_frame`. Pass `None` for the whole entry to keep the geometry fixed and only
+        change the scalars. Files ending in `.gif` need `imageio`; other extensions are
+        written as movies and need `imageio-ffmpeg`.
         """
         if scalar_sequence_sets is None:
             scalar_sequence_sets = [None] * len(mesh_sequence_sets)

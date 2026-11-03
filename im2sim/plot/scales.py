@@ -25,13 +25,13 @@ class ColorScale:
     A colour scale that any number of layers can share by name.
 
     Args:
-        cmap (str): Colormap name. Default is "viridis".
-        clim (str or tuple): Colour limits. ``"frame"`` rescales to the values in each frame,
-            ``"global"`` uses one range over every frame, and ``(vmin, vmax)`` fixes them.
-            Layers sharing the scale share the range, across panels. Default is "frame".
+        cmap (str): Colormap name. Default is `"viridis"`.
+        clim (str or tuple): Colour limits. `"frame"` rescales to the values in each frame,
+            `"global"` uses one range over every frame, and `(vmin, vmax)` fixes them.
+            Layers sharing the scale share the range, across panels. Default is `"frame"`.
         title (str, optional): Colour bar title. Default is the scale's name.
-        show_bar (bool): Draw a colour bar. Default is True.
-        fmt (str): printf-style format for the colour bar labels. Default is "%.3g".
+        show_bar (bool): Draw a colour bar. Default is `True`.
+        fmt (str): printf-style format for the colour bar labels. Default is `"%.3g"`.
     """
 
     cmap: str = "viridis"
@@ -51,7 +51,7 @@ class ColorScale:
 
 
 def value_range(arrays):
-    """``(min, max)`` over the finite values of all arrays, or None if there are none."""
+    """`(min, max)` over the finite values of all arrays, or None if there are none."""
     values = [np.ravel(a) for a in arrays if a is not None and np.size(a)]
     if not values:
         return None

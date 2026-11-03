@@ -14,7 +14,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Adapters that give every GNN the same interface: ``adapter(graph, x=None) -> Tensor[N, C]``."""
+"""Adapters that give every GNN the same interface: `adapter(graph, x=None) -> Tensor[N, C]`."""
 
 from __future__ import annotations
 
@@ -30,40 +30,40 @@ from torch_geometric.nn import MessagePassing
 
 COORD_KEYS = ("pos", "coords")
 
-#: ``factory(in_channels, out_channels) -> ModelAdapter``; builds a fresh, untrained model.
+#: `factory(in_channels, out_channels) -> ModelAdapter`; builds a fresh, untrained model.
 AdapterFactory = Callable[[int, int], "ModelAdapter"]
 
 
 def dummy_image(shape: tuple[int, ...], channels: int = 1) -> torch.Tensor:
-    """Zero image ``[1, channels, *shape]`` for im2sim models whose image input is irrelevant."""
+    """Zero image `[1, channels, *shape]` for im2sim models whose image input is irrelevant."""
     return torch.zeros(1, channels, *shape)
 
 
 class ModelAdapter:
     """Wrap a model so lab experiments can treat it as a plain node-level function.
 
-    Four calling conventions are supported (``kind``):
+    Four calling conventions are supported (`kind`):
 
-    * ``"pyg_xe"``: ``model(x, edge_index)`` returning a tensor (e.g. ``torch_geometric.nn.GCN``).
-    * ``"pyg_data"``: ``model(data)`` returning a tensor or a ``Data``.
-    * ``"graph"``: ``model(graph) -> Data`` (e.g. ``im2sim.models.SimpleGraphDecoder``,
-      ``im2sim.layers.GraphConvBlock``).
-    * ``"im2sim"``: ``model(image, graph) -> Data`` (``Im2SimBase`` / ``Im2SimGen2``).
+    * `"pyg_xe"`: `model(x, edge_index)` returning a tensor (e.g. `torch_geometric.nn.GCN`).
+    * `"pyg_data"`: `model(data)` returning a tensor or a `Data`.
+    * `"graph"`: `model(graph) -> Data` (e.g. `im2sim.models.SimpleGraphDecoder`,
+      `im2sim.layers.GraphConvBlock`).
+    * `"im2sim"`: `model(image, graph) -> Data` (`Im2SimBase` / `Im2SimGen2`).
 
-    ``kind="auto"`` picks one from the model type / ``forward`` signature.
+    `kind="auto"` picks one from the model type / `forward` signature.
 
     Args:
         model (torch.nn.Module): The model to wrap.
-        kind (str): Calling convention, or ``"auto"``.
+        kind (str): Calling convention, or `"auto"`.
         input_key (str): Graph attribute that experiments overwrite with test signals.
-        output_key (str | None): Attribute of the returned ``Data`` holding the prediction
-            (default ``"x"``). Ignored when the model returns a tensor.
-        image (torch.Tensor | Callable | None): Image input for ``kind="im2sim"``; a tensor
-            (expanded to the batch size) or ``fn(graph) -> tensor``. ``None`` lets a
+        output_key (str | None): Attribute of the returned `Data` holding the prediction.
+            Ignored when the model returns a tensor. Default is `"x"`.
+        image (torch.Tensor | Callable | None): Image input for `kind="im2sim"`; a tensor
+            (expanded to the batch size) or `fn(graph) -> tensor`. `None` lets a
             rasterizer-equipped model build it from the graph.
-        call_fn (Callable | None): Custom ``fn(model, graph) -> Tensor`` overriding the above.
-        hidden_filter (Callable | None): ``fn(name, module) -> bool`` choosing the layers
-            reported by :meth:`hidden_states` (default: every ``MessagePassing`` layer).
+        call_fn (Callable | None): Custom `fn(model, graph) -> Tensor` overriding the above.
+        hidden_filter (Callable | None): `fn(name, module) -> bool` choosing the layers
+            reported by :meth:`hidden_states` (default: every `MessagePassing` layer).
     """
 
     def __init__(
@@ -103,14 +103,14 @@ class ModelAdapter:
 
     # ---- graph manipulation -------------------------------------------------------
     def with_input(self, graph: Data, x: torch.Tensor) -> Data:
-        """Shallow copy of ``graph`` with ``input_key`` replaced by ``x`` (autograd-friendly)."""
+        """Shallow copy of `graph` with `input_key` replaced by `x` (autograd-friendly)."""
         g = copy.copy(graph)
         g[self.input_key] = x
         return g
 
     @staticmethod
     def set_coords(graph: Data, coords: torch.Tensor) -> Data:
-        """Shallow copy of ``graph`` with every coordinate attribute (pos / coords) replaced."""
+        """Shallow copy of `graph` with every coordinate attribute (pos / coords) replaced."""
         g = copy.copy(graph)
         for key in COORD_KEYS:
             if key in g:
@@ -126,7 +126,7 @@ class ModelAdapter:
 
     # ---- calling ------------------------------------------------------------------
     def __call__(self, graph: Data, x: torch.Tensor | None = None) -> torch.Tensor:
-        """Run the model; ``x`` (if given) replaces ``graph.<input_key>``."""
+        """Run the model; `x` (if given) replaces `graph.<input_key>`."""
         g = self._prepare(graph if x is None else self.with_input(graph, x))
         if self.call_fn is not None:
             return self.call_fn(self.model, g)
@@ -164,8 +164,8 @@ class ModelAdapter:
         """Detached per-layer node embeddings, captured with forward hooks.
 
         Returns:
-            OrderedDict[str, torch.Tensor]: ``"input"`` followed by the output of every layer
-            selected by ``hidden_filter`` that produced a node-level tensor ``[N, C]``.
+            OrderedDict[str, torch.Tensor]: `"input"` followed by the output of every layer
+            selected by `hidden_filter` that produced a node-level tensor `[N, C]`.
         """
         states: OrderedDict[str, torch.Tensor] = OrderedDict()
         g = graph if x is None else self.with_input(graph, x)

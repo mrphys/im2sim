@@ -14,7 +14,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Plots for lab results. Every function returns a matplotlib ``Figure`` (or draws on ``ax``)."""
+"""Plots for lab results. Every function returns a matplotlib `Figure` (or draws on `ax`)."""
 
 from __future__ import annotations
 
@@ -82,7 +82,7 @@ def plot_graph_signal(
     vmax=None,
     colorbar: bool = True,
 ):
-    """Draw a graph with nodes coloured by ``values`` (2D, or 3D if z has extent).
+    """Draw a graph with nodes coloured by `values` (2D, or 3D if z has extent).
 
     Positions are projected onto their two highest-variance axes unless the graph has real 3D
     extent, in which case a 3D scatter is drawn. NaN values are drawn as faint grey nodes (used
@@ -142,9 +142,9 @@ def plot_graph_signal(
 def plot_reach_profile(results, ax=None, normalise: bool = True, signed: bool = False):
     """Max sensitivity vs hop distance (log scale) from :func:`jacobian_reach`.
 
-    With ``signed=True`` the signed gradient of the most sensitive node per hop is drawn on a symmetric-log axis
+    With `signed=True` the signed gradient of the most sensitive node per hop is drawn on a symmetric-log axis
     (dotted line = zero), so cancellation between a local term and a global one (e.g. a graph norm) is visible
-    as a sign change rather than a dip in ``|grad|``.
+    as a sign change rather than a dip in `|grad|`.
     """
     fig, ax = _axes(ax)
     key = "sens_signed" if signed else "sens_max"

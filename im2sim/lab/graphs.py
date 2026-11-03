@@ -16,9 +16,9 @@
 
 """Toy graph builders and graph utilities for lab experiments.
 
-Every builder returns a ``torch_geometric.data.Data`` with node positions stored under both
-``pos`` (PyG convention) and ``coords`` (im2sim convention), an undirected ``edge_index``, a
-placeholder feature matrix ``x`` and (where meaningful) a boolean ``boundary`` mask.
+Every builder returns a `torch_geometric.data.Data` with node positions stored under both
+`pos` (PyG convention) and `coords` (im2sim convention), an undirected `edge_index`, a
+placeholder feature matrix `x` and (where meaningful) a boolean `boundary` mask.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ from torch_geometric.utils import (
 
 
 def make_graph(pos: torch.Tensor, edge_index: torch.Tensor, **attrs) -> Data:
-    """Assemble a Data object with ``pos``/``coords`` aliases and an undirected edge set."""
+    """Assemble a Data object with `pos`/`coords` aliases and an undirected edge set."""
     pos = pos.float()
     edge_index = to_undirected(remove_self_loops(edge_index)[0], num_nodes=pos.size(0))
     data = Data(x=torch.ones(pos.size(0), 1), edge_index=edge_index, pos=pos, coords=pos)
@@ -57,7 +57,7 @@ def make_graph(pos: torch.Tensor, edge_index: torch.Tensor, **attrs) -> Data:
 
 
 def hop_distances(graph: Data, source: int) -> np.ndarray:
-    """Unweighted shortest-path (hop) distance from ``source`` to every node (inf if unreachable)."""
+    """Unweighted shortest-path (hop) distance from `source` to every node (inf if unreachable)."""
     adj = to_scipy_sparse_matrix(graph.edge_index, num_nodes=graph.num_nodes).tocsr()
     return shortest_path(adj, unweighted=True, indices=source, directed=False)
 
@@ -69,16 +69,16 @@ def mean_edge_length(graph: Data) -> float:
 
 
 def laplacian_eigs(graph: Data, k: int = 8, normalization: str | None = "sym"):
-    """Smallest ``k`` eigenpairs of the graph Laplacian.
+    """Smallest `k` eigenpairs of the graph Laplacian.
 
     Args:
         graph (Data): The graph.
         k (int): Number of eigenpairs.
-        normalization (str | None): ``None`` (combinatorial), ``"sym"`` or ``"rw"``, as in
+        normalization (str | None): `None` (combinatorial), `"sym"` or `"rw"`, as in
             :func:`torch_geometric.utils.get_laplacian`.
 
     Returns:
-        tuple[np.ndarray, np.ndarray]: eigenvalues ``[k]`` and unit-norm eigenvectors ``[N, k]``.
+        tuple[np.ndarray, np.ndarray]: eigenvalues `[k]` and unit-norm eigenvectors `[N, k]`.
     """
     n = graph.num_nodes
     ei, ew = get_laplacian(graph.edge_index, normalization=normalization, num_nodes=n)
@@ -97,15 +97,15 @@ def dirichlet_solve(
 ) -> torch.Tensor:
     """Solve the graph Laplace equation with fixed boundary values.
 
-    Interior nodes satisfy ``u_i = mean(u_j for j in neighbours(i))``.
+    Interior nodes satisfy `u_i = mean(u_j for j in neighbours(i))`.
 
     Args:
         graph (Data): The graph.
-        boundary (torch.Tensor): Bool mask ``[N]`` of fixed nodes.
-        boundary_values (torch.Tensor): Values ``[N]`` (only boundary entries are used).
+        boundary (torch.Tensor): Bool mask `[N]` of fixed nodes.
+        boundary_values (torch.Tensor): Values `[N]` (only boundary entries are used).
 
     Returns:
-        torch.Tensor: The harmonic extension ``[N]``.
+        torch.Tensor: The harmonic extension `[N]`.
     """
     n = graph.num_nodes
     ei, ew = get_laplacian(graph.edge_index, normalization=None, num_nodes=n)
@@ -126,7 +126,7 @@ def dirichlet_solve(
 
 
 def path_graph(n: int) -> Data:
-    """Chain of ``n`` nodes along the x axis (unit spacing)."""
+    """Chain of `n` nodes along the x axis (unit spacing)."""
     idx = torch.arange(n - 1)
     ei = torch.stack([idx, idx + 1])
     pos = torch.stack([torch.arange(n).float(), torch.zeros(n), torch.zeros(n)], dim=1)
@@ -136,7 +136,7 @@ def path_graph(n: int) -> Data:
 
 
 def ring_graph(n: int) -> Data:
-    """Cycle of ``n`` nodes on a unit circle in the xy plane."""
+    """Cycle of `n` nodes on a unit circle in the xy plane."""
     idx = torch.arange(n)
     ei = torch.stack([idx, (idx + 1) % n])
     ang = 2 * math.pi * idx.float() / n
@@ -149,7 +149,7 @@ def grid_graph(height: int, width: int | None = None, diagonals: bool = False) -
 
     Args:
         height (int): Number of rows.
-        width (int | None): Number of columns (default: ``height``).
+        width (int | None): Number of columns (default: `height`).
         diagonals (bool): Also connect diagonal neighbours (PyG's native 8-neighbourhood);
             default is 4-connected.
     """
@@ -166,7 +166,7 @@ def grid_graph(height: int, width: int | None = None, diagonals: bool = False) -
 
 
 def tree_graph(depth: int, branching: int = 2) -> Data:
-    """Complete ``branching``-ary tree of the given depth, laid out by level."""
+    """Complete `branching`-ary tree of the given depth, laid out by level."""
     edges, level_of, nodes_at = [], [0], [[0]]
     count = 1
     for d in range(1, depth + 1):
@@ -212,11 +212,11 @@ def tube_graph(
 ) -> Data:
     """Vessel-like solid cylinder with structured connectivity.
 
-    Axial stations each hold a centre-line node plus ``n_radial`` concentric rings of
-    ``n_per_ring`` nodes. Extra attributes: ``wall_dist`` (distance to the wall),
-    ``radial`` (distance to the axis), ``axial`` (position along the axis), ``poiseuille``
-    (analytic parabolic profile), ``is_wall``, ``is_cap``, ``boundary`` (wall or cap) and the
-    scalar ``radial_spacing``.
+    Axial stations each hold a centre-line node plus `n_radial` concentric rings of
+    `n_per_ring` nodes. Extra attributes: `wall_dist` (distance to the wall),
+    `radial` (distance to the axis), `axial` (position along the axis), `poiseuille`
+    (analytic parabolic profile), `is_wall`, `is_cap`, `boundary` (wall or cap) and the
+    scalar `radial_spacing`.
     """
     per_station = 1 + n_radial * n_per_ring
 
@@ -271,9 +271,9 @@ def u_tube_graph(
 ) -> Data:
     """Two parallel limbs joined at one end: close in space, far apart along the graph.
 
-    ``limb`` is 0 for the first limb and 1 for the second; ``mirror[i]`` is the node facing
-    node ``i`` across the gap (at the same x, hence close in space but far along the graph). With
-    ``cross_edges=True`` facing nodes are also connected (a geometry-aware graph that
+    `limb` is 0 for the first limb and 1 for the second; `mirror[i]` is the node facing
+    node `i` across the gap (at the same x, hence close in space but far along the graph). With
+    `cross_edges=True` facing nodes are also connected (a geometry-aware graph that
     short-cuts the U).
     """
     n = n_per_limb
@@ -300,17 +300,17 @@ def u_tube_graph(
 def subsample(
     graph: Data, idx: torch.Tensor, connectivity: str = "knn", k: int | None = None, r: float | None = None
 ) -> Data:
-    """Keep nodes ``idx`` and rebuild the edges from their positions.
+    """Keep nodes `idx` and rebuild the edges from their positions.
 
     Args:
         graph (Data): Source graph.
         idx (torch.Tensor): Indices of the nodes to keep.
-        connectivity (str): ``"knn"``, ``"radius"`` or ``"delaunay"`` (2D point sets only).
-        k (int | None): Neighbours for ``"knn"``; defaults to the source mean degree.
-        r (float | None): Radius for ``"radius"``; defaults to 1.5x the mean new edge length.
+        connectivity (str): `"knn"`, `"radius"` or `"delaunay"` (2D point sets only).
+        k (int | None): Neighbours for `"knn"`; defaults to the source mean degree.
+        r (float | None): Radius for `"radius"`; defaults to 1.5x the mean new edge length.
 
     Returns:
-        Data: A new graph; every node-level tensor of the source is indexed by ``idx``.
+        Data: A new graph; every node-level tensor of the source is indexed by `idx`.
     """
     n = graph.num_nodes
     out = Data()
@@ -347,7 +347,7 @@ def subsample(
 def resample(
     graph: Data, fraction: float, connectivity: str = "knn", seed: int = 0, **kwargs
 ) -> tuple[Data, torch.Tensor]:
-    """Randomly keep ``fraction`` of the nodes and rebuild connectivity.
+    """Randomly keep `fraction` of the nodes and rebuild connectivity.
 
     Returns:
         tuple[Data, torch.Tensor]: the new graph and the kept source-node indices.
@@ -361,8 +361,8 @@ def resample(
 def from_mesh_graph(graph: Data) -> Data:
     """Wrap a real (e.g. im2sim) graph so lab experiments can run on it.
 
-    Ensures ``pos`` and ``coords`` are both present (taking whichever exists), an undirected
-    edge set, a feature matrix ``x`` and a ``boundary`` mask (degree-based if absent).
+    Ensures `pos` and `coords` are both present (taking whichever exists), an undirected
+    edge set, a feature matrix `x` and a `boundary` mask (degree-based if absent).
     """
     out = graph.clone()
     pos = out.pos if "pos" in out else out.coords

@@ -36,15 +36,15 @@ def run_suite(
     """Run every experiment on every model for every seed.
 
     Args:
-        models: ``label -> ModelAdapter`` (usable by untrained experiments only) or
-            ``label -> factory(in_channels, out_channels) -> ModelAdapter`` (usable by all).
-            Factories are called after ``torch.manual_seed(seed)``, so seeds vary the
+        models: `label -> ModelAdapter` (usable by untrained experiments only) or
+            `label -> factory(in_channels, out_channels) -> ModelAdapter` (usable by all).
+            Factories are called after `torch.manual_seed(seed)`, so seeds vary the
             initialisation.
-        experiments: ``label -> fn(model, seed=...) -> LabResult``; use ``functools.partial``
-            to bind graphs and settings, e.g. ``partial(jacobian_reach, graph=g)``. The
-            ``label`` becomes ``LabResult.name`` so one experiment can be run on several graphs.
+        experiments: `label -> fn(model, seed=...) -> LabResult`; use `functools.partial`
+            to bind graphs and settings, e.g. `partial(jacobian_reach, graph=g)`. The
+            `label` becomes `LabResult.name` so one experiment can be run on several graphs.
         seeds: Random seeds.
-        untrained_channels: ``(in, out)`` channels used to instantiate a factory for an untrained
+        untrained_channels: `(in, out)` channels used to instantiate a factory for an untrained
             experiment (ignored for ready-made adapters).
         verbose: Print progress.
 

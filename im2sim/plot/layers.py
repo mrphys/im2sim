@@ -17,9 +17,9 @@
 """
 Layers: what to draw from a frame's mesh, and how.
 
-A layer turns the panel's mesh for a frame into the geometry it draws (``build``), and says how
-to draw it (``mesh_kwargs``). Several layers can be stacked in one panel. To add a new kind of
-layer, subclass :class:`Layer` and override ``geometry``.
+A layer turns the panel's mesh for a frame into the geometry it draws (`build`), and says how
+to draw it (`mesh_kwargs`). Several layers can be stacked in one panel. To add a new kind of
+layer, subclass :class:`Layer` and override `geometry`.
 """
 
 import numpy as np
@@ -32,10 +32,10 @@ COLOR = "_im2sim_color"
 
 def select_cells(mesh, select):
     """
-    Extract the cells matching ``select``.
+    Extract the cells matching `select`.
 
-    ``select`` is a dict of ``{cell field: value or list of values}``, all of which must match
-    (e.g. ``{"CellEntityIds": 1}``), or a function ``fn(mesh)`` returning a boolean mask over
+    `select` is a dict of `{cell field: value or list of values}`, all of which must match
+    (e.g. `{"CellEntityIds": 1}`), or a function `fn(mesh)` returning a boolean mask over
     cells.
     """
     if callable(select):
@@ -55,7 +55,7 @@ def _extract_surface(mesh):
 
 
 def color_array(mesh):
-    """The array ``mesh`` is coloured by, or None if it has none."""
+    """The array `mesh` is coloured by, or None if it has none."""
     if COLOR in mesh.point_data:
         return np.asarray(mesh.point_data[COLOR])
     if COLOR in mesh.cell_data:
@@ -69,22 +69,22 @@ class Layer:
 
     Args:
         color (str or callable, optional): What to colour by: the name of a field, or a function
-            ``fn(built_mesh) -> array`` with one value per point or cell. Vector fields are
-            coloured by their magnitude. None draws a single ``solid_color``.
+            `fn(built_mesh) -> array` with one value per point or cell. Vector fields are
+            coloured by their magnitude. None draws a single `solid_color`.
         scale (str, optional): Name of the :class:`ColorScale` to use. Layers with the same
-            scale name share colour limits and one colour bar. Default is the ``color`` field
-            name, or "color" when ``color`` is a function.
+            scale name share colour limits and one colour bar. Default is the `color` field
+            name, or `"color"` when `color` is a function.
         select (dict or callable, optional): Keep only matching cells, before anything else.
             See :func:`select_cells`.
-        clip (dict, optional): Arguments for ``pyvista``'s ``clip``, applied after ``select``,
-            e.g. ``{"normal": "z", "crinkle": True}`` to cut a volume open.
-        surface (bool, optional): Reduce a volume to its outer surface. Default is False.
-        opacity (float, optional): Default is 1.
-        solid_color (str, optional): Colour when ``color`` is None. Default "lightsteelblue".
+        clip (dict, optional): Arguments for `pyvista`'s `clip`, applied after `select`,
+            e.g. `{"normal": "z", "crinkle": True}` to cut a volume open.
+        surface (bool, optional): Reduce a volume to its outer surface. Default is `False`.
+        opacity (float, optional): Default is `1`.
+        solid_color (str, optional): Colour when `color` is None. Default is `"lightsteelblue"`.
         show_edges (bool, optional): Draw cell edges. Default depends on the layer.
-        edge_color (str, optional): Default is "black".
-        line_width (float, optional): Width of edges and lines in pixels. Default is 1.
-        **kwargs: Passed on to ``pyvista.Plotter.add_mesh``.
+        edge_color (str, optional): Default is `"black"`.
+        line_width (float, optional): Width of edges and lines in pixels. Default is `1`.
+        **kwargs: Passed on to `pyvista.Plotter.add_mesh`.
     """
 
     style = "surface"
@@ -159,7 +159,7 @@ class Layer:
         Derive the geometry to draw. Override in subclasses.
 
         Args:
-            mesh: The frame's mesh after ``select``, ``clip`` and ``surface``.
+            mesh: The frame's mesh after `select`, `clip` and `surface`.
             source: The frame's full mesh, before any of those.
         """
         return mesh
@@ -177,7 +177,7 @@ class Layer:
         return values
 
     def mesh_kwargs(self):
-        """Keyword arguments for ``pyvista.Plotter.add_mesh``."""
+        """Keyword arguments for `pyvista.Plotter.add_mesh`."""
         return dict(
             style=self.style,
             opacity=self.opacity,
@@ -204,7 +204,7 @@ class Wireframe(Layer):
 
 
 class Points(Layer):
-    """The mesh's points, like :class:`PointCloudPlot`. ``point_size`` is in pixels."""
+    """The mesh's points, like :class:`PointCloudPlot`. `point_size` is in pixels."""
 
     style = "points"
 
@@ -221,8 +221,8 @@ class Graph(Layer):
     """
     Graph edges as lines.
 
-    A graph input (e.g. a PyG ``Data`` with ``edge_index``) is drawn as is; any other mesh is
-    drawn as one line per cell edge, which is the graph ``im2sim.mesh_ops.get_edges_tet`` builds.
+    A graph input (e.g. a PyG `Data` with `edge_index`) is drawn as is; any other mesh is
+    drawn as one line per cell edge, which is the graph `im2sim.mesh_ops.get_edges_tet` builds.
     """
 
     def geometry(self, mesh, source):
@@ -236,26 +236,26 @@ class Streamlines(Layer):
     """
     Streamlines of a vector field, traced through the layer's mesh.
 
-    Use ``select`` to pick the volume to trace through (e.g. ``{"CellEntityIds": 0}``).
+    Use `select` to pick the volume to trace through (e.g. `{"CellEntityIds": 0}`).
     The seeds are chosen from the first frame drawn and reused for every frame, so lines change
-    smoothly over an animation. Use a separate ``Streamlines`` per panel.
+    smoothly over an animation. Use a separate `Streamlines` per panel.
 
     Args:
-        vectors (str): Name of the ``[N, 3]`` vector field, e.g. from
+        vectors (str): Name of the `[N, 3]` vector field, e.g. from
             :func:`~im2sim.plot.data.vector_field`.
         seeds: Where to start the lines: a dict selecting cells of the full mesh (e.g. the inlet,
-            ``{"CellEntityIds": 4}``), a ``[K, 3]`` array, a pyvista mesh, or a function
-            ``fn(full_mesh) -> [K, 3]``.
-        n_seeds (int, optional): Use a random subset of at most this many seeds. Default 300.
+            `{"CellEntityIds": 4}`), a `[K, 3]` array, a pyvista mesh, or a function
+            `fn(full_mesh) -> [K, 3]`.
+        n_seeds (int, optional): Use a random subset of at most this many seeds. Default is `300`.
         direction (str, optional): "forward", "backward" or "both". "both" works whichever way
-            the flow goes through the seeds. Default is "both".
-        tube_radius (float, optional): Draw tubes of this radius. Default is 0.2% of the
+            the flow goes through the seeds. Default is `"both"`.
+        tube_radius (float, optional): Draw tubes of this radius. Default is `0`.2% of the
             mesh's diagonal. Use 0 for plain lines.
-        max_steps (int, optional): Integration steps per line. Default is 4000.
-        random_state (int, optional): Seed for picking the seed subset. Default is 0.
-        integration (dict, optional): More options for pyvista's ``streamlines_from_source``.
+        max_steps (int, optional): Integration steps per line. Default is `4000`.
+        random_state (int, optional): Seed for picking the seed subset. Default is `0`.
+        integration (dict, optional): More options for pyvista's `streamlines_from_source`.
             Lines stop at their last step inside the mesh, so they can end up to one step short
-            of an outlet; ``{"max_step_length": 0.2}`` (in cell lengths) brings them closer.
+            of an outlet; `{"max_step_length": 0.2}` (in cell lengths) brings them closer.
         **kwargs: As for :class:`Layer`.
     """
 
@@ -333,15 +333,15 @@ class Trace:
 
     Args:
         value: What to plot: a field name (plotted as its mean over the mesh, using the
-            magnitude for vectors), a function ``fn(mesh) -> float``, or an array with one value
+            magnitude for vectors), a function `fn(mesh) -> float`, or an array with one value
             per frame.
         label (str, optional): Legend entry. The legend is shown if any trace has a label.
-        color (str, optional): Line colour. Default is the next of ``TRACE_COLORS``.
-        width (float, optional): Line width in pixels. Default is 2.
+        color (str, optional): Line colour. Default is the next of `TRACE_COLORS`.
+        width (float, optional): Line width in pixels. Default is `2`.
         x (array, optional): x value per frame. Default is the data's frame labels if they are
-            numbers (e.g. the steps of a ``VTUSequence``), else the frame index.
-        x_label (str, optional): Default is "frame".
-        y_label (str, optional): Default is ``value`` when it is a field name.
+            numbers (e.g. the steps of a `VTUSequence`), else the frame index.
+        x_label (str, optional): Default is `"frame"`.
+        y_label (str, optional): Default is `value` when it is a field name.
     """
 
     is_chart = True
@@ -359,7 +359,7 @@ class Trace:
         self.y_label = y_label if y_label is not None or not isinstance(value, str) else value
 
     def values(self, sequence):
-        """The ``(x, y)`` arrays to plot, one entry per frame of ``sequence``."""
+        """The `(x, y)` arrays to plot, one entry per frame of `sequence`."""
         if isinstance(self.value, str) or callable(self.value):
             y = np.array([self._reduce(sequence[i]) for i in range(len(sequence))], dtype=float)
         else:

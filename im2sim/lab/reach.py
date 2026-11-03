@@ -42,10 +42,10 @@ def jacobian_reach(
 ) -> LabResult:
     """Sensitivity of one output node to every input node, binned by hop distance.
 
-    Computes ``|d out[centre, out_channel] / d x|`` with autograd (no training needed).
+    Computes `|d out[centre, out_channel] / d x|` with autograd (no training needed).
 
     Args:
-        adapter (ModelAdapter): Model under test (uses ``graph.<input_key>`` as input).
+        adapter (ModelAdapter): Model under test (uses `graph.<input_key>` as input).
         graph (Data): Graph to probe.
         centre (int | None): Output node; default is the node closest to the mean position.
         out_channel (int): Output channel.
@@ -54,14 +54,14 @@ def jacobian_reach(
         seed (int): Unused (kept for the common experiment signature).
 
     Returns:
-        LabResult: scalars ``effective_radius`` (furthest hop whose max sensitivity is at least
-        ``threshold`` x the overall max) and ``receptive_field`` (furthest hop with any
-        non-negligible sensitivity), and ``global_coupling`` (max sensitivity at the farthest
+        LabResult: scalars `effective_radius` (furthest hop whose max sensitivity is at least
+        `threshold` x the overall max) and `receptive_field` (furthest hop with any
+        non-negligible sensitivity), and `global_coupling` (max sensitivity at the farthest
         hop relative to the peak: ~0 for strictly local models, a non-zero floor when something
         couples all nodes, e.g. a normalisation layer over the whole graph, a virtual node or
-        global pooling); arrays ``hops``, ``sens_max``, ``sens_sum``, ``sens_signed`` (signed gradient
+        global pooling); arrays `hops`, `sens_max`, `sens_sum`, `sens_signed` (signed gradient
         of the most sensitive node per hop; shows cancellation between local and global terms),
-        ``node_sens``, ``node_hops``.
+        `node_sens`, `node_hops`.
     """
     if centre is None:
         centre = int((graph.pos - graph.pos.mean(0)).norm(dim=-1).argmin())
@@ -165,23 +165,23 @@ def copy_task(
     """Copy a +-1 bit from node 0 to the farthest node, as a function of distance.
 
     Node 0 carries the bit (channel 0) and a source marker (channel 1); the target node carries
-    a query marker (channel 2). A fresh model (``adapter_factory(3, 1)``) is trained per
+    a query marker (channel 2). A fresh model (`adapter_factory(3, 1)`) is trained per
     distance. Chance accuracy is 0.5.
 
     Args:
-        adapter_factory (AdapterFactory): ``factory(in_channels, out_channels) -> ModelAdapter``.
+        adapter_factory (AdapterFactory): `factory(in_channels, out_channels) -> ModelAdapter`.
         distances: Hop distances to test.
-        graph_fn: ``d -> graph`` whose farthest node from node 0 is ``d`` hops away.
+        graph_fn: `d -> graph` whose farthest node from node 0 is `d` hops away.
         steps (int): Training steps per distance.
         lr (float): Learning rate.
         n_train (int): Training samples per step (random bits).
         n_test (int): Held-out samples.
-        solved (float): Accuracy counted as solved for ``max_distance_solved``.
+        solved (float): Accuracy counted as solved for `max_distance_solved`.
         seed (int): Random seed.
 
     Returns:
-        LabResult: scalar ``max_distance_solved`` (largest d reached with all smaller d also
-        solved); arrays ``distances``, ``accuracy``.
+        LabResult: scalar `max_distance_solved` (largest d reached with all smaller d also
+        solved); arrays `distances`, `accuracy`.
     """
     acc = np.array(
         [
@@ -204,7 +204,7 @@ def copy_task(
 
 
 def _smooth_boundary_values(pos: torch.Tensor, gen: torch.Generator) -> torch.Tensor:
-    """Random low-frequency field evaluated at ``pos`` (normalised to the unit box)."""
+    """Random low-frequency field evaluated at `pos` (normalised to the unit box)."""
     p = (pos - pos.min(0).values) / (pos.max(0).values - pos.min(0).values).clamp(min=1e-8)
     w = torch.randn(p.size(1), 3, generator=gen) * 2.0
     phase = torch.rand(3, generator=gen) * 6.2832
@@ -225,16 +225,16 @@ def harmonic_extension(
 ) -> LabResult:
     """Learn the Laplace solution from boundary values; error vs domain size.
 
-    Input channels are ``[is_boundary, boundary_value]``; the target is the graph-harmonic
+    Input channels are `[is_boundary, boundary_value]`; the target is the graph-harmonic
     extension (exact sparse solve, see :func:`im2sim.lab.graphs.dirichlet_solve`). The answer
     at the centre depends on the whole boundary, so a model that cannot send information across
     the domain fails as the domain grows. Errors are relative L2 over interior nodes; the
     trivial baseline (predict the boundary mean) is reported alongside.
 
     Args:
-        adapter_factory (AdapterFactory): ``factory(in_channels=2, out_channels=1)``.
-        sizes: Argument passed to ``graph_fn`` (grid side length by default).
-        graph_fn: ``size -> graph`` with a ``boundary`` mask.
+        adapter_factory (AdapterFactory): `factory(in_channels=2, out_channels=1)`.
+        sizes: Argument passed to `graph_fn` (grid side length by default).
+        graph_fn: `size -> graph` with a `boundary` mask.
         steps (int): Training steps per size.
         lr (float): Learning rate.
         n_train (int): Training graphs per size.
@@ -242,8 +242,8 @@ def harmonic_extension(
         seed (int): Random seed.
 
     Returns:
-        LabResult: arrays ``sizes``, ``diameters`` (hops), ``error``, ``baseline_error``;
-        scalar ``mean_error``.
+        LabResult: arrays `sizes`, `diameters` (hops), `error`, `baseline_error`;
+        scalar `mean_error`.
     """
     errs, base_errs, diams = [], [], []
     for s in sizes:

@@ -57,27 +57,11 @@ Modules
 -------
 
 .. list-table::
-   :header-rows: 1
+    :header-rows: 1
 
     * - Module
       - Description
-    * - :py:mod:`im2sim.configs`
-      - Flexible configurations for im2sim `models` and `layers`.
-    * - :py:mod:`im2sim.models`
-      - Neural network models for imaging and simulation tasks.
-    * - :py:mod:`im2sim.layers`
-      - Building blocks for constructing image and graph neural networks.
-    * - :py:mod:`im2sim.losses`
-      - Loss functions for training neural networks.
-    * - :py:mod:`im2sim.plot`
-      - Plotting utilities for visualizing images, graphs, and training results.
-    * - :py:mod:`im2sim.data`
-      - Data loading and preprocessing utilities for imaging and simulation tasks.
-    * - :py:mod:`im2sim.transforms`
-      - Data augmentation and transformation utilities to be used alongside `im2sim.data`.
-    * - :py:mod:`im2sim.transforms.mesh_ops`
-      - Mesh operations for 3D data processing and manipulation.
-
+${module_rows}
 """)
 
 MODULE_DOC_TEMPLATE = string.Template(
@@ -111,6 +95,31 @@ Guide
 
 ${module_guide_text}
 """)
+
+
+# One-line description of each module, shown in the table on the im2sim page.
+# Modules are listed in this order; any module missing here is added at the end.
+MODULE_DESCRIPTIONS = {
+    'configs': 'Configuration classes for im2sim `models` and `layers`.',
+    'data': 'Datasets, pipelines and data loading for imaging and simulation tasks.',
+    'lab': 'Controlled experiments for testing what a graph neural network can and cannot do.',
+    'layers': 'Building blocks for constructing image and graph neural networks.',
+    'losses': 'Loss functions for training neural networks.',
+    'mesh_ops': 'Mesh operations for 3D data processing and manipulation.',
+    'models': 'Neural network models for imaging and simulation tasks.',
+    'plot': 'Plotting utilities for visualizing point clouds, meshes, graphs and volumes.',
+    'transforms': 'Data transformations to be used alongside `im2sim.data`.',
+    'utils': 'Internal utilities, such as the layer registries.',
+}
+
+
+def module_rows(names):
+  """RST list-table rows (module, description) for the given module names."""
+  ordered = [n for n in MODULE_DESCRIPTIONS if n in names]
+  ordered += sorted(n for n in names if n not in MODULE_DESCRIPTIONS)
+  return '\n'.join(
+      f"    * - :py:mod:`im2sim.{n}`\n"
+      f"      - {MODULE_DESCRIPTIONS.get(n, '')}" for n in ordered)
 
 
 @dataclasses.dataclass
@@ -186,7 +195,7 @@ with open(filename, 'w') as f:
   # namespaces = api_util.get_submodule_names()
   namespaces = list(modules.keys())
   f.write(im2sim_DOC_TEMPLATE.substitute(
-      namespaces='\n    '.join(sorted(namespaces))))
+      module_rows=module_rows(namespaces)))
 
 # Write index.rst.
 filename = os.path.join(DOCS_PATH, 'index.rst')

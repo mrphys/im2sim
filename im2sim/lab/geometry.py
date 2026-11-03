@@ -38,7 +38,7 @@ def _default_input(adapter: ModelAdapter) -> InputFn:
 
 
 def random_rotation(dim: int, gen: torch.Generator) -> torch.Tensor:
-    """Random proper rotation matrix ``[dim, dim]`` (QR of a Gaussian matrix)."""
+    """Random proper rotation matrix `[dim, dim]` (QR of a Gaussian matrix)."""
     q, r = torch.linalg.qr(torch.randn(dim, dim, generator=gen))
     q = q * torch.sign(torch.diagonal(r))
     if torch.det(q) < 0:
@@ -49,7 +49,7 @@ def random_rotation(dim: int, gen: torch.Generator) -> torch.Tensor:
 def apply_coord_transform(
     adapter: ModelAdapter, graph: Data, rot: torch.Tensor, scale: float, shift: torch.Tensor
 ) -> Data:
-    """Return ``graph`` with coordinates mapped to ``scale * pos @ rot.T + shift``."""
+    """Return `graph` with coordinates mapped to `scale * pos @ rot.T + shift`."""
     return adapter.set_coords(graph, scale * graph.pos @ rot.T + shift)
 
 
@@ -69,24 +69,24 @@ def equivariance_error(
 ) -> LabResult:
     """Relative output change under rotation, translation and scaling of the coordinates.
 
-    ``input_fn`` rebuilds the node input from the *transformed* graph, so models fed raw
-    coordinates (``input_fn=lambda g: g.pos``) are tested honestly; models that only use
-    ``edge_index`` or relative positions inside the layers are tested with the default
-    (``graph.x`` unchanged).
+    `input_fn` rebuilds the node input from the *transformed* graph, so models fed raw
+    coordinates (`input_fn=lambda g: g.pos`) are tested honestly; models that only use
+    `edge_index` or relative positions inside the layers are tested with the default
+    (`graph.x` unchanged).
 
     Args:
         adapter (ModelAdapter): Model under test.
-        graph (Data): Graph with ``pos``.
+        graph (Data): Graph with `pos`.
         n_trials (int): Random transforms per kind.
-        output_kind (str): ``"scalar"`` (output should be unchanged) or ``"vector"`` (the
-            first ``dim`` output channels are a vector: rotated with the input under
+        output_kind (str): `"scalar"` (output should be unchanged) or `"vector"` (the
+            first `dim` output channels are a vector: rotated with the input under
             rotation, unchanged under translation/scaling).
-        input_fn (Callable | None): ``graph -> node input`` (default ``graph[input_key]``).
+        input_fn (Callable | None): `graph -> node input` (default `graph[input_key]`).
         seed (int): Random seed.
 
     Returns:
-        LabResult: scalars ``rotation_error``, ``translation_error``, ``scale_error``
-        (mean over trials of ``|f(Tg) - ref| / |f(g)|``) and arrays with the per-trial values.
+        LabResult: scalars `rotation_error`, `translation_error`, `scale_error`
+        (mean over trials of `|f(Tg) - ref| / |f(g)|`) and arrays with the per-trial values.
     """
     gen = torch.Generator().manual_seed(seed)
     input_fn = input_fn or _default_input(adapter)
@@ -129,10 +129,10 @@ def equivariance_error(
 def geometric_targets(graph: Data, n_eigs: int = 3) -> dict[str, torch.Tensor]:
     """Per-node geometric quantities used as linear-probe targets.
 
-    ``coords`` (centred, unit scale), ``mean_curvature`` (norm of the umbrella-operator
-    Laplacian of the positions), ``laplacian_pos`` (its vector form, ~ normal direction),
-    ``landmark_hops`` (hop distance to node 0), ``eig1..`` (low Laplacian eigenvectors), plus
-    ``wall_dist`` / ``normals`` when the graph provides ``wall_dist`` or faces.
+    `coords` (centred, unit scale), `mean_curvature` (norm of the umbrella-operator
+    Laplacian of the positions), `laplacian_pos` (its vector form, ~ normal direction),
+    `landmark_hops` (hop distance to node 0), `eig1..` (low Laplacian eigenvectors), plus
+    `wall_dist` / `normals` when the graph provides `wall_dist` or faces.
     """
     pos = graph.pos
     n = graph.num_nodes
@@ -161,7 +161,7 @@ def geometric_targets(graph: Data, n_eigs: int = 3) -> dict[str, torch.Tensor]:
 def ridge_r2(
     feats: torch.Tensor, target: torch.Tensor, train: torch.Tensor, alpha: float
 ) -> float:
-    """Held-out R^2 of a ridge regression ``feats -> target`` fit on the ``train`` mask."""
+    """Held-out R^2 of a ridge regression `feats -> target` fit on the `train` mask."""
     f = feats.double()
     y = target.double()
     if y.dim() == 1:
@@ -192,25 +192,25 @@ def linear_probe(
 ) -> LabResult:
     """How linearly decodable is each geometric quantity from each layer's embedding?
 
-    Embeddings come from :meth:`ModelAdapter.hidden_states` (``"input"`` plus every layer
-    chosen by the adapter's ``hidden_filter``). A ridge regression is fit on a random
-    ``train_frac`` of the nodes and R^2 is reported on the rest, so the score is held-out
-    within the graph. ``input`` is the baseline: gain over it is what the network added.
+    Embeddings come from :meth:`ModelAdapter.hidden_states` (`"input"` plus every layer
+    chosen by the adapter's `hidden_filter`). A ridge regression is fit on a random
+    `train_frac` of the nodes and R^2 is reported on the rest, so the score is held-out
+    within the graph. `input` is the baseline: gain over it is what the network added.
 
     Args:
         adapter (ModelAdapter): Model under test.
         graph (Data): Graph to embed.
-        targets (dict | None): ``name -> [N] or [N, k]`` targets (default
+        targets (dict | None): `name -> [N] or [N, k]` targets (default
             :func:`geometric_targets`).
         layers (Sequence[str] | None): Subset of layer names to report.
         alpha (float): Ridge strength (scaled by the number of training nodes).
         train_frac (float): Fraction of nodes used for fitting.
-        input_fn (Callable | None): ``graph -> node input`` (default ``graph[input_key]``).
+        input_fn (Callable | None): `graph -> node input` (default `graph[input_key]`).
         seed (int): Random seed.
 
     Returns:
-        LabResult: array ``r2`` ``[n_layers, n_targets]`` with ``layers`` and ``targets`` name
-        arrays; scalar ``best_mean_r2`` (best layer's mean R^2).
+        LabResult: array `r2` `[n_layers, n_targets]` with `layers` and `targets` name
+        arrays; scalar `best_mean_r2` (best layer's mean R^2).
     """
     gen = torch.Generator().manual_seed(seed)
     targets = targets if targets is not None else geometric_targets(graph)
@@ -258,13 +258,13 @@ def resolution_invariance(
         adapter (ModelAdapter): Model under test.
         graph (Data): Reference graph.
         fractions: Fractions of nodes kept (1.0 re-builds edges only, a connectivity control).
-        connectivity (str): ``"knn"``, ``"radius"`` or ``"delaunay"``.
-        input_fn (Callable | None): ``graph -> node input`` (default ``graph[input_key]``).
+        connectivity (str): `"knn"`, `"radius"` or `"delaunay"`.
+        input_fn (Callable | None): `graph -> node input` (default `graph[input_key]`).
         seed (int): Random seed.
-        **subsample_kwargs: ``k`` / ``r`` forwarded to :func:`im2sim.lab.graphs.subsample`.
+        **subsample_kwargs: `k` / `r` forwarded to :func:`im2sim.lab.graphs.subsample`.
 
     Returns:
-        LabResult: arrays ``fractions``, ``error``; scalar ``max_error``.
+        LabResult: arrays `fractions`, `error`; scalar `max_error`.
     """
     input_fn = input_fn or _default_input(adapter)
     gen = torch.Generator().manual_seed(seed)
@@ -301,7 +301,7 @@ def proximity_leakage(
 ) -> LabResult:
     """Does a perturbation cross the gap between two limbs that are far apart on the graph?
 
-    Needs a graph from :func:`im2sim.lab.graphs.u_tube_graph` (``limb`` and ``mirror``
+    Needs a graph from :func:`im2sim.lab.graphs.u_tube_graph` (`limb` and `mirror`
     attributes). The input is perturbed on a patch of limb 0 and the output change is read at
     the patch and at the facing nodes of limb 1.
 
@@ -313,9 +313,9 @@ def proximity_leakage(
         seed (int): Unused.
 
     Returns:
-        LabResult: scalar ``leakage_ratio`` (mean |change| on the facing nodes divided by on
-        the patch) and ``hop_gap`` (graph distance patch->facing); arrays ``pos_x``, ``limb``,
-        ``delta`` (per-node |change|).
+        LabResult: scalar `leakage_ratio` (mean |change| on the facing nodes divided by on
+        the patch) and `hop_gap` (graph distance patch->facing); arrays `pos_x`, `limb`,
+        `delta` (per-node |change|).
     """
     pos_x = graph.pos[:, 0]
     width = patch_width if patch_width is not None else 2 * mean_edge_length(graph)

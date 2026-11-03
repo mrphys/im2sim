@@ -42,7 +42,7 @@ def check_rendering():
     Raise a RuntimeError if pyvista cannot render off screen in this environment.
 
     Without a working OpenGL setup VTK can crash the whole Python process rather than raise, so
-    the check runs once, in a subprocess. Set ``IM2SIM_SKIP_RENDER_CHECK=1`` to skip it.
+    the check runs once, in a subprocess. Set `IM2SIM_SKIP_RENDER_CHECK=1` to skip it.
     """
     global _rendering_works
     if _rendering_works or os.environ.get("IM2SIM_SKIP_RENDER_CHECK") == "1":
@@ -93,25 +93,25 @@ class Figure:
 
     Args:
         panels (list of Panel): Filled into the grid row by row.
-        grid (tuple, optional): ``(nrows, ncols)``. Default is one row.
-        scales (dict, optional): ``{name: ColorScale}``. Layers refer to scales by name; any
-            name not given here gets ``ColorScale()``.
+        grid (tuple, optional): `(nrows, ncols)`. Default is one row.
+        scales (dict, optional): `{name: ColorScale}`. Layers refer to scales by name; any
+            name not given here gets `ColorScale()`.
         camera (str or list, optional): pyvista camera position, e.g. "xy", "iso" or a
-            ``[position, focal_point, view_up]`` list. Default is "xy".
-        elev (float, optional): Camera elevation in degrees, applied after ``camera``.
-        azim (float, optional): Camera azimuth in degrees, applied after ``camera``.
+            `[position, focal_point, view_up]` list. Default is `"xy"`.
+        elev (float, optional): Camera elevation in degrees, applied after `camera`.
+        azim (float, optional): Camera azimuth in degrees, applied after `camera`.
         link_views (bool, optional): Share one camera between all panels, fitted to every mesh in
-            the first frame. Default is True.
+            the first frame. Default is `True`.
         bounds (sequence of 6 floats, optional): Fit the camera to these
-            ``(xmin, xmax, ymin, ymax, zmin, zmax)`` instead of to the meshes.
+            `(xmin, xmax, ymin, ymax, zmin, zmax)` instead of to the meshes.
         window_size (tuple, optional): Image size in pixels. Default is 500 per panel.
-        background (str, optional): Default is "white".
+        background (str, optional): Default is `"white"`.
         frame_label (callable or str, optional): Text shown in the bottom-left corner: a function
-            ``fn(frame) -> str``, or "auto" for the labels of the first animated panel's data
-            (e.g. the timesteps of a :class:`~im2sim.plot.data.VTUSequence`). Default is None.
+            `fn(frame) -> str`, or "auto" for the labels of the first animated panel's data
+            (e.g. the timesteps of a :class:`~im2sim.plot.data.VTUSequence`). Default is `None`.
         title (str, optional): Title for the whole figure, in the top-left corner.
-        cache (bool, optional): Keep each frame's built layers in memory, so ``"global"`` colour
-            scales and repeated saves don't rebuild them. Default is True.
+        cache (bool, optional): Keep each frame's built layers in memory, so `"global"` colour
+            scales and repeated saves don't rebuild them. Default is `True`.
     """
 
     def __init__(
@@ -187,7 +187,7 @@ class Figure:
         return 0 if len(self.sequences[p]) == 1 else frame
 
     def built(self, p, layer_index, frame):
-        """The mesh layer ``layer_index`` of panel ``p`` draws in ``frame``."""
+        """The mesh layer `layer_index` of panel `p` draws in `frame`."""
         key = (p, layer_index, self._data_index(p, frame))
         if key in self._built:
             return self._built[key]
@@ -198,7 +198,7 @@ class Figure:
         return out
 
     def _layers(self):
-        """``(panel, layer index, layer)`` for every mesh layer."""
+        """`(panel, layer index, layer)` for every mesh layer."""
         for p, panel in enumerate(self.panels):
             for li, layer in enumerate(panel.layers):
                 if not _is_chart(layer):
@@ -208,7 +208,7 @@ class Figure:
         return any(_is_chart(layer) for layer in self.panels[p].layers)
 
     def color_limits(self, frame):
-        """``{scale name: (vmin, vmax) or None}`` for ``frame``."""
+        """`{scale name: (vmin, vmax) or None}` for `frame`."""
         limits = {}
         for name, scale in self.scales.items():
             if not isinstance(scale.clim, str):
@@ -381,7 +381,7 @@ class Figure:
                 plotter.reset_camera(bounds=bounds)
 
     def render(self, frame=0):
-        """Draw ``frame``. Called by ``save`` and ``to_array``; rarely needed directly."""
+        """Draw `frame`. Called by `save` and `to_array`; rarely needed directly."""
         if self._plotter is None:
             self._setup()
         limits = self.color_limits(frame)
@@ -406,7 +406,7 @@ class Figure:
         self._plotter.render()
 
     def to_array(self, frame=0):
-        """Render ``frame`` and return it as an ``[H, W, 3]`` uint8 array."""
+        """Render `frame` and return it as an `[H, W, 3]` uint8 array."""
         self.render(frame)
         return self._plotter.screenshot(None, return_img=True)
 
@@ -415,14 +415,14 @@ class Figure:
         Write an image or an animation, chosen by the file extension.
 
         Args:
-            path (str or Path): ``.png``/``.jpg``/... for one frame; ``.gif`` (needs ``imageio``)
-                or a movie format such as ``.mp4`` (needs ``imageio-ffmpeg``) for several.
-            frame (int, optional): The frame for an image. Default is 0.
+            path (str or Path): `.png`/`.jpg`/... for one frame; `.gif` (needs `imageio`)
+                or a movie format such as `.mp4` (needs `imageio-ffmpeg`) for several.
+            frame (int, optional): The frame for an image. Default is `0`.
             frames (iterable of int, optional): The frames for an animation. Default is all.
-            fps (int, optional): Frames per second of an animation. Default is 10.
+            fps (int, optional): Frames per second of an animation. Default is `10`.
 
         Returns:
-            Path: ``path``.
+            Path: `path`.
         """
         path = Path(path)
         if path.suffix.lower() in _IMAGE_EXTENSIONS:

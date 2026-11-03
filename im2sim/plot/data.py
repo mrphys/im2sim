@@ -46,14 +46,14 @@ def graph_to_mesh(points, edge_index=None, faces=None):
     Build a pyvista mesh from node positions and, optionally, graph edges or triangle faces.
 
     Args:
-        points (np.ndarray or torch.Tensor): ``[N, 3]`` node positions.
-        edge_index (np.ndarray or torch.Tensor, optional): ``[2, E]`` edge index, as stored on a
-            PyTorch Geometric ``Data`` object. Each undirected edge is drawn once even if it
+        points (np.ndarray or torch.Tensor): `[N, 3]` node positions.
+        edge_index (np.ndarray or torch.Tensor, optional): `[2, E]` edge index, as stored on a
+            PyTorch Geometric `Data` object. Each undirected edge is drawn once even if it
             appears in both directions.
-        faces (np.ndarray or torch.Tensor, optional): ``[F, 3]`` triangle node indices.
+        faces (np.ndarray or torch.Tensor, optional): `[F, 3]` triangle node indices.
 
     Returns:
-        pyvista.PolyData: lines for ``edge_index``, triangles for ``faces``, or vertices only if
+        pyvista.PolyData: lines for `edge_index`, triangles for `faces`, or vertices only if
         neither is given.
     """
     pv = _import_pyvista()
@@ -101,10 +101,10 @@ def to_pyvista(obj):
     """
     Convert any supported plot input to a pyvista mesh.
 
-    Accepts a pyvista dataset (returned as is), a PyTorch Geometric ``Data`` object with ``pos``
-    or ``coords`` (plus optional ``edge_index``, ``face`` and per-node attributes, which become
-    fields), a ``(points, edge_index)`` or ``(points, edge_index, faces)`` tuple, or an
-    ``[N, 3]`` array of points.
+    Accepts a pyvista dataset (returned as is), a PyTorch Geometric `Data` object with `pos`
+    or `coords` (plus optional `edge_index`, `face` and per-node attributes, which become
+    fields), a `(points, edge_index)` or `(points, edge_index, faces)` tuple, or an
+    `[N, 3]` array of points.
     """
     pv = _import_pyvista()
     if isinstance(obj, pv.DataSet):
@@ -130,9 +130,9 @@ def clean_field_names(mesh):
 
 def vector_field(*names):
     """
-    A derived field that stacks scalar fields into one ``[N, k]`` vector field.
+    A derived field that stacks scalar fields into one `[N, k]` vector field.
 
-    For example ``fields={"U": vector_field("x-velocity", "y-velocity", "z-velocity")}``.
+    For example `fields={"U": vector_field("x-velocity", "y-velocity", "z-velocity")}`.
     """
 
     def stack(mesh):
@@ -146,17 +146,17 @@ class MeshSequence(Sequence):
     A sequence of pyvista meshes, one per frame, loaded and prepared on first access.
 
     Each mesh has its field names cleaned (:func:`clean_field_names`) and then gets the
-    derived ``fields`` added, in order, so later fields can use earlier ones.
+    derived `fields` added, in order, so later fields can use earlier ones.
 
     Args:
         items (list, optional): Inputs accepted by :func:`to_pyvista`, one per frame.
-        loader (callable, optional): ``loader(i)`` returns the input for frame ``i``. Use instead
-            of ``items`` to load lazily; requires ``length``.
-        length (int, optional): Number of frames when using ``loader``.
-        fields (dict, optional): Derived fields, ``{name: fn(mesh) -> array}``.
+        loader (callable, optional): `loader(i)` returns the input for frame `i`. Use instead
+            of `items` to load lazily; requires `length`.
+        length (int, optional): Number of frames when using `loader`.
+        fields (dict, optional): Derived fields, `{name: fn(mesh) -> array}`.
         labels (list of str, optional): A label per frame, e.g. the timestep. Default is the
             frame index.
-        cache (bool, optional): Keep prepared meshes in memory. Default is True.
+        cache (bool, optional): Keep prepared meshes in memory. Default is `True`.
     """
 
     def __init__(
@@ -210,10 +210,10 @@ class VTUSequence(MeshSequence):
 
     Args:
         pattern (str or Path): File path with a format field for the step, e.g.
-            ``"case-{:04d}.vtu"``.
+            `"case-{:04d}.vtu"`.
         steps (iterable of int): The steps to load, one per frame. They also become the labels.
         fields (dict, optional): Derived fields, as in :class:`MeshSequence`.
-        cache (bool, optional): Keep loaded meshes in memory. Default is True.
+        cache (bool, optional): Keep loaded meshes in memory. Default is `True`.
     """
 
     def __init__(self, pattern, steps, *, fields=None, cache=True):
@@ -233,7 +233,7 @@ def as_sequence(data):
     """
     Wrap plot input as a :class:`MeshSequence`.
 
-    A ``MeshSequence`` is returned as is, a ``list`` is treated as one input per frame, and
+    A `MeshSequence` is returned as is, a `list` is treated as one input per frame, and
     anything else (a mesh, a graph, a tuple) is a single frame.
     """
     if isinstance(data, MeshSequence):

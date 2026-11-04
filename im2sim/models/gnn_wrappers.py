@@ -14,10 +14,24 @@
 # limitations under the License.
 # ==============================================================================
 
+import warnings
 from abc import ABC, abstractmethod
 
 import torch
 import torch_geometric as pyg
+
+
+def _warn_if_not_offset_in_batch(graph: pyg.data.Data, key: str) -> None:
+    """
+    PyG only offsets the node ids of a batch for attributes whose name contains ``index``. Ids stored
+    under other names silently point at the nodes of the first graph.
+    """
+    if (getattr(graph, "num_graphs", None) or 1) > 1 and "index" not in key:
+        warnings.warn(
+            f"'{key}' holds node ids in a batch of graphs, but PyG only offsets the ids of "
+            f"attributes with 'index' in their name. Rename it, e.g. '{key}_index'.",
+            stacklevel=3,
+        )
 
 
 def _get_selected_nodes(
@@ -40,6 +54,7 @@ def _get_selected_nodes(
         ids = []
         for id_key in keys:
             if id_key in graph:
+                _warn_if_not_offset_in_batch(graph, id_key)
                 ids.append(graph[id_key])
             else:
                 raise ValueError(f"ID key '{id_key}' not found in graph.")
@@ -49,9 +64,10 @@ def _get_selected_nodes(
         ids = get_ids_from_keys(include_ids)
 
     elif exclude_ids is not None:
-        ids = get_ids_from_keys(exclude_ids)
-        all_ids = torch.arange(graph.num_nodes)
-        ids = torch.tensor([i for i in all_ids if i not in ids])
+        excluded = get_ids_from_keys(exclude_ids)
+        keep = torch.ones(graph.num_nodes, dtype=torch.bool, device=excluded.device)
+        keep[excluded] = False
+        ids = keep.nonzero().squeeze(1)
 
     else:
         ids = torch.arange(graph.num_nodes)

@@ -16,7 +16,7 @@
 
 import torch
 
-from im2sim.data.core import DataLoader, Operation, Transform
+from im2sim.data.core import Operation, Transform, iter_samples
 from im2sim.transforms.ops import (
     FitNormOp,
     FitPCAOp,
@@ -29,6 +29,18 @@ from im2sim.transforms.ops import (
 )
 
 
+class FnOp(Operation):
+    """Applies an arbitrary function. It cannot be saved, since functions are not serialisable."""
+
+    serializable = False
+
+    def __init__(self, fn):
+        self.fn = fn
+
+    def forward(self, x):
+        return self.fn(x)
+
+
 def transform_from_fn(
     fn,
     keys: list[str],
@@ -39,12 +51,8 @@ def transform_from_fn(
     name: str = None,
 ) -> Transform:
 
-    class FnOp(Operation):
-        def forward(self, x):
-            return fn(x)
-
     return Transform(
-        op=FnOp(),
+        op=FnOp(fn),
         keys=keys,
         attr=attr,
         channels=channels,
@@ -369,7 +377,8 @@ def explained_variance(
     n_channels = target.shape[channel_dim]
 
     transform = FitPCA(n_channels, keys=[key], attr=attr, channel_dim=channel_dim)
-    transform.fit(DataLoader(dataset, batch_size=1))
+    # unbatched samples, so `channel_dim` refers to the same axis as in `sample`
+    transform.fit(iter_samples(dataset))
 
     ratio = transform.op.explained_variance_ratio
     return {

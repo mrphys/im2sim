@@ -24,6 +24,7 @@ forward pass in a :class:`GraphContext` and shared by all layers.
 """
 
 import math
+import warnings
 from collections.abc import Sequence
 
 import torch
@@ -133,6 +134,13 @@ class GraphContext:
             for i, key in enumerate(self.structure_keys):
                 if key not in self.graph:
                     raise ValueError(f"Structure key '{key}' not found in graph.")
+                if self.num_graphs > 1 and "index" not in key:
+                    warnings.warn(
+                        f"Structure key '{key}' holds node ids in a batch of graphs, but PyG only "
+                        "offsets the ids of attributes with 'index' in their name. Rename it, "
+                        f"e.g. '{key}_index'.",
+                        stacklevel=3,
+                    )
                 assign[self.graph[key].long()] = i
             return assign
 

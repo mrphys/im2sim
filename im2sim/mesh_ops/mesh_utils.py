@@ -14,14 +14,23 @@
 # limitations under the License.
 # ==============================================================================
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 import torch
 import torch_geometric.nn as gnn
-from pyvista.core.pointset import PointGrid
 from torch_geometric.data import Data
 from torch_geometric.utils import to_undirected
 
+from im2sim.losses.mesh import compute_edge_lengths
 from im2sim.utils.pyg_ops import graclus, knn
+
+if TYPE_CHECKING:
+    # pyvista is an optional dependency (``pip install im2sim[mesh]``); the meshes are only used
+    # through their methods, so it is not needed to import this module.
+    from pyvista.core.pointset import PointGrid
 
 
 class InputMeshError(ValueError):
@@ -107,7 +116,7 @@ def get_edges(mesh: PointGrid, structure_id: int) -> torch.Tensor:
     Returns:
         edges (torch.Tensor):  Tensor of shape (2, N) where N is the number of edges in the structure.
     """
-    submesh = mesh.extract_cells(np.where(mesh["CellEntityIds"] == structure_id))
+    submesh = mesh.extract_cells(np.where(mesh["CellEntityIds"] == structure_id)[0])
     edges = submesh.extract_all_edges().lines.reshape(-1, 3)[:, 1:].T
     edges = torch.from_numpy(submesh["vtkOriginalPointIds"][edges]).long()
     edges = to_undirected(edges)
@@ -262,7 +271,8 @@ def get_node_features(mesh: PointGrid, feature_names: list[str]) -> torch.Tensor
         feature_names (List[str]): A list of feature names in the mesh pointdata.
 
     Returns:
-        features (torch.Tensor): A tensor of shape [N,C] where N is the number of nodes and C is len(feature_names).
+        features (torch.Tensor): A float32 tensor of shape [N,C] where N is the number of nodes and C is len(feature_names)
+            (vector-valued point data such as a 3-component velocity contributes one column per component).
 
     Example:
 
@@ -280,8 +290,10 @@ def get_node_features(mesh: PointGrid, feature_names: list[str]) -> torch.Tensor
             # features will be a tensor of shape [N, 4] where N is the number of nodes in the mesh and the columns correspond to the specified features
 
     """
-    features = torch.from_numpy(np.array([mesh.point_data[name] for name in feature_names]).T)
-    return features
+    columns = [
+        np.asarray(mesh.point_data[name]).reshape(mesh.n_points, -1) for name in feature_names
+    ]
+    return torch.from_numpy(np.concatenate(columns, axis=1).astype(np.float32))
 
 
 def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
@@ -325,48 +337,9 @@ def make_padded_batch(x: torch.Tensor, batch: torch.Tensor) -> tuple[torch.Tenso
     """
     jagged_x = [x[batch == i] for i in torch.unique(batch)]
     padded_x = torch.nn.utils.rnn.pad_sequence(jagged_x, batch_first=True)
-    lengths = torch.tensor([len(s) for s in jagged_x])
-    mask = torch.arange(padded_x.size(1))[None, :] < lengths[:, None]
+    lengths = torch.tensor([len(s) for s in jagged_x], device=x.device)
+    mask = torch.arange(padded_x.size(1), device=x.device)[None, :] < lengths[:, None]
     return padded_x, mask
-
-
-def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
-    """
-    Computes the Euclidean length of each edge in a mesh.
-
-    Args:
-        points (torch.Tensor): Node coordinate tensor of shape (N, D) where N
-            is the number of nodes and D is the spatial dimensionality
-            (e.g. 3 for 3D meshes).
-        edges (torch.Tensor): Edge index tensor of shape (2, E) where E is the
-            number of edges. Each column represents an edge as a pair of node
-            indices [src, dst].
-
-    Returns:
-        distances (torch.Tensor): A tensor of shape (E,) containing the
-            length of each edge.
-
-    Example:
-
-        .. code-block:: python
-
-            # 4 nodes in 3D space
-            points = torch.tensor([[0.0, 0.0, 0.0],
-                                   [1.0, 0.0, 0.0],
-                                   [1.0, 1.0, 0.0],
-                                   [0.0, 1.0, 1.0]])
-
-            # 3 edges connecting the nodes
-            edges = torch.tensor([[0, 1, 2],
-                                  [1, 2, 3]])
-
-            distances = compute_edge_lengths(points, edges)
-
-            # distances will be a tensor of shape (3,) containing the lengths of the edges
-    """
-    coords = points[edges]
-    distances = torch.linalg.norm(coords[0] - coords[1], dim=-1)
-    return distances
 
 
 def cluster_pool(mesh: Data) -> Data:

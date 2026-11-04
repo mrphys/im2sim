@@ -602,14 +602,15 @@ def test_face_normal_loss_module_unsupervised(two_tetra_graph):
     assert torch.isclose(loss, expected)
 
 
-def test_face_normal_loss_requires_batch(two_tetra_graph):
+def test_face_normal_loss_without_batch_is_a_single_graph(two_tetra_graph):
     graph = two_tetra_graph.clone()
     del graph.batch
+    single = graph.clone()
+    single.batch = torch.zeros(graph.coords.shape[0], dtype=torch.long)
 
     loss_fn = FaceNormalLoss("faces")
 
-    with pytest.raises(ValueError, match="batch"):
-        loss_fn(graph, graph)
+    assert torch.allclose(loss_fn(graph, graph), loss_fn(single, single))
 
 
 # ---------------------------------------------------------------------------

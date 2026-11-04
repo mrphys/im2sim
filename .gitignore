@@ -14,3 +14,9 @@ Thumbs.db
 .pytest_cache/
 .hypotheses/
 .ruff_cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.coverage

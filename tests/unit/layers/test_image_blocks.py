@@ -278,6 +278,26 @@ class TestImageConvBlock:
         y = model(torch.randn(2, 1, 8, 8))
         assert (y >= 0).all()
 
+    def test_out_activation_sees_the_activated_output(self):
+        # Documented limitation: `activation` also applies to the last layer, so with ReLU a
+        # sigmoid `out_activation` cannot go below 0.5. `activation=None` removes the limit.
+        def block(activation):
+            cfg = ImageConvBlockConfig(
+                depth=1,
+                activation=activation,
+                out_activation="sigmoid",
+                norm_cfg=LayerConfig(name=None, kwargs={}),
+            )
+            model = ImageConvBlock(in_channels=2, out_channels=1, rank=2, cfg=cfg)
+            with torch.no_grad():
+                model.layers[0][0].weight.zero_()
+                model.layers[0][0].bias.fill_(-5.0)
+            return model
+
+        x = torch.rand(1, 2, 8, 8)
+        assert (block("ReLU")(x) >= 0.5).all()
+        assert (block(None)(x) < 0.01).all()
+
     def test_no_activation(self, input_tensor):
         cfg = ImageConvBlockConfig(
             activation=None,
@@ -437,7 +457,9 @@ class TestImageConvBlock:
             norm_cfg=LayerConfig(name=None, kwargs={}),
         )
         plain = ImageConvBlock(in_channels=8, out_channels=8, rank=2, cfg=cfg)
-        residual = ImageConvBlock(in_channels=8, out_channels=8, rank=2, cfg=cfg.mod().add_input_residual())
+        residual = ImageConvBlock(
+            in_channels=8, out_channels=8, rank=2, cfg=cfg.mod().add_input_residual()
+        )
         residual.load_state_dict(plain.state_dict())
 
         torch.testing.assert_close(residual(input_tensor), plain(input_tensor) + input_tensor)
@@ -474,7 +496,7 @@ class TestImageConvBlock:
 
         output = model(input_tensor)
 
-        # Concatenatiion should not modify the final channel dim 
+        # Concatenatiion should not modify the final channel dim
         assert output.shape == (2, 8, 32, 32)
 
     # -----------------------------------------------------------------------

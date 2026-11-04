@@ -27,7 +27,7 @@ class ImageConvBlockConfig(Config):
     Configuration class for defining the parameters of an image convolutional block.
 
     The default configuration consists of a single convolutional layer with InstanceNorm normalization, and no dropout or attention layers.
-    The ReLU activation is applied between layers, so it has no effect at the default depth of `1`.
+    The default `ReLU` activation is applied after every convolutional layer, including the last (see the note on `activation` below).
 
     Attributes can either be set directly when creating an instance of the class or modified later.
     Configuration presets can be applied to quickly set up common configurations for different use cases.
@@ -41,6 +41,16 @@ class ImageConvBlockConfig(Config):
 
         activation (str | None):
             The activation function to use after each convolutional layer, including the last. Default is `"ReLU"`.
+
+            .. note::
+                Because `activation` is also applied to the last layer, `out_activation` receives the
+                *activated* output, not the raw convolution output. With `activation="ReLU"` the block
+                output is therefore non-negative before `out_activation`, which limits what it can
+                represent: `out_activation="sigmoid"` can only output values in `[0.5, 1)`, and
+                `"softmax"` only ever sees non-negative logits.
+                For blocks that must produce unconstrained values or logits (e.g. a segmentation or
+                regression output block), set `activation=None` (or use `to_single_conv()`), and put the
+                nonlinearity in `out_activation` only.
 
         out_activation (str | None):
             An additional activation function applied to the block output, after `activation` and any

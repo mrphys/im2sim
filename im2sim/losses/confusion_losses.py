@@ -167,6 +167,10 @@ class ConfusionLoss(nn.Module):
                 #   [B, C]
                 if class_weights.ndim == 1:
                     class_weights = class_weights.unsqueeze(0)
+                # normalise so the result is a weighted mean, independent of the weight scale
+                class_weights = torch.nan_to_num(
+                    class_weights / class_weights.sum(dim=1, keepdim=True), nan=0.0
+                )
 
             else:
                 true_instances = confusion_matrix.true_positives + confusion_matrix.false_negatives
@@ -230,7 +234,7 @@ class FocalTverskyLoss(ConfusionLoss):
             `"weighted"`: Calculate metrics for each class, and find their average weighted by support (the number of true instances for each class).
 
         class_weights (torch.Tensor):
-            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`.
+            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`. They are normalised to sum to 1.
 
         reduction (str):
             Batch reduction strategy. Default is "mean". One of `"none"`, `"mean"`, or `"sum"`.
@@ -301,7 +305,10 @@ class FocalTverskyLoss(ConfusionLoss):
 
         tversky_index = (numerator + self.epsilon) / (denominator + self.epsilon)
 
-        return (1.0 - tversky_index).pow(self.gamma)
+        # d/dx x**gamma is infinite at 0 for gamma < 1, which gives NaN gradients for a perfect
+        # prediction (1 - index == 0), so keep the base strictly positive.
+        base = (1.0 - tversky_index).clamp(min=torch.finfo(tversky_index.dtype).tiny)
+        return base.pow(self.gamma)
 
 
 @api_util.export("losses.TverskyLoss")
@@ -337,7 +344,7 @@ class TverskyLoss(FocalTverskyLoss):
             `"weighted"`: Calculate metrics for each class, and find their average weighted by support (the number of true instances for each class).
 
         class_weights (torch.Tensor):
-            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`.
+            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`. They are normalised to sum to 1.
 
         reduction (str):
             Batch reduction strategy. Default is "mean". One of `"none"`, `"mean"`, or `"sum"`.
@@ -407,7 +414,7 @@ class DiceLoss(TverskyLoss):
             `"weighted"`: Calculate metrics for each class, and find their average weighted by support (the number of true instances for each class).
 
         class_weights (torch.Tensor):
-            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`.
+            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`. They are normalised to sum to 1.
 
         reduction (str):
             Batch reduction strategy. Default is "mean". One of `"none"`, `"mean"`, or `"sum"`.
@@ -470,7 +477,7 @@ class IoULoss(TverskyLoss):
             `"weighted"`: Calculate metrics for each class, and find their average weighted by support (the number of true instances for each class).
 
         class_weights (torch.Tensor):
-            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`.
+            Optional class weights. Default is None. If provided, should be a 1D tensor of shape `[C]` or a 2D tensor of shape `[B, C]`. They are normalised to sum to 1.
 
         reduction (str):
             Batch reduction strategy. Default is "mean". One of `"none"`, `"mean"`, or `"sum"`.

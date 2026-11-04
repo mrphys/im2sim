@@ -23,7 +23,12 @@ from im2sim.utils.pyg_ops import knn_interpolate
 
 def pointcloud_to_mask(points, im_shape, vox_sizes):
     """
-    Fast voxelization
+    Fast voxelization.
+
+    A point is assigned to voxel ``floor(point / vox_size)``, i.e. voxel ``i`` covers the half-open
+    interval ``[i * vox_size, (i + 1) * vox_size)`` in the units of ``points``. Note that
+    `TrilinearProjection` instead treats voxel ``i`` as centred at coordinate ``i``, so a point is
+    rasterised half a voxel differently to how it is sampled from the image features.
     """
     device = points.device
 
@@ -48,10 +53,25 @@ def dilate_mask(mask, kernel_size=3):
     kernel = torch.ones(1, 1, kernel_size, kernel_size, kernel_size, device=mask.device)
     mask = mask.unsqueeze(0).unsqueeze(0)
     dilated = F.conv3d(mask, kernel, padding=kernel_size // 2)
-    return (dilated > 0).float().squeeze()
+    # only drop the batch and channel dims: spatial dims of size 1 must be kept
+    return (dilated > 0).float().squeeze(0).squeeze(0)
 
 
-def rasterise_feats(coords, feats, domain_size):
+def _graph_batch(graph, image_input):
+    """Batch vector of the graph, and the number of images it must match."""
+    n_images = image_input.shape[0]
+    batch = graph.batch
+    if batch is None:
+        batch = torch.zeros(graph.coords.shape[0], dtype=torch.long, device=graph.coords.device)
+    if batch.numel() > 0 and int(batch.max()) >= n_images:
+        raise ValueError(
+            f"The graph has {int(batch.max()) + 1} graphs but image_input has a batch size of "
+            f"{n_images}."
+        )
+    return batch, n_images
+
+
+def rasterise_feats(coords, feats, domain_size, vox_sizes=(1.0, 1.0, 1.0)):
     device = coords.device
     x = torch.arange(0, domain_size[0], device=device)
     y = torch.arange(0, domain_size[1], device=device)
@@ -59,12 +79,14 @@ def rasterise_feats(coords, feats, domain_size):
 
     X, Y, Z = torch.meshgrid(x, y, z, indexing="ij")
 
-    img_coords = torch.stack([X.flatten(), Y.flatten(), Z.flatten()], dim=-1)
+    # voxel positions in the units of `coords`
+    img_coords = torch.stack([X.flatten(), Y.flatten(), Z.flatten()], dim=-1).to(torch.float32)
+    img_coords = img_coords * torch.tensor(vox_sizes, dtype=torch.float32, device=device)
     # create mask in global coordinates, flattened to index img_coords
-    mask = dilate_mask(pointcloud_to_mask(coords, domain_size, [1, 1, 1])).flatten().bool()
+    mask = dilate_mask(pointcloud_to_mask(coords, domain_size, vox_sizes)).flatten().bool()
 
     # interpolate only active voxels
-    rasterised_features = knn_interpolate(feats, coords, img_coords[mask].to(torch.float32), k=1)
+    rasterised_features = knn_interpolate(feats, coords, img_coords[mask], k=1)
 
     img = torch.zeros((*domain_size, feats.shape[-1]), device=feats.device, dtype=torch.float32)
 
@@ -103,16 +125,16 @@ class MaskRasterizer(torch.nn.Module):
         # Determine the shape of the output mask from the input image
         im_shape = image_input.shape[-3:]
 
+        batch, n_images = _graph_batch(graph, image_input)
+
         masks = []
-        for b in graph.batch.unique():
+        for b in range(n_images):
             mask = dilate_mask(
-                pointcloud_to_mask(
-                    graph.coords[graph.batch == b], im_shape, vox_sizes=self.voxel_sizes
-                )
+                pointcloud_to_mask(graph.coords[batch == b], im_shape, vox_sizes=self.voxel_sizes)
             )
             masks.append(mask.unsqueeze(0))
 
-        masks = torch.stack(masks, dim=0)
+        masks = torch.stack(masks, dim=0).to(image_input.dtype)
 
         image_input = torch.cat([image_input[:, :-1], masks], dim=1)
 
@@ -156,10 +178,12 @@ class FeatureRasterizer(torch.nn.Module):
         if self.feature_channels is not None:
             feats = feats[:, self.feature_channels]
 
+        batch, n_images = _graph_batch(graph, image_input)
+
         rasterised_feats = []
-        for b in graph.batch.unique():
+        for b in range(n_images):
             rasterised_feat = rasterise_feats(
-                graph.coords[graph.batch == b], feats[graph.batch == b], im_shape
+                graph.coords[batch == b], feats[batch == b], im_shape, self.voxel_sizes
             )
             # (D, H, W, C) -> (1, C, D, H, W)
             rasterised_feats.append(rasterised_feat.permute(3, 0, 1, 2).unsqueeze(0))

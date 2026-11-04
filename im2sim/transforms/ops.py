@@ -57,7 +57,8 @@ def inv_normtorange(x, max=None, min=None, a=0, b=1):
         min = x.min()
     if max is None:
         max = x.max()
-    return min + ((x - a) * (max - min)) / (b - a)
+    # exact inverse of `normtorange`, which divides by (max - min + eps)
+    return min + ((x - a) * (max - min + eps)) / (b - a)
 
 
 def normalise(x, max=None, min=None):
@@ -109,7 +110,8 @@ def inv_standardise(x, mean=None, std=None):
         mean (float): Mean value for inverse standardization.
         std (float): Standard deviation for inverse standardization.
     """
-    return x * std + mean
+    # exact inverse of `standardise`, which divides by (std + eps)
+    return x * (std + eps) + mean
 
 
 # ------------------------------------------------------------------------------------
@@ -186,7 +188,9 @@ class PowerScaleOp(InvertibleOperation):
 
     def inverse(self, x):
         if self.preserve_sign:
-            return torch.sign(x) * torch.pow(torch.abs(x) + self.eps, 1 / self.exp)
+            # exact inverse of `forward`: remove the eps that was added before the power
+            mag = torch.clamp(torch.pow(torch.abs(x), 1 / self.exp) - self.eps, min=0)
+            return torch.sign(x) * mag
         else:
             return torch.pow(x, 1 / self.exp)
 
@@ -257,9 +261,11 @@ class FitZScoreOp(FittableOperation):
     """
 
     def __init__(self):
-        self.sum = 0
-        self.sq_sum = 0
+        # Streaming mean / sum of squared deviations (Chan et al.), accumulated in float64. The
+        # naive E[x^2] - mean^2 loses all precision for data with a large mean and small variance.
         self.numel = 0
+        self.run_mean = None
+        self.m2 = None
 
     def forward(self, data):
         return standardise(data, self.mean, self.std)
@@ -268,13 +274,26 @@ class FitZScoreOp(FittableOperation):
         return inv_standardise(data, self.mean, self.std)
 
     def fit_step(self, data):
-        self.sum += data.sum()
-        self.sq_sum += (data**2).sum()
-        self.numel += data.numel()
+        d = data.detach().double()
+        n_b = d.numel()
+        if n_b == 0:
+            return
+        mean_b = d.mean()
+        m2_b = ((d - mean_b) ** 2).sum()
+        if self.numel == 0:
+            self.run_mean, self.m2, self.numel = mean_b, m2_b, n_b
+            return
+        total = self.numel + n_b
+        delta = mean_b - self.run_mean
+        self.run_mean = self.run_mean + delta * n_b / total
+        self.m2 = self.m2 + m2_b + delta**2 * self.numel * n_b / total
+        self.numel = total
 
     def complete_fit(self):
-        self.mean = self.sum / self.numel
-        self.std = torch.sqrt(self.sq_sum / self.numel - self.mean**2)
+        if self.numel == 0:
+            raise RuntimeError("FitZScoreOp has not seen any data")
+        self.mean = self.run_mean
+        self.std = torch.sqrt(self.m2 / self.numel)
 
 
 @register_op

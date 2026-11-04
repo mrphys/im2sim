@@ -57,9 +57,10 @@ class DepthwiseConv(torch.nn.Module):
         bias=True,
     ):
         super().__init__()
-        assert out_channels % in_channels == 0, (
-            "For depthwise convolution, out_channels should be a multiple of in_channels."
-        )
+        if out_channels % in_channels != 0:
+            raise ValueError(
+                "For depthwise convolution, out_channels should be a multiple of in_channels."
+            )
         self.conv = get_image_layer("Conv", rank)(
             in_channels=in_channels,
             out_channels=out_channels,

@@ -18,7 +18,7 @@ import logging
 
 import torch
 
-from im2sim.losses.mesh import MeshLoss
+from im2sim.losses.mesh import MeshLoss, _batch_vector
 from im2sim.utils.pyg_ops import knn
 
 logger = logging.getLogger(__name__)
@@ -41,13 +41,13 @@ def _compute_batch_chamfer(y1, y2, b1=None, b2=None):
     if nns1.shape[-1] == 0:
         return (y2 * 0).sum()
 
-    d1 = torch.linalg.norm(y1 - y2[nns1[1]], dim=-1).mean()
+    d1 = torch.linalg.norm(y1[nns1[0]] - y2[nns1[1]], dim=-1).mean()
     nns2 = knn(x=y1, y=y2, batch_x=b1, batch_y=b2, k=1)
 
     if nns2.shape[-1] == 0:
         return (y2 * 0).sum()
     logger.debug("nn shape: %s", nns2.shape)
-    d2 = torch.linalg.norm(y2 - y1[nns2[1]], dim=-1).mean()
+    d2 = torch.linalg.norm(y2[nns2[0]] - y1[nns2[1]], dim=-1).mean()
     return d1 + d2
 
 
@@ -63,7 +63,7 @@ class ChamferLoss(MeshLoss):
     """
 
     def __init__(self, id_key: str = None):
-        required_attrs = ["coords", "batch"]
+        required_attrs = ["coords"]
         if id_key is not None:
             required_attrs.append(id_key)
         super().__init__(required_attrs=required_attrs, supervised=True)
@@ -81,6 +81,6 @@ class ChamferLoss(MeshLoss):
         return _compute_batch_chamfer(
             y1=true_graph.coords[true_ids],
             y2=pred_graph.coords[pred_ids],
-            b1=true_graph.batch[true_ids],
-            b2=pred_graph.batch[pred_ids],
+            b1=_batch_vector(true_graph)[true_ids],
+            b2=_batch_vector(pred_graph)[pred_ids],
         )

@@ -9,7 +9,7 @@ version = "0.1.0"
 description = "A framework for ML-accelerated digital twins"
 readme = "README.rst"
 requires-python = ">=3.10"
-license = { text = "ElasticV2" }
+license = { text = "Apache-2.0" }
 authors = [
     { name = "Anirudh Raman", email = "anirudh.raman.24@ucl.ac.uk" }
 ]
@@ -71,6 +71,10 @@ docs = [
 
 mesh = [
     "pyvista"
+]
+
+lab = [
+    "pandas"
 ]
 
 [project.scripts]

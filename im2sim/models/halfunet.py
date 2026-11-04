@@ -58,7 +58,7 @@ class HalfUNet(torch.nn.Module):
                 hidden_channels=32,
                 n_levels=3,
                 encoder_block_cfg=ImageConvBlockConfig(depth=3, activation="ReLU"),
-                out_block_cfg=ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="softmax")
+                out_block_cfg=ImageConvBlockConfig(depth=1, activation=None, out_activation="softmax")
             )
 
         Since the configs are rankless, you could use the same config for a 1D, 2D, or 3D convolutional block by changing the rank parameter when creating the HalfUNet instance.

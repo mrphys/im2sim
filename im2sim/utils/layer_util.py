@@ -107,6 +107,14 @@ class UnsupportedTemporalLayerError(ValueError):
     pass
 
 
+class InvalidBlockConfigError(ValueError, AssertionError):
+    """
+    A block config is invalid. Also an `AssertionError`, which older versions raised (with `assert`),
+    so existing `except AssertionError` handlers keep working, but unlike `assert` it is not
+    stripped by `python -O`.
+    """
+
+
 def register_with_ranks(base_name, ranks=(1, 2, 3), register=register_image_layer):
     """
     Register a layer class that takes a `rank` argument once per rank, as `f"{base_name}{rank}d"`.

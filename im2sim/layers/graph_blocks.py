@@ -21,6 +21,7 @@ from im2sim.configs.core import LayerConfig
 from im2sim.configs.graph_blocks import GraphConvBlockConfig
 from im2sim.layers import custom_graph_layers
 from im2sim.utils.layer_util import (
+    InvalidBlockConfigError,
     apply_residual_connection,
     get_graph_layer,
 )
@@ -75,6 +76,9 @@ class GraphConvBlock(torch.nn.Module):
             cfg.hidden_channels if cfg.hidden_channels is not None else in_channels
         )
         self.depth = cfg.depth
+        # `activation` is the first layer's activation; every layer gets its own instance so that
+        # learnable activations (e.g. PReLU) are not shared across layers.
+        self._activation_name = cfg.activation
         self.activation = custom_graph_layers.GraphActivation(cfg.activation)
         self.out_activation = custom_graph_layers.GraphActivation(cfg.out_activation)
         self.conv_cfg = cfg.conv_cfg
@@ -140,11 +144,18 @@ class GraphConvBlock(torch.nn.Module):
                 norm,
                 dropout,
                 attn,
-                self.activation if i < self.depth - 1 else torch.nn.Identity(),
+                self._layer_activation(i),
             )
             self.layers.append(block)
 
             in_channels_current = out_channels_current
+
+    def _layer_activation(self, i: int) -> torch.nn.Module:
+        if i >= self.depth - 1:
+            return torch.nn.Identity()
+        if i == 0:
+            return self.activation
+        return custom_graph_layers.GraphActivation(self._activation_name)
 
     def _set_default_configs(self):
         if self.conv_cfg is None:
@@ -157,13 +168,10 @@ class GraphConvBlock(torch.nn.Module):
             self.attn_cfg = LayerConfig(name=None, kwargs={})
 
     def _validate_configs(self):
-        assert self.attn_cfg.name in [None, "EfficientChannelAttn", "SqueezeExcite"], (
-            f"Unsupported attention type: {self.attn_cfg.name}"
-        )
-        if self.dropout_cfg.name is not None:
-            assert max(self.dropout_position) < self.depth, (
-                "Dropout position must be less than depth"
-            )
+        if self.attn_cfg.name not in [None, "EfficientChannelAttn", "SqueezeExcite"]:
+            raise InvalidBlockConfigError(f"Unsupported attention type: {self.attn_cfg.name}")
+        if self.dropout_cfg.name is not None and max(self.dropout_position) >= self.depth:
+            raise InvalidBlockConfigError("Dropout position must be less than depth")
 
         if self.residual_type.lower().strip() == "concat" and any(
             dst >= self.depth for dst in self.residual_connections
@@ -195,16 +203,14 @@ class GraphConvBlock(torch.nn.Module):
 
     def _check_and_apply_residual(self, x, i, outputs):
         if i in self.residual_connections:
-            for src in self.residual_connections[i]:
-                x = apply_residual_connection(outputs[src], x, connection_type=self.residual_type)
+            # Combine all sources in one call so "average" weights every input equally. Sources
+            # are passed last-first to keep the channel order of "concat" unchanged.
+            sources = [outputs[src] for src in reversed(self.residual_connections[i])]
+            x = apply_residual_connection(*sources, x, connection_type=self.residual_type)
         return x
 
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.append("/Users/anirudh/Documents/im2sim/im2sim")
-
     block_cfg = GraphConvBlockConfig(
         depth=4,
         hidden_channels=64,

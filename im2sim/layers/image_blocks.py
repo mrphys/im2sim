@@ -19,6 +19,7 @@ import torch
 from im2sim.configs.core import LayerConfig
 from im2sim.configs.image_blocks import ImageConvBlockConfig
 from im2sim.utils.layer_util import (
+    InvalidBlockConfigError,
     apply_residual_connection,
     get_activation,
     get_image_layer,
@@ -31,6 +32,13 @@ class ImageConvBlock(torch.nn.Module):
     convolutional layers, normalization layers, dropout layers, and attention
     layers. The block supports residual connections and allows for flexible
     configuration of its components.
+
+    Note:
+        `cfg.activation` is applied after every layer, including the last, and `cfg.out_activation`
+        is applied to that already-activated output. With e.g. `activation="ReLU"` and
+        `out_activation="sigmoid"` the output is therefore limited to `[0.5, 1)`. For an output block
+        that should produce unconstrained values or logits, use `activation=None` and put the
+        nonlinearity in `out_activation` only (see `ImageConvBlockConfig`).
 
     Args:
         in_channels (int):
@@ -114,6 +122,9 @@ class ImageConvBlock(torch.nn.Module):
         self.rank = rank
         self.temporal = temporal
         self.depth = cfg.depth
+        # `activation` is the first layer's activation; every layer gets its own instance so that
+        # learnable activations (e.g. PReLU) are not shared across layers.
+        self._activation_name = cfg.activation
         self.activation = get_activation(cfg.activation)
         self.out_activation = get_activation(cfg.out_activation)
         self.conv_cfg = cfg.conv_cfg
@@ -176,7 +187,7 @@ class ImageConvBlock(torch.nn.Module):
                 norm,
                 dropout,
                 attn,
-                self.activation,
+                self.activation if i == 0 else get_activation(self._activation_name),
             )
             self.layers.append(block)
 
@@ -193,16 +204,12 @@ class ImageConvBlock(torch.nn.Module):
             self.attn_cfg = LayerConfig(name=None, kwargs={})
 
     def _validate_configs(self):
-        assert self.norm_cfg.name in [None, "BatchNorm", "InstanceNorm"], (
-            f"Unsupported norm type: {self.norm_cfg.name}"
-        )
-        assert self.attn_cfg.name in [None, "EfficientChannelAttn", "SqueezeExcite"], (
-            f"Unsupported attention type: {self.attn_cfg.name}"
-        )
-        if self.dropout_cfg.name is not None:
-            assert max(self.dropout_position) < self.depth, (
-                "Dropout position must be less than depth"
-            )
+        if self.norm_cfg.name not in [None, "BatchNorm", "InstanceNorm"]:
+            raise InvalidBlockConfigError(f"Unsupported norm type: {self.norm_cfg.name}")
+        if self.attn_cfg.name not in [None, "EfficientChannelAttn", "SqueezeExcite"]:
+            raise InvalidBlockConfigError(f"Unsupported attention type: {self.attn_cfg.name}")
+        if self.dropout_cfg.name is not None and max(self.dropout_position) >= self.depth:
+            raise InvalidBlockConfigError("Dropout position must be less than depth")
 
         if self.residual_type.lower().strip() == "concat" and any(
             dst >= self.depth for dst in self.residual_connections
@@ -224,8 +231,10 @@ class ImageConvBlock(torch.nn.Module):
 
     def _check_and_apply_residual(self, x, i, outputs):
         if i in self.residual_connections:
-            for src in self.residual_connections[i]:
-                x = apply_residual_connection(outputs[src], x, connection_type=self.residual_type)
+            # Combine all sources in one call so "average" weights every input equally. Sources
+            # are passed last-first to keep the channel order of "concat" unchanged.
+            sources = [outputs[src] for src in reversed(self.residual_connections[i])]
+            x = apply_residual_connection(*sources, x, connection_type=self.residual_type)
         return x
 
 

@@ -92,7 +92,10 @@ class Im2SimBase(torch.nn.Module):
         else:
             check_projection_signature(projections)
 
-        self.projections = projections
+        # A plain list would not register the projections as submodules (parameters, state_dict, .to())
+        self.projections = (
+            torch.nn.ModuleList(projections) if isinstance(projections, list) else projections
+        )
 
         if rasterizer is not None:
             check_rasterizer_signature(rasterizer)
@@ -119,8 +122,12 @@ class Im2SimBase(torch.nn.Module):
         if image_input is None:
             if self.rasterizer is None:
                 raise ValueError("Image input is None and no rasteriser is provided.")
+            batch_size = int(graph.batch.max()) + 1 if graph.batch is not None else 1
             image_input = torch.zeros(
-                1, self.image_encoder.in_channels, *self.image_shape, device=graph.x.device
+                batch_size,
+                self.image_encoder.in_channels,
+                *self.image_shape,
+                device=graph.x.device,
             )
             image_input = self.rasterizer(graph, image_input)
 
@@ -137,7 +144,7 @@ class Im2SimBase(torch.nn.Module):
             if self.rasterizer is not None:
                 image_features = self.image_encoder(image_input)
 
-            if not isinstance(self.projections, list):
+            if not isinstance(self.projections, torch.nn.ModuleList):
                 projected_features = self.projections(image_features, graph)
             else:
                 projected_features = []

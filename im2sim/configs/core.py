@@ -16,7 +16,7 @@
 
 
 import json
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from enum import Enum
 from types import UnionType
 from typing import Any, ClassVar, TypeVar, Union, get_args, get_origin, get_type_hints
@@ -107,17 +107,17 @@ class Config:
 
         kwargs = {}
 
-        for field in fields(cls):
-            if field.name not in data:
+        for f in fields(cls):
+            if f.name not in data:
                 continue
 
-            value = data[field.name]
-            field_type = hints.get(field.name)
+            value = data[f.name]
+            field_type = hints.get(f.name)
 
             if field_type is not None:
                 value = cls._deserialize_value(value, field_type)
 
-            kwargs[field.name] = value
+            kwargs[f.name] = value
 
         return cls(**kwargs)
 
@@ -175,7 +175,7 @@ class Config:
             key_type, value_type = args
 
             return {
-                Config._deserialize_value(k, key_type): Config._deserialize_value(v, value_type)
+                Config._deserialize_key(k, key_type): Config._deserialize_value(v, value_type)
                 for k, v in value.items()
             }
 
@@ -183,11 +183,22 @@ class Config:
         if isinstance(typ, type) and issubclass(typ, Config):
             return typ.from_dict(value)
 
-        # Enum
+        # Enum (serialised as {"__enum__": name, "value": value})
         if isinstance(typ, type) and issubclass(typ, Enum):
+            if isinstance(value, dict) and "__enum__" in value:
+                value = value["value"]
             return typ(value)
 
         return value
+
+    @staticmethod
+    def _deserialize_key(key, typ):
+        """JSON object keys are always strings, so cast them back to int / float / bool keys."""
+        if isinstance(key, str) and typ in (int, float):
+            return typ(key)
+        if isinstance(key, str) and typ is bool:
+            return key.lower() == "true"
+        return Config._deserialize_value(key, typ)
 
     def save(self, filepath):
         """
@@ -262,4 +273,9 @@ class LayerConfig(Config):
     """
 
     name: str
-    kwargs: dict[str, Any] = None
+    kwargs: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        # Configs saved with an explicit ``null`` (or created with ``kwargs=None``) mean "no kwargs".
+        if self.kwargs is None:
+            self.kwargs = {}

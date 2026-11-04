@@ -31,13 +31,21 @@ class Operation(ABC):
     """
     Abstract base class for making operations.
     To make a new simple operation, subclass this and overwrite the forward method.
+    Operations are saved by name and constructor arguments, so subclasses that should be saved
+    must be registered with `register_op` and take serialisable arguments. Set
+    `serializable = False` on operations that cannot be saved (e.g. ones wrapping a function).
     """
+
+    serializable = True
 
     def __init_subclass__(cls):
         original_init = cls.__init__
 
         def new_init(self, *args, **kwargs):
-            self.call_args = {"args": args, "kwargs": kwargs}
+            # Keep the arguments of the outermost (most derived) constructor call: a subclass that
+            # calls ``super().__init__(...)`` must not have its arguments overwritten by the parent's.
+            if "call_args" not in self.__dict__:
+                self.call_args = {"args": args, "kwargs": kwargs}
             original_init(self, *args, **kwargs)
 
         cls.__init__ = new_init
@@ -182,11 +190,20 @@ class Transform:
 
         self.op = op
 
-        self.name = name if name is not None else f"{op.__class__.__name__}_{'_'.join(self.keys)}"
+        # ``op`` is a list of per-channel copies when restored from a config with explicit channels
+        base_op = op[0] if isinstance(op, list) else op
+
+        if name is None:
+            name = f"{base_op.__class__.__name__}_{'_'.join(self.keys)}"
+            if self.attr not in (None, "all"):
+                name += f"_{self.attr}"
+            if self.channels is not None:
+                name += "_ch" + "-".join(str(c) for c in self.channels)
+        self.name = name
 
         self.is_multikey = multikey
-        self.is_invertible = isinstance(op, InvertibleOperation)
-        self.is_fittable = isinstance(op, FittableOperation)
+        self.is_invertible = isinstance(base_op, InvertibleOperation)
+        self.is_fittable = isinstance(base_op, FittableOperation)
 
         self.fitted = False
 
@@ -245,7 +262,7 @@ class Transform:
                 if no_return:
                     fn_op(x_moved[c])
                 else:
-                    x_moved[c] = fn_op(x_moved[c])
+                    x_moved = _assign_channels(x_moved, c, fn_op(x_moved[c]))
 
         else:
             idx = self.channels if self.channels is not None else slice(None)
@@ -254,7 +271,7 @@ class Transform:
             if no_return:
                 fn_op(x_moved[idx])
             else:
-                x_moved[idx] = fn_op(x_moved[idx])
+                x_moved = _assign_channels(x_moved, idx, fn_op(x_moved[idx]))
 
         if no_return:
             return None
@@ -338,6 +355,15 @@ class Transform:
     # -----------------------------
 
     def fit(self, dataloader):
+        """
+        Fit the transform.
+
+        Args:
+            dataloader (Iterable[dict]): Iterable of samples in the same layout that `forward`
+                receives. A batching ``torch.utils.data.DataLoader`` adds a leading batch
+                dimension, so a non-negative ``channel_dim`` would then point at the wrong axis.
+                `Pipeline.fit` passes unbatched samples.
+        """
 
         if not self.is_fittable:
             return
@@ -362,12 +388,18 @@ class Transform:
         return self.op[0] if isinstance(self.op, list) else self.op
 
     def config(self):
+        if not getattr(self._base_op(), "serializable", True):
+            raise TypeError(
+                f"Transform {self.name!r} wraps {self._base_op().__class__.__name__}, which cannot "
+                "be saved. Define a registered `Operation` subclass (see `register_op`) instead."
+            )
         return {
             "type": self.__class__.__name__,
             "op": self._base_op().__class__.__name__,
             "op_args": self._base_op().call_args,
             "name": self.name,
             "keys": self.keys,
+            "multikey": self.is_multikey,
             "attr": self.attr,
             "channels": self.channels,
             "per_channel": self.per_channel,
@@ -409,6 +441,21 @@ class Transform:
 
 class Pipeline:
     def __init__(self, transforms):
+        # State is saved and restored by transform name, so names must be unique. Repeated names
+        # (e.g. the same op applied twice to one key) get a positional suffix instead of silently
+        # sharing one state entry. The names are saved in `config()`, so reloads stay consistent.
+        # A new name must not clash with any given name (including later ones) or earlier renames.
+        reserved = {t.name for t in transforms}
+        used: set[str] = set()
+        for t in transforms:
+            if t.name in used:
+                n = 2
+                while f"{t.name}_{n}" in reserved or f"{t.name}_{n}" in used:
+                    n += 1
+                new_name = f"{t.name}_{n}"
+                logger.info("Renaming duplicate transform %r to %r", t.name, new_name)
+                t.name = new_name
+            used.add(t.name)
         self.transforms = transforms
 
     # -----------------------------
@@ -463,17 +510,15 @@ class Pipeline:
         temp_dataset = copy.deepcopy(dataset)
         for i in range(n):
             if self.transforms[i].is_fittable:
+                # Feed unbatched samples: batching would prepend a dimension and shift any
+                # non-negative ``channel_dim``.
                 temp_dataset.transforms = [Pipeline(self.transforms[:i])]
-                dataloader = DataLoader(temp_dataset, batch_size=1)
-                self.transforms[i].fit(dataloader)
+                self.transforms[i].fit(iter_samples(temp_dataset))
         return self
 
     # -----------------------------
     # Serialization
     # -----------------------------
-    def _base_op(self):
-        return self.op[0] if isinstance(self.op, list) else self.op
-
     def config(self):
         return {"transforms": [t.config() for t in self.transforms]}
 
@@ -506,6 +551,7 @@ class Pipeline:
             t = Transform(
                 op=op,
                 keys=tconf["keys"],
+                multikey=tconf.get("multikey", False),
                 attr=tconf["attr"],
                 channels=tconf["channels"],
                 per_channel=tconf["per_channel"],
@@ -528,6 +574,23 @@ class Pipeline:
             self.transforms[i].to(device)
 
 
+def _assign_channels(x, idx, value):
+    """
+    Write ``value`` into ``x[idx]``, promoting ``x`` first if needed (e.g. a float result of a
+    normalisation written into an integer image).
+    """
+    if value.dtype != x.dtype:
+        x = x.to(torch.promote_types(x.dtype, value.dtype))
+    x[idx] = value
+    return x
+
+
+def iter_samples(dataset):
+    """Yield the samples of ``dataset`` one at a time, without batching."""
+    for i in range(len(dataset)):
+        yield dataset[i]
+
+
 def save_pipeline(pipeline, path):
 
     obj = {"config": pipeline.config(), "state": pipeline.state_dict()}
@@ -537,7 +600,10 @@ def save_pipeline(pipeline, path):
 
 def load_pipeline(path):
 
-    obj = torch.load(path)
+    try:
+        obj = torch.load(path, map_location="cpu", weights_only=True)
+    except TypeError:  # torch < 1.13 has no ``weights_only``
+        obj = torch.load(path, map_location="cpu")
 
     pipeline = Pipeline.from_config(obj["config"])
     pipeline.load_state_dict(obj["state"])
@@ -643,7 +709,7 @@ class Dataset(torch.utils.data.Dataset):
         cases (list[str]):
             List of case names. These names are passed to `load_fn` to load data.
 
-        transforms (list[Transform] | Pipeline | None):
+        transforms (Transform | list[Transform] | Pipeline | None):
             Transforms or pipeline applied to each sample. Default is None (no transforms).
 
     Examples:
@@ -674,13 +740,18 @@ class Dataset(torch.utils.data.Dataset):
         self.cases = cases
         self.add_transforms(transforms)
 
-    def add_transforms(self, transforms: list[Transform] | Pipeline | None = None):
+    def add_transforms(self, transforms: Transform | list[Transform] | Pipeline | None = None):
         if transforms is None:
             self.transforms = []
-        elif isinstance(transforms, Pipeline):
+        elif isinstance(transforms, (Pipeline, Transform)):
             self.transforms = [transforms]
-        elif isinstance(transforms, list):
-            self.transforms = transforms
+        elif isinstance(transforms, (list, tuple)):
+            self.transforms = list(transforms)
+        else:
+            raise TypeError(
+                "transforms must be a Transform, a list of Transforms, a Pipeline or None, "
+                f"got {type(transforms).__name__}."
+            )
 
     def __len__(self) -> int:
         return len(self.cases)

@@ -91,8 +91,15 @@ class TrilinearProjection(nn.Module):
         """
         coords = graph.coords
         batch = graph.batch
+        if batch is None:
+            batch = torch.zeros(coords.shape[0], dtype=torch.long, device=coords.device)
+        if batch.numel() > 0 and int(batch.max()) >= image_features.shape[0]:
+            raise ValueError(
+                f"The graph has {int(batch.max()) + 1} graphs but image_features has a batch size "
+                f"of {image_features.shape[0]}."
+            )
         projections = image_features.new_zeros(coords.shape[0], image_features.shape[1])
-        for i in torch.unique(batch).to(torch.int16):
+        for i in torch.unique(batch):
             # TensorFlow tf.shape equivalents
             h = image_features[i].shape[-3]
             w = image_features[i].shape[-2]

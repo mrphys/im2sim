@@ -133,7 +133,7 @@ class UNetConfig(Config):
         .. code-block:: python
 
             skip_connection_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
-            out_block_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
+            out_block_cfg = ImageConvBlockConfig(depth=1, activation=None, out_activation="sigmoid")
             cfg = UNetConfig(
                 filters=[32, 64, 128, 256],
                 skip_connection_cfg=skip_connection_cfg,
@@ -372,6 +372,9 @@ class UNetConfig(Config):
     def segmentation_mode(self):
         self.out_block_cfg.out_activation = None
         self.out_block_cfg = self.out_block_cfg.segmentation_mode()
+        # The output block produces the logits: normalising them (per instance) forces a zero
+        # mean logit map and prevents e.g. predicting an empty mask, so keep the norm off it.
+        self.out_block_cfg.norm_cfg = LayerConfig(name=None, kwargs={})
         for e, d in zip(self.encoder_block_cfg, self.decoder_block_cfg, strict=True):
             e = e.segmentation_mode()
             d = d.segmentation_mode()

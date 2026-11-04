@@ -81,7 +81,14 @@ class DefaultGraphNorm(torch.nn.Module):
 
         out = torch.zeros_like(x)
         for b in torch.unique(batch):
-            out[batch == b] = self.norm(x[batch == b].unsqueeze(0).unsqueeze(0)).reshape(-1, C)
+            mask = batch == b
+            nodes = x[mask]
+            if nodes.numel() < 2:
+                # InstanceNorm needs more than one value: a single value normalises to 0, so only
+                # the affine bias remains.
+                out[mask] = self.norm.bias.reshape(1, 1).expand_as(nodes)
+            else:
+                out[mask] = self.norm(nodes.unsqueeze(0).unsqueeze(0)).reshape(-1, C)
         return out
 
 

@@ -21,6 +21,14 @@ import torch
 import torch.nn.functional as F
 
 
+def _batch_vector(graph) -> torch.Tensor:
+    """The graph's batch vector, or zeros (a single graph) if it is not batched."""
+    batch = getattr(graph, "batch", None)
+    if batch is None:
+        return torch.zeros(graph.coords.shape[0], dtype=torch.long, device=graph.coords.device)
+    return batch
+
+
 def compute_edge_lengths(points: torch.Tensor, edges: torch.Tensor) -> torch.Tensor:
     """
     Computes the Euclidean length of each edge in a mesh.
@@ -257,7 +265,8 @@ def _aspect_ratio(x, cells):
     vert_ids = list(combinations(range(4), 2))
     edge_coords = tet_vertices[vert_ids, :]
     distances = torch.linalg.norm(edge_coords[:, 0, :, :] - edge_coords[:, 1, :, :], dim=-1)
-    aspect_ratio = distances.max(0).values / distances.mean(0)
+    # collapsed tetrahedra have a zero mean edge length
+    aspect_ratio = distances.max(0).values / distances.mean(0).clamp(min=1e-8)
     return aspect_ratio.mean()
 
 
@@ -285,7 +294,7 @@ class FaceNormalLoss(MeshLoss):
     """
 
     def __init__(self, face_key, supervised=True):
-        super().__init__(required_attrs=[face_key, "batch"], supervised=supervised)
+        super().__init__(required_attrs=[face_key], supervised=supervised)
         self.face_key = face_key
 
     def _compute_loss(self, true_graph, pred_graph):
@@ -306,10 +315,12 @@ def _face_norm(face_verts):
 
 def face_norm_consistency(graph, face_key):
     norm = _face_norm(graph.coords[graph[face_key], :])
-    batch = graph.batch[graph[face_key][0]]
+    batch = _batch_vector(graph)[graph[face_key][0]]
     consistency = torch.Tensor([0.0]).to(norm.device)
     for b in torch.unique(batch).tolist():
         mask = batch == b
+        if mask.sum() < 2:  # the standard deviation of a single face normal is undefined
+            continue
         consistency += torch.norm(norm[mask].std(0))
     return consistency
 
@@ -319,16 +330,19 @@ def face_norm_loss(true_graph, pred_graph, face_key):
     norm1 = _face_norm(true_graph.coords[true_graph[face_key], :])
     norm2 = _face_norm(pred_graph.coords[pred_graph[face_key], :])
 
-    batch1 = true_graph.batch[true_graph[face_key][0]]
-    batch2 = pred_graph.batch[pred_graph[face_key][0]]
+    batch1 = _batch_vector(true_graph)[true_graph[face_key][0]]
+    batch2 = _batch_vector(pred_graph)[pred_graph[face_key][0]]
 
     consistency = torch.Tensor([0.0]).to(norm1.device)
     similarity = torch.Tensor([0.0]).to(norm1.device)
 
-    for b in torch.unique(true_graph.batch).tolist():
+    for b in torch.unique(batch1).tolist():
         mask1 = batch1 == b
         mask2 = batch2 == b
-        consistency += torch.norm(norm2[mask2].std(0))
+        if mask1.sum() == 0 or mask2.sum() == 0:
+            continue
+        if mask2.sum() >= 2:  # the standard deviation of a single face normal is undefined
+            consistency += torch.norm(norm2[mask2].std(0))
         similarity += torch.norm(norm1[mask1].mean(0) - norm2[mask2].mean(0))
 
     return consistency + similarity
@@ -410,4 +424,3 @@ if __name__ == "__main__":
     # Compute inversion loss
     inv_loss = EdgeLengthDeviationLoss(supervised=True)
     loss_value = inv_loss(graph, pred_graph=pred_graph)
-

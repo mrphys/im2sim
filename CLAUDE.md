@@ -36,7 +36,7 @@ The library is organized around **four main architectural layers**:
 1. **Models** (`im2sim/models/`): High-level PyTorch models combining image and graph processing
    - `unet.py`, `halfunet.py`, `reverse_halfunet.py`: Image encoders/decoders
    - `graph_decoders.py`: GNN-based graph processors (PyTorch Geometric)
-   - `image_to_graph.py`: Hybrid models that bridge image and graph domains
+   - `image_to_graph.py`: Legacy hybrid models, currently fully commented out (not part of the API)
    - `im2sim_models.py`: Full end-to-end models combining projections, rasterization, and decoders
 
 2. **Layers** (`im2sim/layers/`): Reusable PyTorch modules and building blocks
@@ -47,9 +47,8 @@ The library is organized around **four main architectural layers**:
    - `rasterization.py`: Convert graph outputs back to image space (MaskRasterizer)
 
 3. **Data** (`im2sim/data/`): Data pipeline and preprocessing
-   - `core.py`: Core data abstractions
-   - `pca.py`: Dimensionality reduction
-   - `scaling.py`: Normalization and scaling
+   - `core.py`: Core data abstractions (`Operation`, `Transform`, `Pipeline`, `Dataset`, `DataLoader`)
+   - `pca.py`, `scaling.py`: Unimplemented stubs. Use the transforms in `im2sim/transforms/` instead (`FitPCA`, `FitZScore`, `FitNorm`, ...)
    - Mesh utilities for VTK/PyVista integration
 
 4. **Configs** (`im2sim/configs/`): Configuration classes for reproducibility

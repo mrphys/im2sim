@@ -127,7 +127,7 @@ class HalfUNetConfig(Config):
         .. code-block:: python
 
             stem_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
-            out_block_cfg = ImageConvBlockConfig(depth=1, activation="ReLU", out_activation="sigmoid")
+            out_block_cfg = ImageConvBlockConfig(depth=1, activation=None, out_activation="sigmoid")
             cfg = HalfUNetConfig(
                 hidden_channels=32,
                 n_levels=4,
@@ -321,6 +321,9 @@ class HalfUNetConfig(Config):
     def segmentation_mode(self):
         self.out_block_cfg.out_activation = None
         self.out_block_cfg = self.out_block_cfg.segmentation_mode()
+        # The output block produces the logits: normalising them (per instance) forces a zero
+        # mean logit map and prevents e.g. predicting an empty mask, so keep the norm off it.
+        self.out_block_cfg.norm_cfg = LayerConfig(name=None, kwargs={})
         for e in self.encoder_block_cfg:
             e = e.segmentation_mode()
         return self

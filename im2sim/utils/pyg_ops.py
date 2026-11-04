@@ -155,11 +155,15 @@ def knn_interpolate(x, pos_x, pos_y, batch_x=None, batch_y=None, k=3):
     with torch.no_grad():
         y_idx, x_idx = knn(pos_x, pos_y, k, batch_x=batch_x, batch_y=batch_y)
         diff = pos_x[x_idx] - pos_y[y_idx]
-        squared_distance = (diff * diff).sum(dim=-1, keepdim=True)
+        # 1e-16 underflows in half precision, so accumulate in at least float32
+        acc_dtype = torch.promote_types(x.dtype, torch.float32)
+        squared_distance = (diff * diff).sum(dim=-1, keepdim=True).to(acc_dtype)
         weights = 1.0 / torch.clamp(squared_distance, min=1e-16)
 
-    y = scatter(x[x_idx] * weights, y_idx, 0, pos_y.size(0), reduce="sum")
-    return y / scatter(weights, y_idx, 0, pos_y.size(0), reduce="sum")
+    y = scatter(x[x_idx].to(acc_dtype) * weights, y_idx, 0, pos_y.size(0), reduce="sum")
+    total = scatter(weights, y_idx, 0, pos_y.size(0), reduce="sum")
+    # queries without any neighbour have total == 0 and interpolate to 0 instead of NaN
+    return (y / total.clamp(min=torch.finfo(acc_dtype).tiny)).to(x.dtype)
 
 
 def _graclus_python(edge_index, weight, num_nodes):

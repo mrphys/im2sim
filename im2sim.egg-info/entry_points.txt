@@ -1,2 +1,0 @@
-[console_scripts]
-im2sim-install-pyg-addons = im2sim.cli:install_pyg

@@ -158,9 +158,7 @@ def geometric_targets(graph: Data, n_eigs: int = 3) -> dict[str, torch.Tensor]:
     return out
 
 
-def ridge_r2(
-    feats: torch.Tensor, target: torch.Tensor, train: torch.Tensor, alpha: float
-) -> float:
+def ridge_r2(feats: torch.Tensor, target: torch.Tensor, train: torch.Tensor, alpha: float) -> float:
     """Held-out R^2 of a ridge regression `feats -> target` fit on the `train` mask."""
     f = feats.double()
     y = target.double()

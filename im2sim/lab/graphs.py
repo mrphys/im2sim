@@ -194,7 +194,7 @@ def barbell_graph(n_clique: int = 5, n_path: int = 6) -> Data:
     for off in (0, n_clique + n_path):
         edges += [(off + i, off + j) for i in range(n_clique) for j in range(i + 1, n_clique)]
     chain = [n_clique - 1, *range(n_clique, n_clique + n_path), n_clique + n_path]
-    edges += list(zip(chain[:-1], chain[1:]))
+    edges += list(zip(chain[:-1], chain[1:], strict=True))
     n = 2 * n_clique + n_path
     pos = torch.zeros(n, 3)
     pos[:, 0] = torch.arange(n).float()
@@ -298,7 +298,11 @@ def u_tube_graph(
 
 
 def subsample(
-    graph: Data, idx: torch.Tensor, connectivity: str = "knn", k: int | None = None, r: float | None = None
+    graph: Data,
+    idx: torch.Tensor,
+    connectivity: str = "knn",
+    k: int | None = None,
+    r: float | None = None,
 ) -> Data:
     """Keep nodes `idx` and rebuild the edges from their positions.
 

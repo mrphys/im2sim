@@ -89,7 +89,9 @@ def jacobian_reach(
         s = sens[mask]
         if s.size:
             sens_max[h], sens_sum[h] = s.max(), s.sum()
-            sens_signed[h] = signed[mask][s.argmax()]  # signed gradient of the most sensitive node at this hop
+            sens_signed[h] = signed[mask][
+                s.argmax()
+            ]  # signed gradient of the most sensitive node at this hop
     peak = sens_max.max()
     rel = sens_max / peak if peak > 0 else sens_max
     eff = np.nonzero(rel >= threshold)[0]
@@ -190,7 +192,7 @@ def copy_task(
         ]
     )
     best = 0
-    for d, a in zip(distances, acc):
+    for d, a in zip(distances, acc, strict=True):
         if a < solved:
             break
         best = d
@@ -254,7 +256,7 @@ def harmonic_extension(
         h0 = hop_distances(g, 0)
         diams.append(int(h0[np.isfinite(h0)].max()))
 
-        def sample(count):
+        def sample(count, g=g, gen=gen, bmask=bmask):
             xs, ys = [], []
             for _ in range(count):
                 vals = _smooth_boundary_values(g.pos, gen)
@@ -268,7 +270,7 @@ def harmonic_extension(
         fit(adapter, [g] * n_train, xs, ys, [~bmask] * n_train, steps=steps, lr=lr)
         xt, yt = sample(n_test)
         e, b = [], []
-        for x_, y_ in zip(xt, yt):
+        for x_, y_ in zip(xt, yt, strict=True):
             p = predict(adapter, g, x_)[:, 0]
             inner = ~bmask
             denom = y_[inner].norm()

@@ -33,23 +33,30 @@ This includes two main components:
 
 `Installation`
 
-To install the base repository for imaging tasks, run the following command:
+To install the base package for imaging tasks, run:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      pip install git+https://github.com/mrphys/im2sim.git
+   pip install im2sim
 
 To install with optional mesh dependencies, run:
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      pip install "im2sim[mesh] @ git+https://github.com/mrphys/im2sim.git"
+   pip install "im2sim[mesh]"
 
-To install with Pytorch Geometric functionality required for fast GNN ops, run:
+To install the compiled PyTorch Geometric extensions used for fast GNN ops
+(run after PyTorch is installed for your CUDA version), run:
 
-   .. code-block:: bash 
+.. code-block:: bash
 
-      pip install git+https://github.com/mrphys/im2sim.git
-      im2sim-install-pyg-addons
+   pip install im2sim
+   im2sim-install-pyg-addons
+
+To install the latest development version from GitHub, run:
+
+.. code-block:: bash
+
+   pip install git+https://github.com/mrphys/im2sim.git
 
 .. end-intro

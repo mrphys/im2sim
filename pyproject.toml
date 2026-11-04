@@ -1,15 +1,16 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 
 [project]
 name = "im2sim"
-version = "0.1.0"
+dynamic = ["version"]
 description = "A framework for ML-accelerated digital twins"
 readme = "README.rst"
 requires-python = ">=3.10"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
     { name = "Anirudh Raman", email = "anirudh.raman.24@ucl.ac.uk" }
 ]
@@ -46,7 +47,8 @@ dependencies = [
     "torch-geometric",
     "numpy",
     "matplotlib",
-    "scikit-learn"
+    "scipy",
+    "scikit-learn",
 ]
 
 [project.optional-dependencies]
@@ -56,6 +58,8 @@ dev = [
     "hypothesis",
     "ruff",
     "pre-commit",
+    "build",
+    "twine",
 ]
 docs = [
     "sphinx",
@@ -88,7 +92,10 @@ Issues = "https://github.com/mrphys/im2sim/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["im2sim*"]
+include = ["im2sim", "im2sim.*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "im2sim.__about__.__version__" }
 
 
 # -------------------------

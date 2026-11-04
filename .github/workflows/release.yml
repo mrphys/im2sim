@@ -1,0 +1,149 @@
+name: Release
+
+# Publishes im2sim to TestPyPI, then (after manual approval of the `pypi`
+# environment) to PyPI, when a version tag such as v0.1.0 is pushed.
+# Uses PyPI Trusted Publishing, so no API tokens are stored in the repo.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.12']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e ".[dev, mesh]"
+        im2sim-install-pyg-addons
+
+    - name: Lint
+      run: ruff check im2sim
+
+    - name: Run tests
+      run: pytest
+
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Check tag matches package version
+      run: |
+        PKG_VERSION=$(python -c "import ast, pathlib; src = pathlib.Path('im2sim/__about__.py').read_text(); print(next(n.value.value for n in ast.parse(src).body if isinstance(n, ast.Assign) and n.targets[0].id == '__version__'))")
+        TAG_VERSION="${GITHUB_REF_NAME#v}"
+        echo "Package version: ${PKG_VERSION}, tag version: ${TAG_VERSION}"
+        if [ "${PKG_VERSION}" != "${TAG_VERSION}" ]; then
+          echo "::error::Tag ${GITHUB_REF_NAME} does not match im2sim/__about__.py version ${PKG_VERSION}"
+          exit 1
+        fi
+
+    - name: Build sdist and wheel
+      run: |
+        python -m pip install --upgrade pip build twine
+        python -m build
+        twine check --strict dist/*
+
+    - name: Upload distributions
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+
+  publish-testpypi:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/im2sim
+
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
+
+  publish-pypi:
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+
+    # Add a required reviewer to this environment in the repo settings so the
+    # real upload waits until the TestPyPI release has been checked.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/im2sim
+
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+
+  github-release:
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Download distributions
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist/
+
+    - name: Create GitHub Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release create "${GITHUB_REF_NAME}" dist/* \
+          --repo "${GITHUB_REPOSITORY}" \
+          --title "${GITHUB_REF_NAME}" \
+          --generate-notes

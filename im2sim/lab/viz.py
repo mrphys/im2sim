@@ -94,10 +94,7 @@ def plot_graph_signal(
     fig = ax.figure if ax is not None else plt.figure(figsize=(5, 4))
     if ax is None:
         ax = fig.add_subplot(111, projection="3d" if use3d else None)
-    if use3d:
-        cols = [0, 1, 2]
-    else:
-        cols = list(np.argsort(ext)[::-1][:2])
+    cols = [0, 1, 2] if use3d else list(np.argsort(ext)[::-1][:2])
     src, dst = graph.edge_index.numpy()
     if edges is None:
         edges = src.size <= 5000
@@ -115,7 +112,9 @@ def plot_graph_signal(
     if c is not None:
         hide = ~np.isfinite(c)
         if hide.any():
-            ax.scatter(*[pos[hide, i] for i in cols], s=node_size / 4, c="0.75", alpha=0.25, zorder=1)
+            ax.scatter(
+                *[pos[hide, i] for i in cols], s=node_size / 4, c="0.75", alpha=0.25, zorder=1
+            )
         pos, c = pos[~hide], c[~hide]
         style = {"c": c, "cmap": cmap, "vmin": vmin, "vmax": vmax}
     sc = ax.scatter(*[pos[:, i] for i in cols], s=node_size, zorder=2, **style)
@@ -164,7 +163,11 @@ def plot_reach_profile(results, ax=None, normalise: bool = True, signed: bool = 
         if thr:
             for sign in (1, -1):
                 ax.axhline(sign * thr, ls="--", c="0.5", lw=1)
-        ax.set(xlabel="hop distance", ylabel="signed relative sensitivity", title="Message reach (signed)")
+        ax.set(
+            xlabel="hop distance",
+            ylabel="signed relative sensitivity",
+            title="Message reach (signed)",
+        )
         ax.set_ylim(-2, 2)
     else:
         if thr:
@@ -246,15 +249,24 @@ def plot_equivariance(results, ax=None):
 
 def plot_probe_r2(result: LabResult, ax=None):
     """Heatmap of linear-probe R^2 (layers x geometric targets)."""
-    fig, ax = _axes(ax, (1.0 + 0.9 * len(result.arrays["targets"]), 1.5 + 0.35 * len(result.arrays["layers"])))
+    fig, ax = _axes(
+        ax, (1.0 + 0.9 * len(result.arrays["targets"]), 1.5 + 0.35 * len(result.arrays["layers"]))
+    )
     r2 = result.arrays["r2"]
     im = ax.imshow(np.clip(r2, -0.2, 1), vmin=-0.2, vmax=1, cmap="viridis", aspect="auto")
     ax.set_xticks(range(r2.shape[1]), result.arrays["targets"], rotation=45, ha="right")
     ax.set_yticks(range(r2.shape[0]), result.arrays["layers"])
     for i in range(r2.shape[0]):
         for j in range(r2.shape[1]):
-            ax.text(j, i, f"{r2[i, j]:.2f}", ha="center", va="center", fontsize=8,
-                    color="w" if r2[i, j] < 0.6 else "k")
+            ax.text(
+                j,
+                i,
+                f"{r2[i, j]:.2f}",
+                ha="center",
+                va="center",
+                fontsize=8,
+                color="w" if r2[i, j] < 0.6 else "k",
+            )
     fig.colorbar(im, ax=ax, label="held-out R$^2$")
     ax.set_title(f"Linear probes: {result.label}")
     return fig
@@ -335,7 +347,9 @@ def plot_spectral_gain(results, ax=None):
         _band(axs[1], ev[1:], [r.arrays["dirichlet_ratio"][1:] for r in rs], label, marker="o")
     axs[0].set(xlabel="eigenvalue (frequency)", ylabel="gain", title="Frequency response")
     axs[1].axhline(1, ls=":", c="0.5")
-    axs[1].set(xlabel="eigenvalue (frequency)", ylabel="Dirichlet ratio", title="output / input frequency")
+    axs[1].set(
+        xlabel="eigenvalue (frequency)", ylabel="Dirichlet ratio", title="output / input frequency"
+    )
     for a in axs:
         a.grid(alpha=0.3)
     axs[0].legend(frameon=False)
@@ -387,7 +401,14 @@ def plot_suite_summary(results: Sequence[LabResult], ax=None):
     for i in range(vals.shape[0]):
         for j in range(vals.shape[1]):
             if np.isfinite(vals[i, j]):
-                ax.text(j, i, f"{vals[i, j]:.3g}", ha="center", va="center", fontsize=8,
-                        color="w" if norm[i, j] > 0.6 else "k")
+                ax.text(
+                    j,
+                    i,
+                    f"{vals[i, j]:.3g}",
+                    ha="center",
+                    va="center",
+                    fontsize=8,
+                    color="w" if norm[i, j] > 0.6 else "k",
+                )
     ax.set_title("Suite summary (colour: relative within column)")
     return fig

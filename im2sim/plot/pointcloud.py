@@ -28,8 +28,8 @@ class PointCloudPlot:
     """
     A grid of 3D point clouds, e.g. predicted and target node positions.
 
-    A shortcut for a :class:`~im2sim.plot.figure.Figure` of
-    :class:`~im2sim.plot.layers.Points` layers, rendered with pyvista. For anything more (edges,
+    A shortcut for a `im2sim.plot.Figure` of
+    `im2sim.plot.Points` layers, rendered with pyvista. For anything more (edges,
     surfaces, streamlines, traces) use `Figure` directly.
 
     Args:

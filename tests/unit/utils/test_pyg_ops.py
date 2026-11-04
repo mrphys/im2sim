@@ -111,6 +111,30 @@ def test_knn_fallback_skips_examples_missing_from_x(no_fallback_warnings):
     assert set(row.tolist()) == {0, 1}
 
 
+@requires_compiled_knn
+@pytest.mark.parametrize(
+    "batch_x, batch_y",
+    [
+        ([0, 0, 0, 1, 1, 1], [0, 0, 0]),  # x has more examples than y
+        ([0, 0, 0], [0, 0, 0, 1, 1, 1]),  # y has more examples than x
+        ([1, 1, 1], [0, 0, 1, 1, 2, 2]),  # x is empty for examples 0 and 2
+        ([0, 0, 2, 2], [1, 1, 1]),  # no example is shared
+        (None, [0, 0, 1, 1]),  # missing batch_x means example 0
+    ],
+)
+def test_knn_compiled_handles_unequal_example_counts(batch_x, batch_y):
+    # torch_geometric >= 2.8 with pyg-lib segfaulted or returned out-of-range indices here.
+    batch_x = None if batch_x is None else torch.tensor(batch_x)
+    batch_y = torch.tensor(batch_y)
+    num_x = 4 if batch_x is None else batch_x.numel()
+    x, y = torch.rand(num_x, 3), torch.rand(batch_y.numel(), 3)
+    ref_batch_x = torch.zeros(num_x, dtype=torch.long) if batch_x is None else batch_x
+
+    for k in (1, 2):
+        actual = pyg_ops.knn(x, y, k, batch_x=batch_x, batch_y=batch_y)
+        assert _as_set(actual) == _reference_knn(x, y, k, ref_batch_x, batch_y)
+
+
 @pytest.mark.parametrize("missing", ["batch_x", "batch_y"])
 def test_knn_fallback_treats_missing_batch_as_example_zero(no_fallback_warnings, missing):
     x, y, batch_x, batch_y = _random_batched_points()

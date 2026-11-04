@@ -17,9 +17,9 @@
 """
 Slice-sweep plots of 3D images with overlaid masks, written as GIFs.
 
-A :class:`VolumePlot` steps through a 3D image one slice at a time and draws each slice with
-any number of mask layers on top. A mask is either a voxel array (:class:`Mask`) or a surface
-mesh that is rasterised onto the image grid (:class:`MeshMask`), so a predicted mesh can be
+A `im2sim.plot.VolumePlot` steps through a 3D image one slice at a time and draws each slice with
+any number of mask layers on top. A mask is either a voxel array (`im2sim.plot.Mask`) or a surface
+mesh that is rasterised onto the image grid (`im2sim.plot.MeshMask`), so a predicted mesh can be
 checked against the image it came from. Uses matplotlib and Pillow only; rasterising meshes
 also needs pyvista (`pip install -e ".[mesh]"`).
 """
@@ -31,7 +31,7 @@ from im2sim.plot.data import _import_pyvista, _to_numpy, to_pyvista
 
 def rasterise_nodes(mesh, shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0)):
     """
-    Fast, approximate rasterisation of a mesh's nodes with :class:`im2sim.layers.MaskRasterizer`.
+    Fast, approximate rasterisation of a mesh's nodes with `im2sim.layers.MaskRasterizer`.
 
     Each node marks the voxel it falls in and the result is dilated to close the gaps between
     nodes. This is the mask the models' `MaskRasterizer` layer produces, so it is what the
@@ -40,7 +40,7 @@ def rasterise_nodes(mesh, shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0)
     `origin + [i, i + 1) * spacing` here, as in `pointcloud_to_mask`.
 
     Args:
-        mesh: Anything :func:`~im2sim.plot.data.to_pyvista` accepts.
+        mesh: Anything `im2sim.plot.to_pyvista` accepts.
         shape (tuple of int): Grid size `(X, Y, Z)`.
         spacing, origin (optional): Voxel size and the position of the grid's corner.
 
@@ -66,10 +66,10 @@ def rasterise_mesh(mesh, shape, spacing=(1.0, 1.0, 1.0), origin=(0.0, 0.0, 0.0),
     Rasterise a surface mesh onto a voxel grid.
 
     Voxel `(i, j, k)` is centred at `origin + (i, j, k) * spacing`, so with the defaults mesh
-    coordinates are voxel indices, matching :func:`im2sim.layers.rasterization.pointcloud_to_mask`.
+    coordinates are voxel indices, matching `im2sim.layers.rasterization.pointcloud_to_mask`.
 
     Args:
-        mesh: Anything :func:`~im2sim.plot.data.to_pyvista` accepts. Volume meshes are reduced
+        mesh: Anything `im2sim.plot.to_pyvista` accepts. Volume meshes are reduced
             to their outer surface.
         shape (tuple of int): Grid size `(X, Y, Z)`.
         spacing (tuple of float, optional): Voxel size along each axis. Default is `1`.
@@ -158,16 +158,16 @@ class MeshMask(Mask):
 
     Args:
         mesh: A pyvista mesh, PyG `Data` with `pos` and `face`, or anything else
-            :func:`~im2sim.plot.data.to_pyvista` accepts.
+            `im2sim.plot.to_pyvista` accepts.
         method (str, optional): "nodes" (default) rasterises the mesh's nodes with the
-            :class:`~im2sim.layers.MaskRasterizer` layer: fast, and the same mask the models
+            `im2sim.layers.MaskRasterizer` layer: fast, and the same mask the models
             see, but about a voxel fatter on every side, and it needs a volume mesh (or enough
             nodes) to fill the inside. "exact" rasterises the surface itself, see
-            :func:`rasterise_mesh`: accurate but slow (tens of seconds at 128^3).
+            `im2sim.plot.rasterise_mesh`: accurate but slow (tens of seconds at 128^3).
         fill (bool, optional): With "exact", fill the inside of a closed surface; False draws
             the shell only. Default is `True`.
         spacing, origin (optional): Override the image's voxel size / origin for this mesh.
-        **kwargs: As for :class:`Mask`.
+        **kwargs: As for `im2sim.plot.Mask`.
     """
 
     def __init__(self, mesh, *, method="nodes", fill=True, spacing=None, origin=None, **kwargs):
@@ -212,7 +212,7 @@ class VolumePlot:
         image (array or torch.Tensor): `[X, Y, Z]` image, or `[C, X, Y, Z]` / `[1, C, X, Y, Z]`
             of which `channel` is shown.
         masks (list of Mask, optional): Drawn in order, later ones on top. Bare arrays or
-            tensors are wrapped as :class:`Mask`, and pyvista meshes as :class:`MeshMask`.
+            tensors are wrapped as `im2sim.plot.Mask`, and pyvista meshes as `im2sim.plot.MeshMask`.
         axis (int, optional): Axis to slide along: 0, 1 or 2. Default is `2`.
         channel (int, optional): Channel to show when `image` has channels. Default is `0`.
         spacing (tuple of float, optional): Voxel size, used to set the aspect ratio of each

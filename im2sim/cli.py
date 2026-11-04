@@ -61,19 +61,40 @@ def _cluster_backend(torch_version: str, pyg_version: str) -> str:
     return "torch-cluster"
 
 
-def _fetch_wheel_index(url: str) -> str:
+def _fetch_wheel_index(url: str) -> str | None:
+    """Returns the wheel index page at ``url``, or None if it does not exist."""
     try:
         with urllib.request.urlopen(url, timeout=30) as response:
             return response.read().decode()
     except urllib.error.HTTPError as e:
         if e.code == 404:
-            sys.exit(
-                f"No PyG wheels available at {url}: this PyTorch/CUDA combination is not "
-                "supported. Check https://data.pyg.org/whl/index.html for supported versions."
-            )
+            return None
         raise
     except urllib.error.URLError as e:
         sys.exit(f"Could not reach {url} ({e.reason}). data.pyg.org may be down, try again later.")
+
+
+def _find_wheel_index(torch_version: str, cuda_tag: str) -> tuple[str, str]:
+    """
+    Returns the url and page of the PyG wheel index for this PyTorch/CUDA combination.
+
+    PyG builds wheels per PyTorch minor version (e.g. ``pt214``) and usually only publishes an
+    index for the ``X.Y.0`` release, so patch releases such as 2.14.1 fall back to it.
+    """
+    major, minor = _major_minor(torch_version)
+    versions = [torch_version]
+    if torch_version != f"{major}.{minor}.0":
+        versions.append(f"{major}.{minor}.0")
+
+    urls = [f"https://data.pyg.org/whl/torch-{version}+{cuda_tag}.html" for version in versions]
+    for url in urls:
+        page = _fetch_wheel_index(url)
+        if page is not None:
+            return url, page
+    sys.exit(
+        f"No PyG wheels available at {' or '.join(urls)}: this PyTorch/CUDA combination is not "
+        "supported. Check https://data.pyg.org/whl/index.html for supported versions."
+    )
 
 
 def install_pyg():
@@ -102,8 +123,7 @@ def install_pyg():
 
     cuda = torch.version.cuda
     cuda_tag = "cpu" if cuda is None else f"cu{cuda.replace('.', '')}"
-    url = f"https://data.pyg.org/whl/torch-{torch_version}+{cuda_tag}.html"
-    wheel_index = _fetch_wheel_index(url)
+    url, wheel_index = _find_wheel_index(torch_version, cuda_tag)
 
     if need_scatter:
         if "torch_scatter-" in wheel_index:

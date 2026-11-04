@@ -67,15 +67,15 @@ def _is_chart(layer):
 @dataclass
 class Panel:
     """
-    One panel of a :class:`Figure`: some data and the layers to draw from it.
+    One panel of a `im2sim.plot.Figure`: some data and the layers to draw from it.
 
     Args:
-        data: Anything :func:`~im2sim.plot.data.as_sequence` accepts: a mesh, a PyG graph, a
-            list with one per frame, or a :class:`~im2sim.plot.data.MeshSequence`. A single
+        data: Anything `im2sim.plot.data.as_sequence` accepts: a mesh, a PyG graph, a
+            list with one per frame, or a `im2sim.plot.MeshSequence`. A single
             frame is shown unchanged in every frame of an animation.
         layers (list): Drawn in order, so later layers go on top. Either mesh layers
-            (:class:`~im2sim.plot.layers.Surface`, ...) or chart layers
-            (:class:`~im2sim.plot.layers.Trace`), not both.
+            (`im2sim.plot.Surface`, ...) or chart layers
+            (`im2sim.plot.Trace`), not both.
         title (str, optional): Title shown at the top of the panel.
     """
 
@@ -108,7 +108,7 @@ class Figure:
         background (str, optional): Default is `"white"`.
         frame_label (callable or str, optional): Text shown in the bottom-left corner: a function
             `fn(frame) -> str`, or "auto" for the labels of the first animated panel's data
-            (e.g. the timesteps of a :class:`~im2sim.plot.data.VTUSequence`). Default is `None`.
+            (e.g. the timesteps of a `im2sim.plot.VTUSequence`). Default is `None`.
         title (str, optional): Title for the whole figure, in the top-left corner.
         cache (bool, optional): Keep each frame's built layers in memory, so `"global"` colour
             scales and repeated saves don't rebuild them. Default is `True`.

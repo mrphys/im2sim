@@ -16,12 +16,14 @@ INDEX_WITHOUT_SCATTER = "pyg_lib-0.9.0"
 def env(monkeypatch):
     """Configures the detected versions/backends and records the urls and pip commands used."""
     calls = {"urls": [], "pip": []}
-    index = {"page": INDEX_WITH_SCATTER, "error": None}
+    index = {"page": INDEX_WITH_SCATTER, "error": None, "missing": ()}
 
     def urlopen(url, timeout=None):
         calls["urls"].append(url)
         if index["error"] is not None:
             raise index["error"]
+        if any(f"torch-{version}+" in url for version in index["missing"]):
+            raise urllib.error.HTTPError(url, 404, "Not Found", None, None)
         return io.BytesIO(index["page"].encode())
 
     monkeypatch.setattr(cli.urllib.request, "urlopen", urlopen)
@@ -36,6 +38,7 @@ def env(monkeypatch):
         scatter=False,
         page=INDEX_WITH_SCATTER,
         error=None,
+        missing=(),
     ):
         monkeypatch.setattr(torch, "__version__", torch_version)
         monkeypatch.setattr(torch.version, "cuda", cuda)
@@ -44,7 +47,7 @@ def env(monkeypatch):
         monkeypatch.setattr(pyg_ops, "HAS_COMPILED_KNN", compiled)
         monkeypatch.setattr(pyg_ops, "HAS_COMPILED_GRACLUS", compiled)
         monkeypatch.setattr(pyg_ops, "HAS_TORCH_SCATTER", scatter)
-        index.update(page=page, error=error)
+        index.update(page=page, error=error, missing=missing)
         return calls
 
     return configure
@@ -165,3 +168,35 @@ def test_other_http_errors_are_raised(env):
     env(error=urllib.error.HTTPError("url", 500, "Server Error", None, None))
     with pytest.raises(urllib.error.HTTPError):
         cli.install_pyg()
+
+
+def test_patch_release_falls_back_to_minor_wheel_index(env):
+    # PyG only publishes X.Y.0 indexes for recent PyTorch, its wheels cover every X.Y.z.
+    calls = env(torch_version="2.14.1+cu126", cuda="12.6", missing=("2.14.1",))
+    cli.install_pyg()
+    exact = "https://data.pyg.org/whl/torch-2.14.1+cu126.html"
+    base = "https://data.pyg.org/whl/torch-2.14.0+cu126.html"
+    assert calls["urls"] == [exact, base]
+    assert _installed(calls["pip"][0])[2] == base
+
+
+def test_patch_release_prefers_its_own_wheel_index(env):
+    calls = env(torch_version="2.4.1", pyg_version="2.7.0")
+    cli.install_pyg()
+    url = "https://data.pyg.org/whl/torch-2.4.1+cpu.html"
+    assert calls["urls"] == [url]
+    assert _installed(calls["pip"][0])[2] == url
+
+
+def test_patch_release_without_any_wheel_index_exits(env):
+    calls = env(torch_version="2.14.1", missing=("2.14.1", "2.14.0"))
+    with pytest.raises(SystemExit, match=r"torch-2\.14\.1\+cpu\.html or .*torch-2\.14\.0\+cpu"):
+        cli.install_pyg()
+    assert calls["pip"] == []
+
+
+def test_minor_release_is_not_fetched_twice(env):
+    calls = env(torch_version="2.14.0", missing=("2.14.0",))
+    with pytest.raises(SystemExit, match="No PyG wheels available"):
+        cli.install_pyg()
+    assert calls["urls"] == ["https://data.pyg.org/whl/torch-2.14.0+cpu.html"]

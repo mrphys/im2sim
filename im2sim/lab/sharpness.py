@@ -190,10 +190,10 @@ def boundary_layer(
 ) -> LabResult:
     """Fit near-wall profiles of decreasing thickness on a tube graph (CFD-style boundary layer).
 
-    Needs a graph from :func:`im2sim.lab.graphs.tube_graph`. Targets are
+    Needs a graph from `im2sim.lab.tube_graph`. Targets are
     `1 - exp(-wall_dist / (delta * radial_spacing))` (`profile="exp"`), thickness `delta`
     in radial node spacings, or the parabolic Poiseuille profile (`profile="poiseuille"`,
-    `deltas` ignored). Trained on the single graph, like :func:`step_sweep`.
+    `deltas` ignored). Trained on the single graph, like `im2sim.lab.step_sweep`.
 
     Args:
         adapter_factory (AdapterFactory): `factory(in_channels, 1) -> ModelAdapter`.

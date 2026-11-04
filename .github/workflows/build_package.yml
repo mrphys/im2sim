@@ -28,7 +28,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install -e ".[dev, mesh]"
+        pip install -e ".[dev, mesh, lab]"
         im2sim-install-pyg-addons
 
     - name: Lint

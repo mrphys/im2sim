@@ -18,14 +18,14 @@
 
 Experiments are grouped by the question they answer:
 
-* :mod:`~im2sim.lab.reach`: how far do messages travel?
-* :mod:`~im2sim.lab.geometry`: how well does the model understand geometry?
-* :mod:`~im2sim.lab.sharpness`: how sharply can the signal change?
+* `im2sim.lab.reach`: how far do messages travel?
+* `im2sim.lab.geometry`: how well does the model understand geometry?
+* `im2sim.lab.sharpness`: how sharply can the signal change?
 
-All experiments take a :class:`ModelAdapter` (or, for trained ones, a factory building one),
+All experiments take a `im2sim.lab.ModelAdapter` (or, for trained ones, a factory building one),
 so im2sim models and plain PyG models are tested identically, on toy graphs from
-:mod:`~im2sim.lab.graphs` or on real graphs via :func:`~im2sim.lab.graphs.from_mesh_graph`.
-Results are :class:`LabResult` objects that :mod:`~im2sim.lab.viz` knows how to plot.
+`im2sim.lab.graphs` or on real graphs via `im2sim.lab.from_mesh_graph`.
+Results are `im2sim.lab.LabResult` objects that `im2sim.lab.viz` knows how to plot.
 """
 
 from im2sim.lab import geometry, graphs, reach, sharpness, viz

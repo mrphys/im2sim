@@ -61,7 +61,7 @@ class MeshPlot:
     """
     A grid of pyvista renders for comparing meshes, with edges drawn.
 
-    The pyvista counterpart of :class:`PointCloudPlot`: the same grid, colouring and
+    The pyvista counterpart of `im2sim.plot.PointCloudPlot`: the same grid, colouring and
     `norm_mode` options, but each subplot is a mesh so its edges (graph connectivity, surface
     triangles or tetrahedra) are visible.
 
@@ -70,10 +70,11 @@ class MeshPlot:
         ncols (int): Number of columns in the grid.
         meshes (list): One entry per subplot, filled row by row. Each entry is a pyvista dataset
             (e.g. from `pv.read`), or a `(points, edge_index)` tuple which is converted with
-            :func:`graph_to_mesh`.
+            `im2sim.plot.graph_to_mesh`.
         scalars (list, optional): One entry per subplot: an array with one value per point (or
             per cell), the name of an array on the mesh, or `None` for a uniform colour.
-        cmap (str, optional): Colormap. Default is `"Blues_r"`, matching :class:`PointCloudPlot`.
+        cmap (str, optional): Colormap. Default is `"Blues_r"`, matching
+            `im2sim.plot.PointCloudPlot`.
         norm_mode (str, optional): Which subplots share a colour scale: `"all"`, `"row"`, `"col"` or
             `"none"`. Default is `"none"`.
         clim (tuple or list of tuple, optional): Fixed `(vmin, vmax)` colour limits, either one
@@ -349,8 +350,8 @@ class MeshPlot:
         Write one frame per entry of `mesh_sequence_sets`.
 
         Each entry is a list with one item per subplot, in any form accepted by
-        :meth:`draw_frame`. Pass `None` for the whole entry to keep the geometry fixed and only
-        change the scalars. Files ending in `.gif` need `imageio`; other extensions are
+        `im2sim.plot.MeshPlot.draw_frame`. Pass `None` for the whole entry to keep the geometry
+        fixed and only change the scalars. Files ending in `.gif` need `imageio`; other extensions are
         written as movies and need `imageio-ffmpeg`.
         """
         if scalar_sequence_sets is None:

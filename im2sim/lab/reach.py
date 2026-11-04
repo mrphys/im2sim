@@ -228,7 +228,7 @@ def harmonic_extension(
     """Learn the Laplace solution from boundary values; error vs domain size.
 
     Input channels are `[is_boundary, boundary_value]`; the target is the graph-harmonic
-    extension (exact sparse solve, see :func:`im2sim.lab.graphs.dirichlet_solve`). The answer
+    extension (exact sparse solve, see `im2sim.lab.graphs.dirichlet_solve`). The answer
     at the centre depends on the whole boundary, so a model that cannot send information across
     the domain fails as the domain grows. Errors are relative L2 over interior nodes; the
     trivial baseline (predict the boundary mean) is reported alongside.

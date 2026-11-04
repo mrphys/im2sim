@@ -82,7 +82,7 @@ def save_results(results: Sequence[LabResult], path: str | Path) -> None:
 
 
 def load_results(path: str | Path) -> list[LabResult]:
-    """Read results written by :func:`save_results`."""
+    """Read results written by `im2sim.lab.save_results`."""
     return [LabResult.from_dict(d) for d in json.loads(Path(path).read_text())]
 
 

@@ -75,7 +75,7 @@ def laplacian_eigs(graph: Data, k: int = 8, normalization: str | None = "sym"):
         graph (Data): The graph.
         k (int): Number of eigenpairs.
         normalization (str | None): `None` (combinatorial), `"sym"` or `"rw"`, as in
-            :func:`torch_geometric.utils.get_laplacian`.
+            `torch_geometric.utils.get_laplacian`.
 
     Returns:
         tuple[np.ndarray, np.ndarray]: eigenvalues `[k]` and unit-norm eigenvectors `[N, k]`.
@@ -145,7 +145,7 @@ def ring_graph(n: int) -> Data:
 
 
 def grid_graph(height: int, width: int | None = None, diagonals: bool = False) -> Data:
-    """Regular grid in the z=0 plane (built from :func:`torch_geometric.utils.grid`).
+    """Regular grid in the z=0 plane (built from `torch_geometric.utils.grid`).
 
     Args:
         height (int): Number of rows.

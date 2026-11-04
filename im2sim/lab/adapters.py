@@ -63,7 +63,8 @@ class ModelAdapter:
             rasterizer-equipped model build it from the graph.
         call_fn (Callable | None): Custom `fn(model, graph) -> Tensor` overriding the above.
         hidden_filter (Callable | None): `fn(name, module) -> bool` choosing the layers
-            reported by :meth:`hidden_states` (default: every `MessagePassing` layer).
+            reported by `im2sim.lab.ModelAdapter.hidden_states` (default: every `MessagePassing`
+            layer).
     """
 
     def __init__(

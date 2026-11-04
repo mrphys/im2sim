@@ -139,7 +139,7 @@ def plot_graph_signal(
 
 
 def plot_reach_profile(results, ax=None, normalise: bool = True, signed: bool = False):
-    """Max sensitivity vs hop distance (log scale) from :func:`jacobian_reach`.
+    """Max sensitivity vs hop distance (log scale) from `im2sim.lab.jacobian_reach`.
 
     With `signed=True` the signed gradient of the most sensitive node per hop is drawn on a symmetric-log axis
     (dotted line = zero), so cancellation between a local term and a global one (e.g. a graph norm) is visible

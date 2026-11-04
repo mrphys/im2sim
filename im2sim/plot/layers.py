@@ -19,7 +19,7 @@ Layers: what to draw from a frame's mesh, and how.
 
 A layer turns the panel's mesh for a frame into the geometry it draws (`build`), and says how
 to draw it (`mesh_kwargs`). Several layers can be stacked in one panel. To add a new kind of
-layer, subclass :class:`Layer` and override `geometry`.
+layer, subclass `im2sim.plot.Layer` and override `geometry`.
 """
 
 import numpy as np
@@ -71,11 +71,11 @@ class Layer:
         color (str or callable, optional): What to colour by: the name of a field, or a function
             `fn(built_mesh) -> array` with one value per point or cell. Vector fields are
             coloured by their magnitude. None draws a single `solid_color`.
-        scale (str, optional): Name of the :class:`ColorScale` to use. Layers with the same
+        scale (str, optional): Name of the `im2sim.plot.ColorScale` to use. Layers with the same
             scale name share colour limits and one colour bar. Default is the `color` field
             name, or `"color"` when `color` is a function.
         select (dict or callable, optional): Keep only matching cells, before anything else.
-            See :func:`select_cells`.
+            See `im2sim.plot.layers.select_cells`.
         clip (dict, optional): Arguments for `pyvista`'s `clip`, applied after `select`,
             e.g. `{"normal": "z", "crinkle": True}` to cut a volume open.
         surface (bool, optional): Reduce a volume to its outer surface. Default is `False`.
@@ -204,7 +204,7 @@ class Wireframe(Layer):
 
 
 class Points(Layer):
-    """The mesh's points, like :class:`PointCloudPlot`. `point_size` is in pixels."""
+    """The mesh's points, like `im2sim.plot.PointCloudPlot`. `point_size` is in pixels."""
 
     style = "points"
 
@@ -242,7 +242,7 @@ class Streamlines(Layer):
 
     Args:
         vectors (str): Name of the `[N, 3]` vector field, e.g. from
-            :func:`~im2sim.plot.data.vector_field`.
+            `im2sim.plot.vector_field`.
         seeds: Where to start the lines: a dict selecting cells of the full mesh (e.g. the inlet,
             `{"CellEntityIds": 4}`), a `[K, 3]` array, a pyvista mesh, or a function
             `fn(full_mesh) -> [K, 3]`.
@@ -256,7 +256,7 @@ class Streamlines(Layer):
         integration (dict, optional): More options for pyvista's `streamlines_from_source`.
             Lines stop at their last step inside the mesh, so they can end up to one step short
             of an outlet; `{"max_step_length": 0.2}` (in cell lengths) brings them closer.
-        **kwargs: As for :class:`Layer`.
+        **kwargs: As for `im2sim.plot.Layer`.
     """
 
     def __init__(

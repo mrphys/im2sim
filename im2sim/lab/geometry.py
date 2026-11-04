@@ -190,7 +190,7 @@ def linear_probe(
 ) -> LabResult:
     """How linearly decodable is each geometric quantity from each layer's embedding?
 
-    Embeddings come from :meth:`ModelAdapter.hidden_states` (`"input"` plus every layer
+    Embeddings come from `im2sim.lab.ModelAdapter.hidden_states` (`"input"` plus every layer
     chosen by the adapter's `hidden_filter`). A ridge regression is fit on a random
     `train_frac` of the nodes and R^2 is reported on the rest, so the score is held-out
     within the graph. `input` is the baseline: gain over it is what the network added.
@@ -199,7 +199,7 @@ def linear_probe(
         adapter (ModelAdapter): Model under test.
         graph (Data): Graph to embed.
         targets (dict | None): `name -> [N] or [N, k]` targets (default
-            :func:`geometric_targets`).
+            `im2sim.lab.geometric_targets`).
         layers (Sequence[str] | None): Subset of layer names to report.
         alpha (float): Ridge strength (scaled by the number of training nodes).
         train_frac (float): Fraction of nodes used for fitting.
@@ -259,7 +259,7 @@ def resolution_invariance(
         connectivity (str): `"knn"`, `"radius"` or `"delaunay"`.
         input_fn (Callable | None): `graph -> node input` (default `graph[input_key]`).
         seed (int): Random seed.
-        **subsample_kwargs: `k` / `r` forwarded to :func:`im2sim.lab.graphs.subsample`.
+        **subsample_kwargs: `k` / `r` forwarded to `im2sim.lab.graphs.subsample`.
 
     Returns:
         LabResult: arrays `fractions`, `error`; scalar `max_error`.
@@ -299,7 +299,7 @@ def proximity_leakage(
 ) -> LabResult:
     """Does a perturbation cross the gap between two limbs that are far apart on the graph?
 
-    Needs a graph from :func:`im2sim.lab.graphs.u_tube_graph` (`limb` and `mirror`
+    Needs a graph from `im2sim.lab.u_tube_graph` (`limb` and `mirror`
     attributes). The input is perturbed on a patch of limb 0 and the output change is read at
     the patch and at the facing nodes of limb 1.
 

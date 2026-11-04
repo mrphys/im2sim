@@ -119,18 +119,33 @@ def knn(x, y, k, batch_x=None, batch_y=None):
         batch_x = batch_x.long()
     if batch_y is not None:
         batch_y = batch_y.long()
-
-    if HAS_COMPILED_KNN:
-        return gnn.knn(x, y, k, batch_x=batch_x, batch_y=batch_y)
-
-    _warn_fallback("knn")
     if (batch_x is None) != (batch_y is None):
         # Match PyG, a missing batch vector means all points belong to example 0.
         if batch_x is None:
             batch_x = x.new_zeros(x.size(0), dtype=torch.long)
         else:
             batch_y = y.new_zeros(y.size(0), dtype=torch.long)
+
+    if HAS_COMPILED_KNN:
+        return _knn_compiled(x, y, k, batch_x, batch_y)
+
+    _warn_fallback("knn")
     return _knn_torch(x, y, k, batch_x, batch_y)
+
+
+def _knn_compiled(x, y, k, batch_x, batch_y):
+    empty = torch.empty((2, 0), dtype=torch.long, device=y.device)
+    if x.size(0) == 0 or y.size(0) == 0 or k <= 0:
+        return empty
+    if batch_x is None:
+        return gnn.knn(x, y, k)
+
+    # torch_geometric >= 2.8 builds `ptr_x` and `ptr_y` from separately inferred example counts.
+    # If the largest example id differs between `batch_x` and `batch_y`, the two have different
+    # lengths and pyg-lib reads out of bounds (garbage indices or a segfault). Passing a shared
+    # batch size keeps them aligned, examples empty on one side then just get no neighbours.
+    batch_size = int(torch.maximum(batch_x.max(), batch_y.max())) + 1
+    return gnn.knn(x, y, k, batch_x=batch_x, batch_y=batch_y, batch_size=batch_size)
 
 
 def knn_interpolate(x, pos_x, pos_y, batch_x=None, batch_y=None, k=3):

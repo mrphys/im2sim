@@ -145,11 +145,11 @@ class MeshSequence(Sequence):
     """
     A sequence of pyvista meshes, one per frame, loaded and prepared on first access.
 
-    Each mesh has its field names cleaned (:func:`clean_field_names`) and then gets the
+    Each mesh has its field names cleaned (`im2sim.plot.data.clean_field_names`) and then gets the
     derived `fields` added, in order, so later fields can use earlier ones.
 
     Args:
-        items (list, optional): Inputs accepted by :func:`to_pyvista`, one per frame.
+        items (list, optional): Inputs accepted by `im2sim.plot.to_pyvista`, one per frame.
         loader (callable, optional): `loader(i)` returns the input for frame `i`. Use instead
             of `items` to load lazily; requires `length`.
         length (int, optional): Number of frames when using `loader`.
@@ -206,13 +206,13 @@ class MeshSequence(Sequence):
 
 class VTUSequence(MeshSequence):
     """
-    A :class:`MeshSequence` of mesh files numbered by timestep, read lazily with pyvista.
+    A `im2sim.plot.MeshSequence` of mesh files numbered by timestep, read lazily with pyvista.
 
     Args:
         pattern (str or Path): File path with a format field for the step, e.g.
             `"case-{:04d}.vtu"`.
         steps (iterable of int): The steps to load, one per frame. They also become the labels.
-        fields (dict, optional): Derived fields, as in :class:`MeshSequence`.
+        fields (dict, optional): Derived fields, as in `im2sim.plot.MeshSequence`.
         cache (bool, optional): Keep loaded meshes in memory. Default is `True`.
     """
 
@@ -231,7 +231,7 @@ class VTUSequence(MeshSequence):
 
 def as_sequence(data):
     """
-    Wrap plot input as a :class:`MeshSequence`.
+    Wrap plot input as a `im2sim.plot.MeshSequence`.
 
     A `MeshSequence` is returned as is, a `list` is treated as one input per frame, and
     anything else (a mesh, a graph, a tuple) is a single frame.

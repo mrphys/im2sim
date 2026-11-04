@@ -45,10 +45,12 @@ def test_kind_detection():
     assert ModelAdapter(gnn.GCN(1, 4, 2, out_channels=2)).kind == "pyg_xe"
 
 
-@pytest.mark.parametrize("model", [XEModel(), DataModel()])
-def test_call_and_input_override(model):
+@pytest.mark.parametrize("model_cls", [XEModel, DataModel])
+def test_call_and_input_override(model_cls):
+    # Unseeded, XEModel's ReLU can zero every hidden unit so both inputs give the same output.
+    torch.manual_seed(0)
     g = path_graph(6)
-    a = ModelAdapter(model)
+    a = ModelAdapter(model_cls())
     out = a(g)
     assert out.shape == (6, 2)
     out2 = a(g, torch.zeros(6, 1))
